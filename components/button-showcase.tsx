@@ -56,12 +56,12 @@ export function ButtonShowcase() {
       document.documentElement.classList.add("dark");
       try {
         localStorage.setItem("theme", "dark");
-      } catch {}
+      } catch { }
     } else {
       document.documentElement.classList.remove("dark");
       try {
         localStorage.setItem("theme", "light");
-      } catch {}
+      } catch { }
     }
   };
 
@@ -433,7 +433,7 @@ export function ButtonShowcase() {
               </span>
               <div className="flex items-center gap-3">
                 <Button variant="secondary" size="icon" aria-label="Settings">
-                  <Settings className="size-4.5" />
+                  <Settings className="size-4" />
                 </Button>
                 <Button size="icon-full" aria-label="Send">
                   <Send className="size-4" />

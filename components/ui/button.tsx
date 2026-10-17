@@ -63,14 +63,14 @@ const buttonVariants = cva(
         default: "h-10 px-4 text-sm gap-2 rounded-md [&_svg]:size-4",
 
         // 02 Sizing System: Large (h-12, 48px)
-        lg: "h-12 px-6 text-base font-semibold gap-2.5 rounded-md [&_svg]:size-4.5",
-        large: "h-12 px-6 text-base font-semibold gap-2.5 rounded-md [&_svg]:size-4.5",
+        lg: "h-12 px-6 text-base font-semibold gap-2.5 rounded-md [&_svg]:size-4",
+        large: "h-12 px-6 text-base font-semibold gap-2.5 rounded-md [&_svg]:size-4",
 
         // Icon-Only Variants
-        icon: "size-10 p-0 rounded-md [&_svg]:size-4.5",
+        icon: "size-10 p-0 rounded-md [&_svg]:size-4",
         "icon-sm": "size-8 p-0 rounded-md [&_svg]:size-3.5",
         "icon-lg": "size-12 p-0 rounded-md [&_svg]:size-5",
-        "icon-full": "size-10 p-0 rounded-full [&_svg]:size-4.5",
+        "icon-full": "size-10 p-0 rounded-full [&_svg]:size-4",
         "icon-full-sm": "size-8 p-0 rounded-full [&_svg]:size-3.5",
         "icon-full-lg": "size-12 p-0 rounded-full [&_svg]:size-5",
       },
