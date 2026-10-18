@@ -29,6 +29,7 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
+import { Footer, PublicFooter, AppFooter } from "@/components/ui/footers";
 import { Button } from "@/components/ui/button";
 import {
   Moon,
@@ -77,6 +78,7 @@ export function NavigationShowcase() {
     "requests" | "shop" | "reels" | "messages" | "settings"
   >("requests");
   const [currentPage, setCurrentPage] = useState(1);
+  const [footerAuthMode, setFooterAuthMode] = useState<"logged-out" | "logged-in" | "both">("logged-out");
 
   useEffect(() => {
     setMounted(true);
@@ -357,6 +359,101 @@ export function NavigationShowcase() {
               </Pagination>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* 05 Footer System */}
+      <section className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground flex items-center gap-2.5">
+            <span className="w-1.5 h-6 bg-primary rounded-full inline-block transition-colors" />
+            05 Footer System
+          </h2>
+
+          {/* Interactive State Switcher */}
+          <div className="inline-flex items-center p-1 rounded-lg bg-secondary border border-border/60 self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => setFooterAuthMode("logged-out")}
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer",
+                footerAuthMode === "logged-out"
+                  ? "bg-card text-foreground shadow-xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Logged-Out (Public)
+            </button>
+            <button
+              type="button"
+              onClick={() => setFooterAuthMode("logged-in")}
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer",
+                footerAuthMode === "logged-in"
+                  ? "bg-card text-foreground shadow-xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Logged-In (App)
+            </button>
+            <button
+              type="button"
+              onClick={() => setFooterAuthMode("both")}
+              className={cn(
+                "px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer hidden md:inline-block",
+                footerAuthMode === "both"
+                  ? "bg-card text-foreground shadow-xs font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              Compare Both
+            </button>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-card shadow-xs overflow-hidden">
+          {footerAuthMode === "both" ? (
+            <div className="space-y-8 p-4 sm:p-6">
+              <div className="space-y-2">
+                <span className="inline-block text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">
+                  IMAGE 1: LOGGED-OUT STATE (MARKETPLACE / PUBLIC FOOTER)
+                </span>
+                <div className="rounded-xl border border-border/80 overflow-hidden shadow-2xs">
+                  <PublicFooter />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="inline-block text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">
+                  IMAGE 2: LOGGED-IN STATE (SERVICES & RESOURCES APP FOOTER)
+                </span>
+                <div className="rounded-xl border border-border/80 overflow-hidden shadow-2xs">
+                  <AppFooter />
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div className="px-6 py-3 border-b border-border/60 bg-secondary/40 flex items-center justify-between text-xs text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <span className="size-2 rounded-full bg-primary" />
+                  <span>
+                    Current View:{" "}
+                    <strong className="text-foreground">
+                      {footerAuthMode === "logged-in"
+                        ? "Logged-In Application Footer (Image 2)"
+                        : "Logged-Out Public Marketplace Footer (Image 1)"}
+                    </strong>
+                  </span>
+                </div>
+                <span className="text-[11px] font-mono bg-card px-2 py-0.5 rounded border border-border/60 text-foreground">
+                  &lt;Footer isLoggedIn=&#123;
+                  {footerAuthMode === "logged-in" ? "true" : "false"}&#125; /&gt;
+                </span>
+              </div>
+              <Footer isLoggedIn={footerAuthMode === "logged-in"} />
+            </div>
+          )}
         </div>
       </section>
     </div>
