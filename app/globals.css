@@ -205,6 +205,11 @@
   }
 }
 
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
 /* 01 Typography Scale (Figma) */
 @layer utilities {
   .text-h1-display {

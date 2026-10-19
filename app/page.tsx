@@ -1,86 +1,157 @@
 "use client";
 
-import { useState } from "react";
-import { ButtonShowcase } from "@/components/button-showcase";
-import { FormShowcase } from "@/components/form-showcase";
-import { NavigationShowcase } from "@/components/navigation-showcase";
-import { LayoutGrid, CheckSquare, Compass } from "lucide-react";
-import { cn } from "@/lib/utils";
+import * as React from "react";
+import {
+  Zap,
+  Scissors,
+  Car,
+  PaintRoller,
+  MoreHorizontal,
+  ShieldCheck,
+  Lock,
+  MapPin,
+  Mop,
+  Faucet,
+  CodeSquare,
+} from "lucide-react";
+import { threeWomen } from "@/lib";
+import Header, { LandingNavbar } from "@/components/ui/headers";
+import {
+  HeroSection,
+  CategoriesSection,
+  FeaturesSection,
+  CtaCardsSection,
+  type CategoryItem,
+  type FeatureItem,
+  type CtaCardItem,
+} from "@/components/landing";
+import { PublicFooter } from "@/components/ui/footers";
+
 
 export default function Home() {
-    const [activeTab, setActiveTab] = useState<"navigation" | "forms" | "buttons">(
-        "navigation"
-    );
+  const handleLogin = () => {};
+  const handleRegister = () => {};
+  const handleGetStarted = () => {};
+  const handleProfessionalJoin = () => {};
+  const handleCategorySelect = (id: string) => {};
+  const handleConsumerBrowse = () => {};
+  const handleProListService = () => {};
 
-    return (
-        <main className="min-h-screen bg-background text-foreground antialiased transition-colors duration-200">
-            {/* Design System Global Switcher Header Bar */}
-            <div className="border-b border-border bg-card/70 backdrop-blur-md sticky top-0 z-40">
-                <div className="max-w-6xl mx-auto px-6 py-2.5 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground hidden sm:inline-block">
-                            Design System:
-                        </span>
-                        <div className="inline-flex items-center p-1 rounded-lg bg-secondary/80 border border-border/60">
-                            <button
-                                type="button"
-                                onClick={() => setActiveTab("navigation")}
-                                className={cn(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer",
-                                    activeTab === "navigation"
-                                        ? "bg-card text-foreground shadow-xs font-semibold"
-                                        : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <Compass className="size-3.5 text-primary" />
-                                Navigation
-                                <span className="text-[10px] bg-primary/10 text-primary font-bold px-1.5 py-0.2 rounded-full">
-                                    New
-                                </span>
-                            </button>
+  const categories: CategoryItem[] = [
+    {
+      id: "cleaning",
+      name: "Cleaning",
+      icon: Mop,
+      onClick: () => handleCategorySelect("cleaning"),
+    },
+    {
+      id: "plumbing",
+      name: "Plumbing",
+      icon: Faucet,
+      onClick: () => handleCategorySelect("plumbing"),
+    },
+    {
+      id: "electrical",
+      name: "Electrical",
+      icon: Zap,
+      onClick: () => handleCategorySelect("electrical"),
+    },
+    {
+      id: "beauty-spa",
+      name: "Beauty & Spa",
+      icon: Scissors,
+      onClick: () => handleCategorySelect("beauty-spa"),
+    },
+    {
+      id: "mechanic",
+      name: "Mechanic",
+      icon: Car,
+      onClick: () => handleCategorySelect("mechanic"),
+    },
+    {
+      id: "it-support",
+      name: "IT Support",
+      icon: CodeSquare,
+      onClick: () => handleCategorySelect("it-support"),
+    },
+    {
+      id: "painting",
+      name: "Painting",
+      icon: PaintRoller,
+      onClick: () => handleCategorySelect("painting"),
+    },
+    {
+      id: "view-all",
+      name: "View All",
+      icon: MoreHorizontal,
+      onClick: () => handleCategorySelect("view-all"),
+    },
+  ];
 
-                            <button
-                                type="button"
-                                onClick={() => setActiveTab("forms")}
-                                className={cn(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer",
-                                    activeTab === "forms"
-                                        ? "bg-card text-foreground shadow-xs font-semibold"
-                                        : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <CheckSquare className="size-3.5 text-muted-foreground" />
-                                Form System
-                            </button>
+  const features: FeatureItem[] = [
+    {
+      id: "verified-professionals",
+      title: "Verified Professionals",
+      description:
+        "Every professional undergoes a rigorous background check and verification process for your peace of mind.",
+      icon: ShieldCheck,
+    },
+    {
+      id: "secure-payments",
+      title: "Secure Payments",
+      description:
+        "We provide a secure escrow system. Payment is only released to the professional after you are satisfied with the work.",
+      icon: Lock,
+    },
+    {
+      id: "local-expertise",
+      title: "Local Expertise",
+      description:
+        "Connect with professionals who understand the Nigerian market and local community requirements.",
+      icon: MapPin,
+    },
+  ];
 
-                            <button
-                                type="button"
-                                onClick={() => setActiveTab("buttons")}
-                                className={cn(
-                                    "flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-medium transition-all cursor-pointer",
-                                    activeTab === "buttons"
-                                        ? "bg-card text-foreground shadow-xs font-semibold"
-                                        : "text-muted-foreground hover:text-foreground"
-                                )}
-                            >
-                                <LayoutGrid className="size-3.5 text-muted-foreground" />
-                                Button System
-                            </button>
-                        </div>
-                    </div>
+  const ctaCards: CtaCardItem[] = [
+    {
+      id: "for-consumers",
+      title: "For Consumers",
+      description:
+        "Find the best help for your home or business. Fast, reliable, and verified.",
+      buttonText: "Browse Categories",
+      onButtonClick: handleConsumerBrowse,
+    },
+    {
+      id: "for-professionals",
+      title: "For Professionals",
+      description:
+        "Grow your business and reach more customers across Nigeria with ease.",
+      buttonText: "List Your Service",
+      onButtonClick: handleProListService,
+    },
+  ];
 
-                    <div className="text-xs text-muted-foreground font-mono">
-                        MyKostoma UI v1.0.0
-                    </div>
-                </div>
-            </div>
+  return (
+    <div className="min-h-screen bg-card text-foreground transition-colors selection:bg-primary/20 selection:text-primary">
+      <Header variant="landing" onLogin={handleLogin} onRegister={handleRegister} />
 
-            {/* Main Showcase View */}
-            <div className="py-6">
-                {activeTab === "navigation" && <NavigationShowcase />}
-                {activeTab === "forms" && <FormShowcase />}
-                {activeTab === "buttons" && <ButtonShowcase />}
-            </div>
-        </main>
-    );
+      <main className="space-y-16 md:space-y-20 lg:space-y-24">
+        <HeroSection
+          heroImage={threeWomen}
+          onGetStarted={handleGetStarted}
+          onProfessionalClick={handleProfessionalJoin}
+        />
+
+        <CategoriesSection categories={categories} />
+
+        <div className="w-full bg-secondary/40 transition-colors">
+          <FeaturesSection features={features} />
+        </div>
+
+        <CtaCardsSection cards={ctaCards} />
+      </main>
+
+      <PublicFooter />
+    </div>
+  );
 }

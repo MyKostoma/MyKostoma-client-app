@@ -248,10 +248,6 @@ export const DEFAULT_APP_BOTTOM_LINKS: FooterLinkItem[] = [
    COMPONENT 1: PublicFooter (Image 1 - When User is Logged Out)
    ========================================================================== */
 
-/**
- * PublicFooter represents the marketing/marketplace footer shown when the user
- * is not logged in (Image 1).
- */
 export function PublicFooter({
   tagline = "Connecting Nigeria's finest talent with those who need it most.",
   logoHref = "/",
@@ -273,7 +269,7 @@ export function PublicFooter({
       )}
       {...props}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-14 pb-10">
+      <div className="container px-6 sm:px-8 lg:px-12 pt-14 pb-10">
         {/* Top Section: Brand + Links */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           {/* Brand & Socials Column */}
@@ -346,10 +342,8 @@ export function PublicFooter({
           </div>
         </div>
 
-        {/* Subtle Horizontal Divider */}
         <hr className="border-t border-border/80 my-8 sm:my-10" />
 
-        {/* Bottom Bar: Copyright & Location/Version */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-muted-foreground">
           <p className="tracking-normal text-center sm:text-left">
             MyKostoma Digital © {copyrightYear}. All rights reserved.
@@ -370,10 +364,6 @@ export function PublicFooter({
    COMPONENT 2: AppFooter (Image 2 - When User is Logged In)
    ========================================================================== */
 
-/**
- * AppFooter represents the application/services footer shown when the user
- * is authenticated/logged in (Image 2).
- */
 export function AppFooter({
   tagline = "Connecting homeowners with elite local professionals. Standardizing trust and quality for home services worldwide.",
   logoHref = "/",
@@ -397,7 +387,7 @@ export function AppFooter({
       )}
       {...props}
     >
-      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 pt-14 pb-10">
+      <div className="container px-6 sm:px-8 lg:px-12 pt-14 pb-10">
         {/* Top Section: Brand + Links */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
           {/* Brand & Action Buttons Column */}
@@ -511,14 +501,7 @@ export function AppFooter({
   );
 }
 
-/* ==========================================================================
-   MAIN COMPONENT: Footer (with temporary logged-in flag & variant support)
-   ========================================================================== */
 
-/**
- * Unified Footer component. Automatically renders PublicFooter (logged out)
- * or AppFooter (logged in) based on the `isLoggedIn` prop or the `TEMPORARY_IS_LOGGED_IN` flag.
- */
 export function Footer({
   isLoggedIn,
   variant,
@@ -530,8 +513,8 @@ export function Footer({
     variant === "app" || variant === "logged-in"
       ? true
       : variant === "public" || variant === "logged-out"
-      ? false
-      : (isLoggedIn ?? TEMPORARY_IS_LOGGED_IN);
+        ? false
+        : (isLoggedIn ?? TEMPORARY_IS_LOGGED_IN);
 
   if (effectiveLoggedIn) {
     return <AppFooter className={className} {...props} />;
@@ -540,7 +523,6 @@ export function Footer({
   return <PublicFooter className={className} {...props} />;
 }
 
-// Aliases for convenience
 export const Footers = Footer;
 export const LoggedOutFooter = PublicFooter;
 export const LoggedInFooter = AppFooter;

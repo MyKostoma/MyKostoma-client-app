@@ -1,4 +1,4 @@
-export * from "@/components/ui/app-header";
+export * from "@/components/ui/headers";
 export * from "@/components/ui/sidebar-nav";
 export * from "@/components/ui/mobile-bottom-nav";
 export * from "@/components/ui/breadcrumb";

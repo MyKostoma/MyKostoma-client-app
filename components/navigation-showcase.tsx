@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { AppHeader } from "@/components/ui/app-header";
+import { AppHeader } from "@/components/ui/headers";
 import {
   ConsumerSidebar,
   ProfessionalSidebar,
