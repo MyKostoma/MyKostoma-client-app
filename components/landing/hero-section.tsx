@@ -44,15 +44,15 @@ export function HeroSection({
     >
       <div className="container grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
         <div className="lg:col-span-6 space-y-6 flex flex-col items-center lg:items-start">
-          <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15] text-center lg:text-start">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15] text-center lg:text-start">
             {title}
           </h1>
 
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg text-center lg:text-start">
+          <p className="text-sm sm:text-base md:text-lg lg:text-base text-muted-foreground leading-relaxed max-w-lg text-center lg:text-start">
             {subtitle}
           </p>
 
-          <div className="grid grid-cols-1 md:flex flex-wrap items-center gap-3 pt-2">
+          <div className="grid grid-cols-1 sm:flex flex-wrap items-center gap-3 pt-2">
             <Button
               variant="default"
               size="default"

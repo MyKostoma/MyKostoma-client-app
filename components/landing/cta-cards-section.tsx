@@ -18,12 +18,12 @@ export interface CtaCardsSectionProps extends React.HTMLAttributes<HTMLElement> 
 
 function CtaCard({ card }: { card: CtaCardItem }) {
   return (
-    <div className="rounded-3xl bg-secondary/40 border border-border/60 p-8 sm:p-10 flex flex-col justify-between items-start min-h-[220px] space-y-6 shadow-2xs hover:shadow-xs transition-shadow">
+    <div className="rounded-3xl bg-secondary/40 border border-border/60 p-6 sm:p-10 flex flex-col justify-between items-start min-h-64 sm:min-h-80 lg:min-h-96 max-w-140 space-y-6 shadow-2xs hover:shadow-xs transition-shadow">
       <div className="space-y-3">
-        <h3 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+        <h3 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-foreground">
           {card.title}
         </h3>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-sm">
+        <p className="text-xs sm:text-sm lg:text-lg text-muted-foreground leading-relaxed max-w-lg">
           {card.description}
         </p>
       </div>
@@ -48,7 +48,7 @@ export function CtaCardsSection({
   return (
     <section
       className={cn(
-        "w-full container px-6 sm:px-8 lg:px-12 pb-16 sm:pb-24",
+        "w-full container px-6 py-16 sm:py-24",
         className
       )}
       {...props}

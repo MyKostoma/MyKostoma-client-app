@@ -60,7 +60,7 @@ const buttonVariants = cva(
         small: "h-8 px-3 text-xs gap-1.5 rounded-md [&_svg]:size-3.5",
 
         // 02 Sizing System: Default (h-10, 40px)
-        default: "h-10 px-4 text-sm gap-2 rounded-md [&_svg]:size-4",
+        default: "h-10 xl:h-14 px-5 xl:px-8 text-sm xl:text-base gap-2 rounded-md [&_svg]:size-4",
 
         // 02 Sizing System: Large (h-12, 48px)
         lg: "h-12 px-6 text-base font-semibold gap-2.5 rounded-md [&_svg]:size-4",

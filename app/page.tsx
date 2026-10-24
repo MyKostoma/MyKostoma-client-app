@@ -132,7 +132,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-card text-foreground transition-colors selection:bg-primary/20 selection:text-primary">
+    <div className="min-h-screen bg-card text-foreground transition-colors selection:bg-primary/20 selection:text-primary font-inter">
       <Header variant="landing" onLogin={handleLogin} onRegister={handleRegister} />
 
       <main className="">

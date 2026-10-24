@@ -307,7 +307,7 @@ export function PublicFooter({
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={social.name}
-                      className="text-slate-400 hover:text-foreground dark:text-muted-foreground dark:hover:text-foreground transition-colors p-0.5"
+                      className="text-foreground/60 hover:text-primary transition-colors p-0.5"
                     >
                       <Icon className="size-4.5" />
                     </a>
@@ -330,7 +330,7 @@ export function PublicFooter({
                       <a
                         href={link.href}
                         onClick={link.onClick}
-                        className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
+                        className="text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors inline-block"
                       >
                         {link.label}
                       </a>

@@ -55,11 +55,11 @@ export function CategoriesSection({
       )}
       {...props}
     >
-      <div className="text-center max-w-2xl mx-auto space-y-2 mb-10">
+      <div className="text-center max-w-lg lg:max-w-2xl mx-auto space-y-2 sm:space-y-4 mb-10">
         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
           {title}
         </h2>
-        <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+        <p className="text-xs sm:text-sm lg:text-base text-muted-foreground leading-relaxed">
           {subtitle}
         </p>
       </div>

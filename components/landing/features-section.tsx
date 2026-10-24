@@ -23,11 +23,11 @@ function FeatureCard({ feature }: { feature: FeatureItem }) {
         <Icon className="size-5" />
       </div>
 
-      <h3 className="text-base sm:text-lg font-bold text-foreground tracking-tight">
+      <h3 className="text-base sm:text-lg lg:text-xl font-bold text-foreground tracking-tight">
         {feature.title}
       </h3>
 
-      <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+      <p className="text-xs sm:text-sm lg:text-base text-muted-foreground leading-relaxed">
         {feature.description}
       </p>
     </div>
@@ -42,12 +42,12 @@ export function FeaturesSection({
   return (
     <section
       className={cn(
-        "w-full container px-6 sm:px-8 lg:px-12 py-14 sm:py-20",
+        "w-full container px-6 py-14 sm:py-24",
         className
       )}
       {...props}
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 lg:gap-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-8 lg:gap-10">
         {features.map((feature) => (
           <FeatureCard key={feature.id} feature={feature} />
         ))}
