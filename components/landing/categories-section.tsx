@@ -50,7 +50,7 @@ export function CategoriesSection({
   return (
     <section
       className={cn(
-        "w-full container px-6 sm:px-8 lg:px-12 py-12 sm:py-16",
+        "w-full container px-6 py-12 sm:py-16 lg:py-24",
         className
       )}
       {...props}

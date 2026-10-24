@@ -135,7 +135,7 @@ export default function Home() {
     <div className="min-h-screen bg-card text-foreground transition-colors selection:bg-primary/20 selection:text-primary">
       <Header variant="landing" onLogin={handleLogin} onRegister={handleRegister} />
 
-      <main className="space-y-16 md:space-y-20 lg:space-y-24">
+      <main className="">
         <HeroSection
           heroImage={threeWomen}
           onGetStarted={handleGetStarted}

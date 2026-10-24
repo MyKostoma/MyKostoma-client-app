@@ -112,7 +112,7 @@ export function LandingNavbar({
                 <Moon className="size-4 text-foreground" />
               )
             }
-            className="transition-colors shadow-2xs"
+            className="transition-colors shadow-2xs border-0 bg-transparent shadow-none"
           >
           </Button>
 

@@ -37,28 +37,28 @@ export function HeroSection({
   return (
     <section
       className={cn(
-        "w-full px-6 sm:px-8 lg:px-12 py-10 md:py-16 lg:py-20 bg-secondary/60 border-t border-border font-inter",
+        "w-full px-6 sm:px-8 lg:px-12 py-10 md:py-16 lg:py-20 xl:py-24 bg-secondary/60 border-t border-border font-inter",
         className
       )}
       {...props}
     >
       <div className="container grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-        <div className="lg:col-span-6 space-y-6">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-foreground leading-[1.15]">
+        <div className="lg:col-span-6 space-y-6 flex flex-col items-center lg:items-start">
+          <h1 className="text-4xl sm:text-5xl xl:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15] text-center lg:text-start">
             {title}
           </h1>
 
-          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg">
+          <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-lg text-center lg:text-start">
             {subtitle}
           </p>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2">
+          <div className="grid grid-cols-1 md:flex flex-wrap items-center gap-3 pt-2">
             <Button
               variant="default"
               size="default"
               onClick={onGetStarted}
               trailingIcon={<ArrowRight className="size-4" />}
-              className="h-10 px-5 text-sm font-semibold rounded-md shadow-xs"
+              className="h-10 xl:h-14 px-5 xl:px-8 text-sm xl:text-base font-semibold rounded-md shadow-xs"
             >
               {getStartedText}
             </Button>
@@ -67,7 +67,7 @@ export function HeroSection({
               variant="default"
               size="default"
               onClick={onProfessionalClick}
-              className="h-10 px-5 text-sm font-semibold rounded-md shadow-xs"
+              className="h-10 xl:h-14 px-5 xl:px-8 text-sm xl:text-base font-semibold rounded-md shadow-xs"
             >
               {professionalText}
             </Button>
@@ -75,7 +75,7 @@ export function HeroSection({
         </div>
 
         <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
-          <div className="relative w-full max-w-lg">
+          <div className="relative w-full max-w-xl">
             <div className="overflow-hidden rounded-2xl shadow-sm border border-border/40 bg-secondary/20">
               <img
                 src={imgSrc}
@@ -84,9 +84,9 @@ export function HeroSection({
               />
             </div>
 
-            <div className="absolute -bottom-5 left-4 sm:-bottom-6 sm:left-4 bg-card border border-border/80 rounded-xl px-4 py-3 shadow-lg flex items-center gap-3">
+            <div className="absolute -bottom-5 -left-4 sm:-bottom-6 sm:-left-4 bg-card border border-border/80 rounded-xl px-4 pr-10 py-3 shadow-lg flex items-center gap-3">
               <div className="size-6 rounded-full bg-success/15 flex items-center justify-center text-success shrink-0">
-                <Check className="size-3.5 stroke-[3]" />
+                <Check className="size-3.5" />
               </div>
 
               <div className="flex flex-col">
