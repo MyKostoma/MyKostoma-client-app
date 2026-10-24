@@ -76,27 +76,27 @@ export function HeroSection({
 
         <div className="lg:col-span-6 relative flex justify-center lg:justify-end">
           <div className="relative w-full max-w-xl">
-            <div className="overflow-hidden rounded-2xl shadow-sm border border-border/40 bg-secondary/20">
+            <div className="overflow-hidden rounded-lg shadow-sm border border-border/40 bg-secondary/20">
               <img
                 src={imgSrc}
                 alt="Local Professionals collaborating"
-                className="w-full h-auto aspect-[4/3] object-cover"
+                className="w-full h-auto aspect-4/3 object-cover"
               />
             </div>
 
-            <div className="absolute -bottom-5 -left-4 sm:-bottom-6 sm:-left-4 bg-card border border-border/80 rounded-xl px-4 pr-10 py-3 shadow-lg flex items-center gap-3">
+            <div className="absolute w-[256px] h-20 -bottom-5 -left-4 sm:-bottom-6 sm:-left-4 bg-card border border-border/80 rounded-xl px-4 pr-10 py-3 shadow-lg flex items-center gap-3">
               <div className="size-6 rounded-full bg-success/15 flex items-center justify-center text-success shrink-0">
                 <Check className="size-3.5" />
               </div>
 
-              <div className="flex flex-col">
+              <div className="flex flex-col w-full">
                 <span className="text-xs font-bold tracking-wider text-foreground uppercase leading-tight">
                   {badgeName}
                 </span>
-                <span className="text-[10px] font-bold tracking-widest text-success uppercase leading-tight mt-0.5">
+                <span className="text-[10px] font-bold tracking-widest text-success uppercase leading-tight my-1">
                   {badgeStatus}
                 </span>
-                <div className="h-0.5 w-full bg-foreground/90 rounded-full mt-1.5" />
+                <div className="h-2 w-9/10 bg-foreground/90 rounded-full mt-1.5" />
               </div>
             </div>
           </div>
