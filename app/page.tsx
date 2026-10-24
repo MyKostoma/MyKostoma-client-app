@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useRouter } from "next/navigation";
 import {
   Zap,
   Scissors,
@@ -15,7 +15,7 @@ import {
   CodeSquare,
 } from "lucide-react";
 import { threeWomen } from "@/lib";
-import Header, { LandingNavbar } from "@/components/ui/headers";
+import Header from "@/components/ui/headers";
 import {
   HeroSection,
   CategoriesSection,
@@ -29,13 +29,29 @@ import { PublicFooter } from "@/components/ui/footers";
 
 
 export default function Home() {
-  const handleLogin = () => {};
-  const handleRegister = () => {};
-  const handleGetStarted = () => {};
-  const handleProfessionalJoin = () => {};
-  const handleCategorySelect = (id: string) => {};
-  const handleConsumerBrowse = () => {};
-  const handleProListService = () => {};
+  const router = useRouter();
+
+  const handleLogin = () => {
+    router.push("/login");
+  };
+  const handleRegister = () => {
+    router.push("/register");
+  };
+  const handleGetStarted = () => {
+    router.push("/register");
+  };
+  const handleProfessionalJoin = () => {
+    router.push("/register?role=professional");
+  };
+  const handleCategorySelect = (id: string) => {
+    router.push(`/category/${id}`);
+  };
+  const handleConsumerBrowse = () => {
+    router.push("/register?role=consumer");
+  };
+  const handleProListService = () => {
+    router.push("/register?role=professional");
+  };
 
   const categories: CategoryItem[] = [
     {

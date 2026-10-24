@@ -15,7 +15,7 @@ import {
     FileText,
     X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // ============================================================================
 // 1. LABEL COMPONENT
@@ -226,7 +226,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
             value !== undefined ? value : defaultValue
         );
 
-        React.useEffect(() => {
+        useEffect(() => {
             if (value !== undefined) {
                 setInternalValue(value);
             }
@@ -389,15 +389,15 @@ export const Select: React.FC<SelectProps> = ({
     const [selectedValue, setSelectedValue] = useState<string | undefined>(
         value !== undefined ? value : defaultValue
     );
-    const dropdownRef = React.useRef<HTMLDivElement>(null);
+    const dropdownRef = useRef<HTMLDivElement>(null);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (value !== undefined) {
             setSelectedValue(value);
         }
     }, [value]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const handleOutsideClick = (event: MouseEvent) => {
             if (
                 dropdownRef.current &&
@@ -522,7 +522,7 @@ export const Switch: React.FC<SwitchProps> = ({
         checked !== undefined ? checked : defaultChecked
     );
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (checked !== undefined) {
             setIsChecked(checked);
         }
@@ -660,7 +660,7 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
             checked !== undefined ? checked : defaultChecked
         );
 
-        React.useEffect(() => {
+        useEffect(() => {
             if (checked !== undefined) {
                 setIsChecked(checked);
             }
@@ -826,9 +826,9 @@ export const OtpInput: React.FC<OtpInputProps> = ({
         return arr;
     });
 
-    const inputRefs = React.useRef<(HTMLInputElement | null)[]>([]);
+    const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (value !== undefined) {
             const arr = new Array(length).fill("");
             for (let i = 0; i < Math.min(value.length, length); i++) {
@@ -885,7 +885,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({
 
     return (
         <div
-            className={cn("flex items-center gap-3", className)}
+            className={cn("flex w-full items-center justify-center gap-2 sm:gap-3", className)}
             onPaste={handlePaste}
         >
             {internalOtp.map((digit, idx) => {
@@ -904,11 +904,11 @@ export const OtpInput: React.FC<OtpInputProps> = ({
                         onChange={(e) => handleChange(idx, e.target.value)}
                         onKeyDown={(e) => handleKeyDown(idx, e)}
                         className={cn(
-                            "w-12 h-12 md:w-13 md:h-13 rounded-lg text-center font-bold text-lg md:text-xl outline-none transition-all duration-150",
-                            "border bg-card text-foreground shadow-2xs",
+                            "min-w-0 flex-1 aspect-square max-w-12 md:max-w-13 rounded-lg p-0 text-center font-bold text-base sm:text-lg md:text-xl outline-none transition-all duration-150",
+                            "border-2 bg-card text-foreground shadow-2xs",
                             // Active / Filled purple/primary ring border from Figma
                             isFilled
-                                ? "border-2 border-primary ring-2 ring-primary/20 text-foreground font-bold"
+                                ? "border-primary ring-2 ring-primary/20 text-foreground font-bold"
                                 : "border-input hover:border-muted-foreground/40 focus:border-primary focus:ring-2 focus:ring-primary/20",
                             disabled && "opacity-50 cursor-not-allowed bg-muted border-border"
                         )}
@@ -943,7 +943,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({
     className,
 }) => {
     const [isDragOver, setIsDragOver] = useState(false);
-    const inputRef = React.useRef<HTMLInputElement>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const handleDragOver = (e: React.DragEvent) => {
         e.preventDefault();
