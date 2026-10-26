@@ -8,9 +8,16 @@ import { Button } from "@/components/ui/button";
 import { FormField, Input, Label, PasswordInput } from "@/components/ui/form-fields";
 import { AuthAltAction, AuthCard } from "./auth-card";
 import { mockLogin } from "./mock-handlers";
+import { useAppDispatch } from "@/store/hooks";
+import { setCredentials } from "@/store/slices/authSlice";
+import { setActivePerspective } from "@/store/slices/uiSlice";
+import { getRedirectAfterLogin, setAuthCookies } from "@/lib/cookies";
+import { getDefaultDashboard } from "@/lib/default-dashboard";
+import type { UserRole } from "@/types/user";
 
 export function LoginForm() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [identifier, setIdentifier] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -20,7 +27,39 @@ export function LoginForm() {
     setLoading(true);
     const res = await mockLogin({ identifier, password });
     setLoading(false);
-    if (res.ok) router.push("/");
+    if (res.ok) {
+      const inferredRole: UserRole = identifier
+        .toLowerCase()
+        .includes("pro")
+        ? "professional"
+        : "consumer";
+      const mockAccessToken = `mk_access_${Date.now()}`;
+      const mockRefreshToken = `mk_refresh_${Date.now()}`;
+
+      dispatch(
+        setCredentials({
+          user: {
+            id: `usr_${Date.now()}`,
+            fullName: identifier.split("@")[0] || "Alex Morgan",
+            identifier,
+            role: inferredRole,
+            roles: [inferredRole],
+            verified: true,
+            active: true,
+          },
+          tokens: {
+            accessToken: mockAccessToken,
+            refreshToken: mockRefreshToken,
+          },
+        })
+      );
+      dispatch(setActivePerspective(inferredRole));
+      setAuthCookies(mockAccessToken, mockRefreshToken, inferredRole);
+
+      const redirectPath =
+        getRedirectAfterLogin() ?? getDefaultDashboard(inferredRole);
+      router.push(redirectPath);
+    }
   };
 
   return (

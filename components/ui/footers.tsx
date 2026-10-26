@@ -4,6 +4,8 @@ import * as React from "react";
 import Link from "next/link";
 import { Cloud, Send, User } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAppSelector } from "@/store/hooks";
+import { selectIsAuthenticated } from "@/store/slices/authSlice";
 
 /* ==========================================================================
    CONFIG & TEMPORARY FLAGS
@@ -89,7 +91,7 @@ export type FooterVariant = "public" | "app" | "logged-out" | "logged-in";
 export interface FooterProps extends React.HTMLAttributes<HTMLElement> {
   /**
    * Manually override the logged in status.
-   * If undefined, falls back to `TEMPORARY_IS_LOGGED_IN`.
+   * If undefined, falls back to Redux auth state or `TEMPORARY_IS_LOGGED_IN`.
    */
   isLoggedIn?: boolean;
   /**
@@ -501,20 +503,21 @@ export function AppFooter({
   );
 }
 
-
 export function Footer({
   isLoggedIn,
   variant,
   className,
   ...props
 }: FooterProps) {
-  // Determine variant preference or fallback to flag
+  const storeIsAuthenticated = useAppSelector(selectIsAuthenticated);
+
+  // Determine variant preference or fallback to Redux auth state / temporary flag
   const effectiveLoggedIn =
     variant === "app" || variant === "logged-in"
       ? true
       : variant === "public" || variant === "logged-out"
         ? false
-        : (isLoggedIn ?? TEMPORARY_IS_LOGGED_IN);
+        : (isLoggedIn ?? (storeIsAuthenticated || TEMPORARY_IS_LOGGED_IN));
 
   if (effectiveLoggedIn) {
     return <AppFooter className={className} {...props} />;

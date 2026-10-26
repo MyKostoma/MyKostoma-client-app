@@ -8,6 +8,15 @@ import { OtpInput } from "@/components/ui/form-fields";
 import { AuthCard } from "./auth-card";
 import { AuthSuccess } from "./auth-success";
 import { mockResendCode, mockVerifyCode } from "./mock-handlers";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  selectCurrentUser,
+  selectPendingVerification,
+  setCredentials,
+} from "@/store/slices/authSlice";
+import { setActivePerspective } from "@/store/slices/uiSlice";
+import { setAuthCookies } from "@/lib/cookies";
+import { getRoleDestination } from "@/lib/role-utils";
 
 const CODE_LENGTH = 6;
 const RESEND_SECONDS = 60;
@@ -15,6 +24,10 @@ const RESEND_SECONDS = 60;
 const formatTime = (s: number) => `00:${String(s).padStart(2, "0")}`;
 
 export function VerifyAccountForm() {
+  const dispatch = useAppDispatch();
+  const pendingVerification = useAppSelector(selectPendingVerification);
+  const currentUser = useAppSelector(selectCurrentUser);
+
   const [code, setCode] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [loading, setLoading] = React.useState(false);
@@ -22,6 +35,10 @@ export function VerifyAccountForm() {
   const [seconds, setSeconds] = React.useState(RESEND_SECONDS);
   // Bumped to remount the OTP input when the user wants to retry with empty boxes.
   const [otpKey, setOtpKey] = React.useState(0);
+
+  const detectedRole =
+    pendingVerification?.role ?? currentUser?.role ?? "consumer";
+  const destinationMeta = getRoleDestination(detectedRole);
 
   React.useEffect(() => {
     if (seconds <= 0) return;
@@ -41,8 +58,40 @@ export function VerifyAccountForm() {
     setLoading(true);
     const res = await mockVerifyCode(code);
     setLoading(false);
-    if (res.ok) setVerified(true);
-    else setError(res.message);
+    if (res.ok) {
+      const mockAccessToken = `mk_access_${Date.now()}`;
+      const mockRefreshToken = `mk_refresh_${Date.now()}`;
+      const verifiedUser = {
+        id: currentUser?.id ?? `usr_${Date.now()}`,
+        fullName:
+          pendingVerification?.fullName ??
+          currentUser?.fullName ??
+          "MyKostoma User",
+        identifier:
+          pendingVerification?.identifier ??
+          currentUser?.identifier ??
+          "user@mykostoma.com",
+        role: detectedRole,
+        roles: [detectedRole],
+        category: pendingVerification?.category ?? currentUser?.category ?? null,
+        verified: true,
+        active: true,
+      };
+      dispatch(
+        setCredentials({
+          user: verifiedUser,
+          tokens: {
+            accessToken: mockAccessToken,
+            refreshToken: mockRefreshToken,
+          },
+        })
+      );
+      dispatch(setActivePerspective(detectedRole));
+      setAuthCookies(mockAccessToken, mockRefreshToken, detectedRole);
+      setVerified(true);
+    } else {
+      setError(res.message);
+    }
   };
 
   const handleResend = async () => {
@@ -52,7 +101,13 @@ export function VerifyAccountForm() {
   };
 
   if (verified) {
-    return <AuthSuccess destinationLabel="Consumer Product Entry" roleLabel="Consumer" />;
+    return (
+      <AuthSuccess
+        destinationLabel={destinationMeta.destinationLabel}
+        roleLabel={destinationMeta.roleLabel}
+        href={destinationMeta.href}
+      />
+    );
   }
 
   const canResend = seconds === 0;

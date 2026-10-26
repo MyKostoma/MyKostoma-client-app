@@ -8,9 +8,12 @@ import { Button } from "@/components/ui/button";
 import { FormField, Input } from "@/components/ui/form-fields";
 import { AuthCard } from "./auth-card";
 import { mockSendResetCode } from "./mock-handlers";
+import { useAppDispatch } from "@/store/hooks";
+import { setPendingVerification } from "@/store/slices/authSlice";
 
 export function ForgotPasswordForm() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [identifier, setIdentifier] = React.useState("");
   const [loading, setLoading] = React.useState(false);
 
@@ -19,7 +22,16 @@ export function ForgotPasswordForm() {
     setLoading(true);
     const res = await mockSendResetCode(identifier);
     setLoading(false);
-    if (res.ok) router.push("/reset-password");
+    if (res.ok) {
+      dispatch(
+        setPendingVerification({
+          identifier,
+          role: "consumer",
+          flow: "reset-password",
+        })
+      );
+      router.push("/reset-password");
+    }
   };
 
   return (

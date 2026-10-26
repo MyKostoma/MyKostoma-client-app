@@ -13,6 +13,16 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { selectCurrentUser } from "@/store/slices/authSlice";
+import {
+  selectGlobalSearchQuery,
+  selectUnreadMessagesCount,
+  selectUnreadNotificationsCount,
+  setGlobalSearchQuery,
+  setTheme,
+} from "@/store/slices/uiSlice";
+import { RoleDisplayNames } from "@/types/user";
 
 export interface LandingNavbarProps extends React.HTMLAttributes<HTMLElement> {
   logoHref?: string;
@@ -27,6 +37,7 @@ export function LandingNavbar({
   className,
   ...props
 }: LandingNavbarProps) {
+  const dispatch = useAppDispatch();
   const [isDark, setIsDark] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
 
@@ -56,6 +67,8 @@ export function LandingNavbar({
   const toggleTheme = () => {
     const nextDark = !isDark;
     setIsDark(nextDark);
+    const nextTheme = nextDark ? "dark" : "light";
+    dispatch(setTheme(nextTheme));
     if (nextDark) {
       document.documentElement.classList.add("dark");
       try {
@@ -156,11 +169,11 @@ export interface AppHeaderProps {
 }
 
 export function AppHeader({
-  userName = "Alex Morgan",
-  userRole = "PREMIUM CONSUMER",
-  avatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-  notificationCount = 3,
-  hasUnreadMessages = true,
+  userName,
+  userRole,
+  avatarUrl,
+  notificationCount,
+  hasUnreadMessages,
   searchPlaceholder = "Search services, professionals...",
   searchValue,
   onSearchChange,
@@ -170,11 +183,36 @@ export function AppHeader({
   onProfileClick,
   className,
 }: AppHeaderProps) {
-  const [internalSearch, setInternalSearch] = React.useState(searchValue || "");
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector(selectCurrentUser);
+  const storeNotificationCount = useAppSelector(selectUnreadNotificationsCount);
+  const storeUnreadMessagesCount = useAppSelector(selectUnreadMessagesCount);
+  const storeSearchQuery = useAppSelector(selectGlobalSearchQuery);
+
+  const resolvedUserName = userName ?? currentUser?.fullName ?? "Alex Morgan";
+  const resolvedUserRole =
+    userRole ??
+    (currentUser?.role
+      ? RoleDisplayNames[currentUser.role].toUpperCase()
+      : "PREMIUM CONSUMER");
+  const resolvedAvatarUrl =
+    avatarUrl ??
+    currentUser?.avatarUrl ??
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80";
+  const resolvedNotificationCount =
+    notificationCount ?? (storeNotificationCount || 3);
+  const resolvedHasUnreadMessages =
+    hasUnreadMessages ?? (storeUnreadMessagesCount > 0 || true);
+
+  const [internalSearch, setInternalSearch] = React.useState(
+    searchValue ?? storeSearchQuery ?? ""
+  );
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInternalSearch(e.target.value);
-    onSearchChange?.(e.target.value);
+    const val = e.target.value;
+    setInternalSearch(val);
+    dispatch(setGlobalSearchQuery(val));
+    onSearchChange?.(val);
   };
 
   return (
@@ -227,7 +265,7 @@ export function AppHeader({
           className="relative size-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
         >
           <MessageSquare className="size-4.5" />
-          {hasUnreadMessages && (
+          {resolvedHasUnreadMessages && (
             <span
               className="absolute top-2 right-2 size-2 rounded-full bg-error ring-2 ring-card animate-pulse"
               aria-label="Unread messages"
@@ -242,9 +280,9 @@ export function AppHeader({
           className="relative size-9 rounded-lg flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors cursor-pointer"
         >
           <Bell className="size-4.5" />
-          {notificationCount > 0 && (
+          {resolvedNotificationCount > 0 && (
             <span className="absolute -top-1 -right-0.5 size-4 rounded-full bg-error text-white font-bold text-[10px] leading-none flex items-center justify-center shadow-xs ring-2 ring-card">
-              {notificationCount > 9 ? "9+" : notificationCount}
+              {resolvedNotificationCount > 9 ? "9+" : resolvedNotificationCount}
             </span>
           )}
         </button>
@@ -266,17 +304,17 @@ export function AppHeader({
         >
           <div className="flex flex-col text-right hidden sm:flex">
             <span className="text-xs sm:text-sm font-bold text-foreground tracking-tight leading-tight">
-              {userName}
+              {resolvedUserName}
             </span>
             <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase leading-tight mt-0.5">
-              {userRole}
+              {resolvedUserRole}
             </span>
           </div>
 
           <div className="relative">
             <img
-              src={avatarUrl}
-              alt={userName}
+              src={resolvedAvatarUrl}
+              alt={resolvedUserName}
               className="size-9 rounded-full object-cover ring-2 ring-primary/30 shadow-2xs"
             />
           </div>

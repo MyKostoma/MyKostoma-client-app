@@ -8,9 +8,12 @@ import { Button } from "@/components/ui/button";
 import { FormField, PasswordInput } from "@/components/ui/form-fields";
 import { AuthCard } from "./auth-card";
 import { mockResetPassword } from "./mock-handlers";
+import { useAppDispatch } from "@/store/hooks";
+import { clearPendingVerification } from "@/store/slices/authSlice";
 
 export function ResetPasswordForm() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const [password, setPassword] = React.useState("");
   const [confirm, setConfirm] = React.useState("");
   const [loading, setLoading] = React.useState(false);
@@ -24,7 +27,10 @@ export function ResetPasswordForm() {
     setLoading(true);
     const res = await mockResetPassword(password);
     setLoading(false);
-    if (res.ok) router.push("/login");
+    if (res.ok) {
+      dispatch(clearPendingVerification());
+      router.push("/login");
+    }
   };
 
   return (
