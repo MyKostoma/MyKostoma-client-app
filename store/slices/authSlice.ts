@@ -22,6 +22,7 @@ export interface AuthState {
   isLoading: boolean;
   error: string | null;
   pendingVerification: PendingVerification | null;
+  registrationRole: UserRole | null;
 }
 
 const initialState: AuthState = {
@@ -31,6 +32,7 @@ const initialState: AuthState = {
   isLoading: false,
   error: null,
   pendingVerification: null,
+  registrationRole: null,
 };
 
 const authSlice = createSlice({
@@ -74,6 +76,14 @@ const authSlice = createSlice({
       state.pendingVerification = null;
     },
 
+    setRegistrationRole: (state, action: PayloadAction<UserRole | null>) => {
+      state.registrationRole = action.payload;
+    },
+
+    clearRegistrationRole: (state) => {
+      state.registrationRole = null;
+    },
+
     setError: (state, action: PayloadAction<string>) => {
       state.error = action.payload;
       state.isLoading = false;
@@ -90,6 +100,7 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.error = null;
       state.pendingVerification = null;
+      state.registrationRole = null;
     },
   },
 });
@@ -101,6 +112,8 @@ export const {
   updateTokens,
   setPendingVerification,
   clearPendingVerification,
+  setRegistrationRole,
+  clearRegistrationRole,
   setError,
   clearError,
   logout,
@@ -137,6 +150,8 @@ export const selectIsLoading = (state: { auth: AuthState }) =>
   state.auth.isLoading;
 export const selectPendingVerification = (state: { auth: AuthState }) =>
   state.auth.pendingVerification;
+export const selectRegistrationRole = (state: { auth: AuthState }) =>
+  state.auth.registrationRole;
 
 export default authSlice.reducer;
 

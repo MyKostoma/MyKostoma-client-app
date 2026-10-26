@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { mockRegister } from "./mock-handlers";
 import {
@@ -10,21 +10,24 @@ import {
 } from "./register-details-form";
 import { RoleSelectStep } from "./role-select-step";
 import { CategoryStep } from "./category-step";
-import { useAppDispatch } from "@/store/hooks";
-import { setPendingVerification } from "@/store/slices/authSlice";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  clearRegistrationRole,
+  selectRegistrationRole,
+  setPendingVerification,
+  setRegistrationRole,
+} from "@/store/slices/authSlice";
 import { setActivePerspective } from "@/store/slices/uiSlice";
 
 type Step = "role" | "details" | "category";
 
-export interface RegisterFlowProps {
-  presetRole?: Role;
-}
-
-export function RegisterFlow({ presetRole }: RegisterFlowProps = {}) {
+export function RegisterFlow() {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [step, setStep] = useState<Step>(presetRole ? "details" : "role");
-  const [role, setRole] = useState<Role>(presetRole ?? "consumer");
+  const storedRole = useAppSelector(selectRegistrationRole);
+
+  const [step, setStep] = useState<Step>(storedRole ? "details" : "role");
+  const [role, setRole] = useState<Role>(storedRole ?? "consumer");
   const [category, setCategory] = useState<string | null>(null);
   const [details, setDetails] = useState<RegisterDetails>({
     fullName: "",
@@ -33,16 +36,9 @@ export function RegisterFlow({ presetRole }: RegisterFlowProps = {}) {
   });
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (presetRole) {
-      setRole(presetRole);
-      setStep("details");
-      dispatch(setActivePerspective(presetRole));
-    }
-  }, [presetRole, dispatch]);
-
   const handleRoleChange = (nextRole: Role) => {
     setRole(nextRole);
+    dispatch(setRegistrationRole(nextRole));
     dispatch(setActivePerspective(nextRole));
   };
 
@@ -60,6 +56,7 @@ export function RegisterFlow({ presetRole }: RegisterFlowProps = {}) {
           flow: "register",
         })
       );
+      dispatch(clearRegistrationRole());
       dispatch(setActivePerspective(role));
       router.push("/verify-account");
     }
@@ -70,8 +67,15 @@ export function RegisterFlow({ presetRole }: RegisterFlowProps = {}) {
       <RoleSelectStep
         role={role}
         onRoleChange={handleRoleChange}
-        onSubmit={() => setStep("details")}
-        onBack={() => router.back()}
+        onSubmit={() => {
+          dispatch(setRegistrationRole(role));
+          dispatch(setActivePerspective(role));
+          setStep("details");
+        }}
+        onBack={() => {
+          dispatch(clearRegistrationRole());
+          router.back();
+        }}
       />
     );
   }
@@ -94,7 +98,10 @@ export function RegisterFlow({ presetRole }: RegisterFlowProps = {}) {
       values={details}
       onChange={setDetails}
       loading={loading}
-      onBack={() => setStep("role")}
+      onBack={() => {
+        dispatch(clearRegistrationRole());
+        setStep("role");
+      }}
       onSubmit={() => (role === "professional" ? setStep("category") : finish(null))}
     />
   );

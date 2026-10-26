@@ -26,31 +26,46 @@ import {
   type CtaCardItem,
 } from "@/components/landing";
 import { PublicFooter } from "@/components/ui/footers";
+import { useAppDispatch } from "@/store/hooks";
+import {
+  clearRegistrationRole,
+  setRegistrationRole,
+} from "@/store/slices/authSlice";
+import { setActivePerspective } from "@/store/slices/uiSlice";
 
 
 export default function Home() {
   const router = useRouter();
+  const dispatch = useAppDispatch();
 
   const handleLogin = () => {
     router.push("/login");
   };
   const handleRegister = () => {
+    dispatch(clearRegistrationRole());
     router.push("/register");
   };
   const handleGetStarted = () => {
+    dispatch(clearRegistrationRole());
     router.push("/register");
   };
   const handleProfessionalJoin = () => {
-    router.push("/register?role=professional");
+    dispatch(setRegistrationRole("professional"));
+    dispatch(setActivePerspective("professional"));
+    router.push("/register");
   };
   const handleCategorySelect = (id: string) => {
     router.push(`/category/${id}`);
   };
   const handleConsumerBrowse = () => {
-    router.push("/register?role=consumer");
+    dispatch(setRegistrationRole("consumer"));
+    dispatch(setActivePerspective("consumer"));
+    router.push("/register");
   };
   const handleProListService = () => {
-    router.push("/register?role=professional");
+    dispatch(setRegistrationRole("professional"));
+    dispatch(setActivePerspective("professional"));
+    router.push("/register");
   };
 
   const categories: CategoryItem[] = [
