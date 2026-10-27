@@ -14,7 +14,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { selectCurrentUser } from "@/store/slices/authSlice";
+import {
+  logout,
+  selectCurrentUser,
+  selectIsAuthenticated,
+} from "@/store/slices/authSlice";
+import { clearAuthCookies } from "@/lib/cookies";
+import { baseApi } from "@/store/api/baseApi";
 import {
   selectGlobalSearchQuery,
   selectUnreadMessagesCount,
@@ -28,16 +34,23 @@ export interface LandingNavbarProps extends React.HTMLAttributes<HTMLElement> {
   logoHref?: string;
   onLogin?: () => void;
   onRegister?: () => void;
+  onLogout?: () => void;
+  isAuthenticated?: boolean;
 }
 
 export function LandingNavbar({
   logoHref = "/",
   onLogin,
   onRegister,
+  onLogout,
+  isAuthenticated: isAuthenticatedProp,
   className,
   ...props
 }: LandingNavbarProps) {
   const dispatch = useAppDispatch();
+  const storeIsAuthenticated = useAppSelector(selectIsAuthenticated);
+  const currentUser = useAppSelector(selectCurrentUser);
+  const [hasAuthCookie, setHasAuthCookie] = React.useState(false);
   const [isDark, setIsDark] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
 
@@ -45,6 +58,17 @@ export function LandingNavbar({
     setMounted(true);
     const hasDarkClass = document.documentElement.classList.contains("dark");
     setIsDark(hasDarkClass);
+
+    const hasToken = document.cookie
+      .split(";")
+      .some(
+        (c) =>
+          c.trim().startsWith("access_token=") &&
+          c.trim().split("=")[1]?.length > 0 &&
+          c.trim().split("=")[1] !== "null" &&
+          c.trim().split("=")[1] !== "undefined"
+      );
+    setHasAuthCookie(hasToken);
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent) => {
@@ -63,6 +87,27 @@ export function LandingNavbar({
     mediaQuery.addEventListener("change", handleChange);
     return () => mediaQuery.removeEventListener("change", handleChange);
   }, []);
+
+  const isUserLoggedIn =
+    isAuthenticatedProp !== undefined
+      ? isAuthenticatedProp
+      : mounted &&
+        (Boolean(storeIsAuthenticated) ||
+          Boolean(currentUser) ||
+          hasAuthCookie);
+
+  const handleLogout = async () => {
+    try {
+      if (onLogout) {
+        await onLogout();
+      }
+    } finally {
+      dispatch(logout());
+      clearAuthCookies();
+      dispatch(baseApi.util.resetApiState());
+      setHasAuthCookie(false);
+    }
+  };
 
   const toggleTheme = () => {
     const nextDark = !isDark;
@@ -129,23 +174,36 @@ export function LandingNavbar({
           >
           </Button>
 
-          <Button
-            variant="default"
-            size="sm"
-            onClick={onLogin}
-            className="h-8 px-4 text-xs font-semibold rounded-md shadow-2xs"
-          >
-            Login
-          </Button>
+          {isUserLoggedIn ? (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={handleLogout}
+              className="h-8 px-4 text-xs font-semibold rounded-md shadow-2xs"
+            >
+              Logout
+            </Button>
+          ) : (
+            <>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={onLogin}
+                className="h-8 px-4 text-xs font-semibold rounded-md shadow-2xs"
+              >
+                Login
+              </Button>
 
-          <Button
-            variant="default"
-            size="sm"
-            onClick={onRegister}
-            className="h-8 px-4 text-xs font-semibold rounded-md shadow-2xs"
-          >
-            Register
-          </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={onRegister}
+                className="h-8 px-4 text-xs font-semibold rounded-md shadow-2xs"
+              >
+                Register
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>
@@ -333,6 +391,8 @@ export interface HeaderProps extends React.HTMLAttributes<HTMLElement> {
   logoHref?: string;
   onLogin?: () => void;
   onRegister?: () => void;
+  onLogout?: () => void;
+  isAuthenticated?: boolean;
   userName?: string;
   userRole?: string;
   avatarUrl?: string;

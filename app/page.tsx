@@ -30,9 +30,11 @@ import { useAppDispatch } from "@/store/hooks";
 import {
   clearRegistrationRole,
   setRegistrationRole,
+  logout,
 } from "@/store/slices/authSlice";
 import { setActivePerspective } from "@/store/slices/uiSlice";
-
+import { clearAuthCookies } from "@/lib/cookies";
+import { baseApi } from "@/store/api/baseApi";
 
 export default function Home() {
   const router = useRouter();
@@ -44,6 +46,11 @@ export default function Home() {
   const handleRegister = () => {
     dispatch(clearRegistrationRole());
     router.push("/register");
+  };
+  const handleLogout = () => {
+    dispatch(logout());
+    clearAuthCookies();
+    dispatch(baseApi.util.resetApiState());
   };
   const handleGetStarted = () => {
     dispatch(clearRegistrationRole());
@@ -164,7 +171,12 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-card text-foreground transition-colors selection:bg-primary/20 selection:text-primary font-inter">
-      <Header variant="landing" onLogin={handleLogin} onRegister={handleRegister} />
+      <Header
+        variant="landing"
+        onLogin={handleLogin}
+        onRegister={handleRegister}
+        onLogout={handleLogout}
+      />
 
       <main className="">
         <HeroSection
