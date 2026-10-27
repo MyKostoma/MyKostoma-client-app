@@ -211,6 +211,7 @@ export function LandingNavbar({
 }
 
 export interface AppHeaderProps {
+  logoHref?: string;
   userName?: string;
   userRole?: string;
   avatarUrl?: string;
@@ -227,6 +228,7 @@ export interface AppHeaderProps {
 }
 
 export function AppHeader({
+  logoHref = "/home",
   userName,
   userRole,
   avatarUrl,
@@ -281,38 +283,38 @@ export function AppHeader({
         className
       )}
     >
-      <div className="flex items-center gap-3 shrink-0">
-        <div className="size-9 rounded-lg bg-primary flex items-center justify-center text-white shadow-xs">
-          <svg
-            className="size-5"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <rect x="4" y="4" width="7" height="7" rx="2" fill="currentColor" fillOpacity="0.9" />
-            <rect x="13" y="4" width="7" height="7" rx="2" fill="currentColor" />
-            <rect x="4" y="13" width="7" height="7" rx="2" fill="currentColor" />
-            <rect x="13" y="13" width="7" height="7" rx="2" fill="currentColor" fillOpacity="0.75" />
-          </svg>
-        </div>
-        <span className="text-lg font-bold tracking-tight text-foreground select-none">
-          MyKostoma
-        </span>
-      </div>
+      <div className="flex items-center gap-6 lg:gap-8 flex-1 min-w-0">
+        <Link
+          href={logoHref}
+          className="inline-flex items-center shrink-0 transition-opacity hover:opacity-90"
+          aria-label="MyKostoma Home"
+        >
+          <img
+            src="/mykostoma_full_logo.png"
+            alt="MyKostoma"
+            className="h-7 sm:h-8 w-auto object-contain dark:hidden select-none"
+          />
+          <img
+            src="/mykostoma_full_logo_white.png"
+            alt="MyKostoma"
+            className="h-7 sm:h-8 w-auto object-contain hidden dark:block select-none"
+          />
+        </Link>
 
-      <div className="relative flex-1 max-w-md hidden md:flex items-center">
-        <Search className="absolute left-3.5 size-4 text-muted-foreground/70 pointer-events-none" />
-        <input
-          type="search"
-          value={searchValue !== undefined ? searchValue : internalSearch}
-          onChange={handleSearch}
-          placeholder={searchPlaceholder}
-          className={cn(
-            "w-full h-10 pl-10 pr-4 text-sm rounded-lg bg-secondary text-foreground outline-none transition-all",
-            "border border-transparent placeholder:text-muted-foreground/60",
-            "hover:bg-secondary-hover focus:bg-card focus:border-primary/40 focus:ring-2 focus:ring-primary/20"
-          )}
-        />
+        <div className="relative flex-1 max-w-md hidden md:flex items-center">
+          <Search className="absolute left-3.5 size-4 text-muted-foreground/70 pointer-events-none" />
+          <input
+            type="search"
+            value={searchValue !== undefined ? searchValue : internalSearch}
+            onChange={handleSearch}
+            placeholder={searchPlaceholder}
+            className={cn(
+              "w-full h-10 pl-10 pr-4 text-sm rounded-lg bg-secondary text-foreground outline-none transition-all",
+              "border border-transparent placeholder:text-muted-foreground/60",
+              "hover:bg-secondary-hover focus:bg-card focus:border-primary/40 focus:ring-2 focus:ring-primary/20"
+            )}
+          />
+        </div>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">

@@ -47,7 +47,7 @@ export const protectedRoutes: RouteConfig[] = [
 
   // Consumer workspace routes
   {
-    path: "/dashboard*",
+    path: "/home*",
     roles: ["consumer"],
     redirectTo: "/login",
   },
@@ -68,6 +68,11 @@ export const protectedRoutes: RouteConfig[] = [
   },
 
   // Shared authenticated routes (both consumer & professional)
+  {
+    path: "/dashboard*",
+    roles: ["consumer", "professional"],
+    redirectTo: "/login",
+  },
   {
     path: "/requests*",
     roles: ["consumer", "professional"],
@@ -102,7 +107,7 @@ export const publicRoutes = [
 ];
 
 /**
- * Auth routes - redirect to role dashboard if already logged in
+ * Auth routes - redirect to role default page if already logged in
  */
 export const authRoutes = [
   "/login",
@@ -111,4 +116,3 @@ export const authRoutes = [
   "/reset-password",
   "/verify-account",
 ];
-

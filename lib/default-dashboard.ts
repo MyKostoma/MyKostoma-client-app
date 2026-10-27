@@ -5,11 +5,10 @@ export function getDefaultDashboard(role: UserRole | string | null | undefined):
   const normalized = normalizeRole(role);
   switch (normalized) {
     case "professional":
-      return "/pro/overview";
-    case "consumer":
       return "/dashboard";
+    case "consumer":
+      return "/home";
     default:
       return "/";
   }
 }
-

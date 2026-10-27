@@ -118,7 +118,14 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  const protectedPrefixes = ["/dashboard", "/pro", "/my-bookings", "/my-shop", "/earnings"];
+  const protectedPrefixes = [
+    "/dashboard",
+    "/home",
+    "/pro",
+    "/my-bookings",
+    "/my-shop",
+    "/earnings",
+  ];
   const needsProtection = protectedPrefixes.some((prefix) =>
     pathname.startsWith(prefix)
   );
@@ -133,4 +140,3 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico|images|.*\\.png$|api).*)"],
 };
-
