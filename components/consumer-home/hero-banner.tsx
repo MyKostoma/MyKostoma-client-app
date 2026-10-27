@@ -83,11 +83,11 @@ export function ConsumerHeroBanner({
         </div>
       </div>
 
-      {referenceId && (
+      {/* {referenceId && (
         <div className="hidden sm:inline-flex absolute bottom-4 right-5 z-10 px-2.5 py-1 rounded-md bg-primary-foreground/20 backdrop-blur-xs border border-primary-foreground/25 text-[10px] font-medium text-primary-foreground/90 select-none">
           {referenceId}
         </div>
-      )}
+      )} */}
     </section>
   );
 }
