@@ -1,6 +1,7 @@
 "use client";
 
-import * as React from "react";
+
+import { useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AppHeader } from "@/components/ui/headers";
 import { AppFooter } from "@/components/ui/footers";
@@ -90,26 +91,26 @@ export function ConsumerSearchView({
   const queryParam = searchParams.get("q");
   const categoryParam = searchParams.get("category") ?? initialCategory;
 
-  const [searchQuery, setSearchQuery] = React.useState(
+  const [searchQuery, setSearchQuery] = useState(
     queryParam ?? initialQuery
   );
 
-  const [filters, setFilters] = React.useState<SearchFilterState>(() => ({
+  const [filters, setFilters] = useState<SearchFilterState>(() => ({
     categories: categoryParam ? [categoryParam] : [],
     location: "all",
     verifications: [],
     minRating: null,
   }));
 
-  const [sortBy, setSortBy] = React.useState("best-match");
-  const [currentPage, setCurrentPage] = React.useState(1);
+  const [sortBy, setSortBy] = useState("best-match");
+  const [currentPage, setCurrentPage] = useState(1);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setSearchQuery(queryParam ?? "");
     setCurrentPage(1);
   }, [queryParam]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (categoryParam) {
       setFilters((prev) => ({
         ...prev,
@@ -119,7 +120,7 @@ export function ConsumerSearchView({
     }
   }, [categoryParam]);
 
-  const locationOptions = React.useMemo<SelectOption[]>(() => {
+  const locationOptions = useMemo<SelectOption[]>(() => {
     const uniqueLocations = Array.from(
       new Set(
         professionals.map((pro) => pro.location.trim()).filter(Boolean)
@@ -191,7 +192,7 @@ export function ConsumerSearchView({
     router.push(`/search?q=${encodeURIComponent(term)}`);
   };
 
-  const filteredProfessionals = React.useMemo(() => {
+  const filteredProfessionals = useMemo(() => {
     const rawQuery = searchQuery.trim().toLowerCase();
 
     return professionals
@@ -292,7 +293,7 @@ export function ConsumerSearchView({
   const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
 
-  const paginatedProfessionals = React.useMemo(() => {
+  const paginatedProfessionals = useMemo(() => {
     const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
     return filteredProfessionals.slice(
       startIndex,
@@ -300,7 +301,7 @@ export function ConsumerSearchView({
     );
   }, [filteredProfessionals, safeCurrentPage]);
 
-  const paginationItems = React.useMemo(
+  const paginationItems = useMemo(
     () => getPaginationRange(safeCurrentPage, totalPages),
     [safeCurrentPage, totalPages]
   );

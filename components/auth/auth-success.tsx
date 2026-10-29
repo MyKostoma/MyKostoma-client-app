@@ -1,11 +1,11 @@
 "use client";
 
-import * as React from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AuthCard } from "./auth-card";
+import { useEffect, useState } from "react";
 
 export interface AuthSuccessProps {
   /** Where the user is being sent, e.g. "Consumer Product Entry". */
@@ -26,7 +26,7 @@ export function AuthSuccess({
 }: AuthSuccessProps) {
   const router = useRouter();
 
-  React.useEffect(() => {
+  useEffect(() => {
     const t = setTimeout(() => router.push(href), redirectAfter * 1000);
     return () => clearTimeout(t);
   }, [router, href, redirectAfter]);

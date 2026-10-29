@@ -30,6 +30,7 @@ import {
   setTheme,
 } from "@/store/slices/uiSlice";
 import { RoleDisplayNames } from "@/types/user";
+import { useState, useEffect } from "react";
 
 export interface LandingNavbarProps extends React.HTMLAttributes<HTMLElement> {
   logoHref?: string;
@@ -51,11 +52,11 @@ export function LandingNavbar({
   const dispatch = useAppDispatch();
   const storeIsAuthenticated = useAppSelector(selectIsAuthenticated);
   const currentUser = useAppSelector(selectCurrentUser);
-  const [hasAuthCookie, setHasAuthCookie] = React.useState(false);
-  const [isDark, setIsDark] = React.useState(false);
-  const [mounted, setMounted] = React.useState(false);
+  const [hasAuthCookie, setHasAuthCookie] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
     const hasDarkClass = document.documentElement.classList.contains("dark");
     setIsDark(hasDarkClass);
@@ -268,11 +269,11 @@ export function AppHeader({
   const resolvedHasUnreadMessages =
     hasUnreadMessages ?? storeUnreadMessagesCount > 0;
 
-  const [internalSearch, setInternalSearch] = React.useState(
+  const [internalSearch, setInternalSearch] = useState(
     searchValue ?? storeSearchQuery ?? ""
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (searchValue !== undefined) {
       setInternalSearch(searchValue);
     }

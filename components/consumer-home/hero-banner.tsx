@@ -28,7 +28,7 @@ export function ConsumerHeroBanner({
   return (
     <section
       className={cn(
-        "relative w-full overflow-hidden rounded-2xl sm:rounded-3xl min-h-[360px] sm:min-h-[420px] lg:min-h-[460px] flex items-center border border-border/50 shadow-xs",
+        "relative w-full overflow-hidden rounded-sm sm:rounded-md min-h-[360px] sm:min-h-[420px] lg:min-h-[560px] flex items-center border border-border/50 shadow-xs",
         className
       )}
       {...props}

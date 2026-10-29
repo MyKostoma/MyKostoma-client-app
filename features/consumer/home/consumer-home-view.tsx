@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useRouter } from "next/navigation";
 import { AppHeader } from "@/components/ui/headers";
 import { AppFooter } from "@/components/ui/footers";
@@ -18,6 +17,7 @@ import {
   DEFAULT_FEATURED_PROFESSIONALS,
   DEFAULT_SPOTLIGHT_PROVIDERS,
 } from "./data";
+import { useMemo } from "react";
 
 export interface ConsumerHomeViewProps {
   categories?: ConsumerCategoryItem[];
@@ -44,18 +44,18 @@ export function ConsumerHomeView({
     router.push(`/search?pro=${encodeURIComponent(proId)}`);
   };
 
-  const mappedCategories = React.useMemo(
+  const mappedCategories = useMemo(
     () =>
-      categories.map((cat) => ({
+      categories.slice(0,6).map((cat) => ({
         ...cat,
         onClick: cat.onClick ?? handleCategorySelect,
       })),
     [categories]
   );
 
-  const mappedProfessionals = React.useMemo(
+  const mappedProfessionals = useMemo(
     () =>
-      featuredProfessionals.map((pro) => ({
+      featuredProfessionals.slice(0,12).map((pro) => ({
         ...pro,
         onBookClick: pro.onBookClick ?? handleBookPro,
       })),
@@ -75,7 +75,7 @@ export function ConsumerHomeView({
         </div>
       </div>
 
-      <main className="flex-1 container px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 space-y-12 sm:space-y-16">
+      <main className="flex-1 container px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 space-y-12 sm:space-y-16 lg:space-y-24">
         <ConsumerHeroBanner onPrimaryClick={handleBrowsePros} />
 
         <ServiceCategoriesSection

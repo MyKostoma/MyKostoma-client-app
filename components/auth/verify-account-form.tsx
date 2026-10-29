@@ -1,6 +1,7 @@
 "use client";
 
-import * as React from "react";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,19 +29,19 @@ export function VerifyAccountForm() {
   const pendingVerification = useAppSelector(selectPendingVerification);
   const currentUser = useAppSelector(selectCurrentUser);
 
-  const [code, setCode] = React.useState("");
-  const [error, setError] = React.useState<string | null>(null);
-  const [loading, setLoading] = React.useState(false);
-  const [verified, setVerified] = React.useState(false);
-  const [seconds, setSeconds] = React.useState(RESEND_SECONDS);
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [verified, setVerified] = useState(false);
+  const [seconds, setSeconds] = useState(RESEND_SECONDS);
   // Bumped to remount the OTP input when the user wants to retry with empty boxes.
-  const [otpKey, setOtpKey] = React.useState(0);
+  const [otpKey, setOtpKey] = useState(0);
 
   const detectedRole =
     pendingVerification?.role ?? currentUser?.role ?? "consumer";
   const destinationMeta = getRoleDestination(detectedRole);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (seconds <= 0) return;
     const t = setTimeout(() => setSeconds((s) => s - 1), 1000);
     return () => clearTimeout(t);

@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export interface NavItemConfig {
   id: string;
@@ -32,11 +33,11 @@ export function SidebarNav({
 }: SidebarNavProps) {
   const isProfessional = perspective === "professional";
 
-  const [internalActive, setInternalActive] = React.useState<string | undefined>(
+  const [internalActive, setInternalActive] = useState<string | undefined>(
     activeItemId ?? items[0]?.id
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (activeItemId !== undefined) {
       setInternalActive(activeItemId);
     } else if (items.length > 0 && !items.some((i) => i.id === internalActive)) {

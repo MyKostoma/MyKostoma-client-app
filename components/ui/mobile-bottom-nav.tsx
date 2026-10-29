@@ -1,6 +1,7 @@
 "use client";
 
-import * as React from "react";
+
+import { useEffect, useState } from "react";
 import {
   Home,
   Search,
@@ -32,9 +33,9 @@ export function ConsumerMobileNav({
   avatarUrl = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
   className,
 }: ConsumerMobileNavProps) {
-  const [currentTab, setCurrentTab] = React.useState(activeTab);
+  const [currentTab, setCurrentTab] = useState(activeTab);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (activeTab !== undefined) {
       setCurrentTab(activeTab);
     }
@@ -217,9 +218,9 @@ export function ProfessionalMobileNav({
   onCenterActionClick,
   className,
 }: ProfessionalMobileNavProps) {
-  const [currentTab, setCurrentTab] = React.useState(activeTab);
+  const [currentTab, setCurrentTab] = useState(activeTab);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (activeTab !== undefined) {
       setCurrentTab(activeTab);
     }
