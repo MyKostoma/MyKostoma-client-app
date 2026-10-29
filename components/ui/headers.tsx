@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Search,
   MessageSquare,
@@ -220,6 +221,7 @@ export interface AppHeaderProps {
   searchPlaceholder?: string;
   searchValue?: string;
   onSearchChange?: (val: string) => void;
+  onSearchSubmit?: (val: string) => void;
   onNotificationsClick?: () => void;
   onMessagesClick?: () => void;
   onSettingsClick?: () => void;
@@ -237,12 +239,14 @@ export function AppHeader({
   searchPlaceholder = "Search services, professionals...",
   searchValue,
   onSearchChange,
+  onSearchSubmit,
   onNotificationsClick,
   onMessagesClick,
   onSettingsClick,
   onProfileClick,
   className,
 }: AppHeaderProps) {
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector(selectCurrentUser);
   const storeNotificationCount = useAppSelector(selectUnreadNotificationsCount);
@@ -260,19 +264,41 @@ export function AppHeader({
     currentUser?.avatarUrl ??
     "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80";
   const resolvedNotificationCount =
-    notificationCount ?? (storeNotificationCount || 3);
+    notificationCount ?? storeNotificationCount ?? 0;
   const resolvedHasUnreadMessages =
-    hasUnreadMessages ?? (storeUnreadMessagesCount > 0 || true);
+    hasUnreadMessages ?? storeUnreadMessagesCount > 0;
 
   const [internalSearch, setInternalSearch] = React.useState(
     searchValue ?? storeSearchQuery ?? ""
   );
+
+  React.useEffect(() => {
+    if (searchValue !== undefined) {
+      setInternalSearch(searchValue);
+    }
+  }, [searchValue]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setInternalSearch(val);
     dispatch(setGlobalSearchQuery(val));
     onSearchChange?.(val);
+  };
+
+  const handleSearchSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
+    const currentVal = searchValue !== undefined ? searchValue : internalSearch;
+    const query = currentVal.trim();
+    dispatch(setGlobalSearchQuery(query));
+    if (onSearchSubmit) {
+      onSearchSubmit(query);
+    } else {
+      if (query) {
+        router.push(`/search?q=${encodeURIComponent(query)}`);
+      } else {
+        router.push("/search");
+      }
+    }
   };
 
   return (
@@ -301,8 +327,18 @@ export function AppHeader({
           />
         </Link>
 
-        <div className="relative flex-1 max-w-md hidden md:flex items-center">
-          <Search className="absolute left-3.5 size-4 text-muted-foreground/70 pointer-events-none" />
+        <form
+          role="search"
+          onSubmit={handleSearchSubmit}
+          className="relative flex-1 max-w-md hidden md:flex items-center"
+        >
+          <button
+            type="submit"
+            aria-label="Search"
+            className="absolute left-3.5 size-4 text-muted-foreground/70 hover:text-foreground transition-colors cursor-pointer flex items-center justify-center p-0 border-0 bg-transparent"
+          >
+            <Search className="size-4" />
+          </button>
           <input
             type="search"
             value={searchValue !== undefined ? searchValue : internalSearch}
@@ -314,7 +350,7 @@ export function AppHeader({
               "hover:bg-secondary-hover focus:bg-card focus:border-primary/40 focus:ring-2 focus:ring-primary/20"
             )}
           />
-        </div>
+        </form>
       </div>
 
       <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
@@ -403,6 +439,7 @@ export interface HeaderProps extends React.HTMLAttributes<HTMLElement> {
   searchPlaceholder?: string;
   searchValue?: string;
   onSearchChange?: (val: string) => void;
+  onSearchSubmit?: (val: string) => void;
   onNotificationsClick?: () => void;
   onMessagesClick?: () => void;
   onSettingsClick?: () => void;

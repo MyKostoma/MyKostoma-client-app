@@ -26,6 +26,10 @@ export const GENERAL_CATEGORY_OPTIONS: SearchFilterCategoryOption[] = [
   { id: "electricians", label: "Electrical Work" },
   { id: "carpentry", label: "Custom Carpentry" },
   { id: "painting", label: "Painting & Finishes" },
+  { id: "cleaning", label: "Cleaning Services" },
+  { id: "hvac", label: "HVAC & AC Repair" },
+  { id: "solar-energy", label: "Solar & Inverter" },
+  { id: "tailoring", label: "Bespoke Tailoring" },
 ];
 
 export const SEARCH_LOCATION_OPTIONS: SelectOption[] = [
@@ -42,7 +46,6 @@ export const SEARCH_SORT_OPTIONS: SelectOption[] = [
 ];
 
 export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
-  // Screenshot 1: Plumbers in Lagos (Horizontal Cards)
   {
     id: "chidi-okonkwo",
     name: "Chidi Okonkwo",
@@ -101,7 +104,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     cardVariant: "horizontal",
   },
 
-  // Screenshot 2: Interior Designers in Lagos (Studio Cards)
   {
     id: "luxenest-design-studio",
     name: "LuxeNest Design Studio",
@@ -131,5 +133,121 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     imageUrl:
       "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80",
     cardVariant: "studio",
+  },
+
+  {
+    id: "voltsmart-solutions",
+    name: "VoltSmart Solutions",
+    subtitle: "Electrical Systems • Commercial & Residential",
+    categoryIds: ["electricians"],
+    location: "Victoria Island, Lagos",
+    cityGroup: "victoria-island",
+    rating: 5.0,
+    reviewCount: 98,
+    verification: "company",
+    isTopRated: true,
+    imageUrl:
+      "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80",
+    cardVariant: "horizontal",
+  },
+  {
+    id: "tunde-balogun",
+    name: "Tunde Balogun",
+    subtitle: "Certified Electrician • 9 years exp.",
+    categoryIds: ["electricians"],
+    location: "Lekki Phase 1, Lagos",
+    cityGroup: "lekki",
+    rating: 4.8,
+    reviewCount: 62,
+    verification: "individual",
+    imageUrl:
+      "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80",
+    cardVariant: "horizontal",
+  },
+  {
+    id: "marcus-thorne",
+    name: "Marcus Thorne",
+    subtitle: "Custom Carpentry & Woodcraft",
+    categoryIds: ["carpentry", "furniture-design"],
+    location: "Yaba, Lagos",
+    cityGroup: "lagos-mainland",
+    rating: 4.9,
+    reviewCount: 230,
+    verification: "individual",
+    isTopRated: true,
+    imageUrl:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
+    cardVariant: "horizontal",
+  },
+  {
+    id: "elena-rodriguez",
+    name: "Elena Rodriguez",
+    subtitle: "Architectural Finishes & Interior Painting",
+    categoryIds: ["painting"],
+    location: "Victoria Island, Lagos",
+    cityGroup: "victoria-island",
+    rating: 4.9,
+    reviewCount: 95,
+    verification: "individual",
+    imageUrl:
+      "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=800&q=80",
+    cardVariant: "horizontal",
+  },
+  {
+    id: "apex-climate-systems",
+    name: "Apex Climate Systems",
+    subtitle: "HVAC & AC Repair Specialist",
+    categoryIds: ["hvac"],
+    location: "Ikeja, Lagos",
+    cityGroup: "lagos-mainland",
+    rating: 5.0,
+    reviewCount: 112,
+    verification: "company",
+    isTopRated: true,
+    imageUrl:
+      "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=800&q=80",
+    cardVariant: "horizontal",
+  },
+  {
+    id: "sparkleclean-lagos",
+    name: "SparkleClean Lagos",
+    subtitle: "Deep Cleaning & Janitorial Services",
+    categoryIds: ["cleaning"],
+    location: "Lekki Phase 1, Lagos",
+    cityGroup: "lekki",
+    rating: 4.8,
+    reviewCount: 88,
+    verification: "company",
+    imageUrl:
+      "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
+    cardVariant: "horizontal",
+  },
+  {
+    id: "malik-adebayo",
+    name: "Malik Adebayo",
+    subtitle: "Solar & Inverter Technician",
+    categoryIds: ["solar-energy", "solar-heating"],
+    location: "Surulere, Lagos",
+    cityGroup: "lagos-mainland",
+    rating: 4.9,
+    reviewCount: 64,
+    verification: "individual",
+    imageUrl:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80",
+    cardVariant: "horizontal",
+  },
+  {
+    id: "clara-vance",
+    name: "Clara Vance",
+    subtitle: "Bespoke Tailoring & Alterations",
+    categoryIds: ["tailoring"],
+    location: "Ikoyi, Lagos",
+    cityGroup: "victoria-island",
+    rating: 4.8,
+    reviewCount: 184,
+    verification: "individual",
+    imageUrl:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
+    cardVariant: "horizontal",
   },
 ];
