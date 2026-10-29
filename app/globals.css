@@ -210,6 +210,17 @@
   margin: 0 auto;
 }
 
+.no-scrollbar,
+.noscrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar,
+.noscrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* 01 Typography Scale (Figma) */
 @layer utilities {
   .text-h1-display {
