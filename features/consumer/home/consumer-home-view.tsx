@@ -33,15 +33,15 @@ export function ConsumerHomeView({
   const router = useRouter();
 
   const handleBrowsePros = () => {
-    router.push("/find-pros");
+    router.push("/search");
   };
 
   const handleCategorySelect = (categoryId: string) => {
-    router.push(`/category/${categoryId}`);
+    router.push(`/search?category=${encodeURIComponent(categoryId)}`);
   };
 
   const handleBookPro = (proId: string) => {
-    router.push(`/find-pros?pro=${encodeURIComponent(proId)}`);
+    router.push(`/search?pro=${encodeURIComponent(proId)}`);
   };
 
   const mappedCategories = React.useMemo(

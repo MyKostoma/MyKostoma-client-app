@@ -4,19 +4,7 @@ import type {
   SearchProfessionalItem,
 } from "@/components/consumer-search";
 
-export const PLUMBING_CATEGORY_OPTIONS: SearchFilterCategoryOption[] = [
-  { id: "plumbing", label: "Plumbing Services" },
-  { id: "water-treatment", label: "Water Treatment" },
-  { id: "solar-heating", label: "Solar Heating" },
-];
-
-export const INTERIOR_CATEGORY_OPTIONS: SearchFilterCategoryOption[] = [
-  { id: "interior-design", label: "Interior Design" },
-  { id: "home-staging", label: "Home Staging" },
-  { id: "furniture-design", label: "Furniture Design" },
-];
-
-export const GENERAL_CATEGORY_OPTIONS: SearchFilterCategoryOption[] = [
+export const SEARCH_CATEGORY_OPTIONS: SearchFilterCategoryOption[] = [
   { id: "plumbing", label: "Plumbing Services" },
   { id: "water-treatment", label: "Water Treatment" },
   { id: "solar-heating", label: "Solar Heating" },
@@ -32,12 +20,7 @@ export const GENERAL_CATEGORY_OPTIONS: SearchFilterCategoryOption[] = [
   { id: "tailoring", label: "Bespoke Tailoring" },
 ];
 
-export const SEARCH_LOCATION_OPTIONS: SelectOption[] = [
-  { value: "all", label: "Lagos, Nigeria" },
-  { value: "lagos-mainland", label: "Lagos Mainland" },
-  { value: "lekki", label: "Lekki Phase 1" },
-  { value: "victoria-island", label: "Victoria Island" },
-];
+export const GENERAL_CATEGORY_OPTIONS = SEARCH_CATEGORY_OPTIONS;
 
 export const SEARCH_SORT_OPTIONS: SelectOption[] = [
   { value: "best-match", label: "Best Match" },
@@ -51,7 +34,7 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     name: "Chidi Okonkwo",
     subtitle: "Master Plumber • 12 years exp.",
     categoryIds: ["plumbing", "water-treatment"],
-    location: "Lekki Phase 1",
+    location: "Lekki Phase 1, Lagos",
     cityGroup: "lekki",
     rating: 4.9,
     reviewCount: 118,
@@ -59,21 +42,19 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     isTopRated: true,
     imageUrl:
       "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "aquaflow-services",
     name: "AquaFlow Services",
     subtitle: "Commercial Plumbing",
     categoryIds: ["plumbing", "water-treatment", "solar-heating"],
-    location: "Victoria Island",
+    location: "Victoria Island, Lagos",
     cityGroup: "victoria-island",
     rating: 4.7,
     reviewCount: 94,
     verification: "company",
     imageUrl:
       "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "david-henshaw",
@@ -87,7 +68,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     verification: "individual",
     imageUrl:
       "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "lagos-plumb-co",
@@ -101,9 +81,7 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     verification: "company",
     imageUrl:
       "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
-
   {
     id: "luxenest-design-studio",
     name: "LuxeNest Design Studio",
@@ -117,7 +95,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     isTopRated: true,
     imageUrl:
       "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=80",
-    cardVariant: "studio",
   },
   {
     id: "urban-space-architects",
@@ -132,9 +109,7 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     isTopRated: false,
     imageUrl:
       "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80",
-    cardVariant: "studio",
   },
-
   {
     id: "voltsmart-solutions",
     name: "VoltSmart Solutions",
@@ -148,7 +123,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     isTopRated: true,
     imageUrl:
       "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "tunde-balogun",
@@ -162,7 +136,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     verification: "individual",
     imageUrl:
       "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "marcus-thorne",
@@ -177,7 +150,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     isTopRated: true,
     imageUrl:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "elena-rodriguez",
@@ -191,7 +163,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     verification: "individual",
     imageUrl:
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "apex-climate-systems",
@@ -206,7 +177,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     isTopRated: true,
     imageUrl:
       "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "sparkleclean-lagos",
@@ -220,7 +190,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     verification: "company",
     imageUrl:
       "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "malik-adebayo",
@@ -234,7 +203,6 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     verification: "individual",
     imageUrl:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
   {
     id: "clara-vance",
@@ -248,6 +216,19 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     verification: "individual",
     imageUrl:
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
-    cardVariant: "horizontal",
   },
+];
+
+export const SEARCH_LOCATION_OPTIONS: SelectOption[] = [
+  { value: "all", label: "All Locations" },
+  ...Array.from(
+    new Set(
+      SEARCH_PROFESSIONALS_DATA.map((pro) => pro.location.trim()).filter(
+        Boolean
+      )
+    )
+  ).map((location) => ({
+    value: location,
+    label: location,
+  })),
 ];

@@ -31,10 +31,12 @@ export interface SearchFiltersSidebarProps
   showStarsRow?: boolean;
 }
 
-const DEFAULT_RATING_OPTIONS: RatingFilterOption[] = [
-  { value: 4.5, label: "4.5 & Above", starsCount: 5 },
-  { value: 4.0, label: "4.0 & Above", starsCount: 4 },
+export const DEFAULT_RATING_OPTIONS: RatingFilterOption[] = [
+  { value: 1.0, label: "1.0 & Above", starsCount: 1 },
+  { value: 2.0, label: "2.0 & Above", starsCount: 2 },
   { value: 3.0, label: "3.0 & Above", starsCount: 3 },
+  { value: 4.0, label: "4.0 & Above", starsCount: 4 },
+  { value: 4.5, label: "4.5 & Above", starsCount: 5 },
 ];
 
 export function SearchFiltersSidebar({

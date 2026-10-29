@@ -1,10 +1,5 @@
-import { Suspense } from "react";
-import { ConsumerSearchView } from "@/features/consumer/search";
+import { redirect } from "next/navigation";
 
 export default function FindProsPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-background" />}>
-      <ConsumerSearchView />
-    </Suspense>
-  );
+  redirect("/search");
 }

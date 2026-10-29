@@ -1,7 +1,5 @@
 export type VerificationType = "company" | "individual";
 
-export type SearchCardLayout = "horizontal" | "studio";
-
 export interface SearchFilterCategoryOption {
   id: string;
   label: string;
@@ -20,12 +18,11 @@ export interface SearchProfessionalItem {
   subtitle: string;
   categoryIds: string[];
   location: string;
-  cityGroup: string;
+  cityGroup?: string;
   rating: number;
   reviewCount?: number;
   verification: VerificationType;
   isTopRated?: boolean;
   isFavorite?: boolean;
   imageUrl: string;
-  cardVariant?: SearchCardLayout;
 }

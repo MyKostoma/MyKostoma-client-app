@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { LayoutGrid, Rows3 } from "lucide-react";
 import { AppHeader } from "@/components/ui/headers";
 import { AppFooter } from "@/components/ui/footers";
 import {
@@ -22,25 +21,57 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { Select } from "@/components/ui/form-fields";
+import { Select, type SelectOption } from "@/components/ui/form-fields";
 import {
   SearchEmptyState,
   SearchFiltersSidebar,
-  SearchResultHorizontalCard,
-  SearchResultStudioCard,
-  type SearchCardLayout,
   type SearchFilterState,
   type SearchProfessionalItem,
   type VerificationType,
 } from "@/components/consumer-search";
-import { cn } from "@/lib/utils";
+import { ProfessionalCard } from "@/components/consumer-home";
 import {
-  INTERIOR_CATEGORY_OPTIONS,
-  PLUMBING_CATEGORY_OPTIONS,
-  SEARCH_LOCATION_OPTIONS,
+  SEARCH_CATEGORY_OPTIONS,
   SEARCH_PROFESSIONALS_DATA,
   SEARCH_SORT_OPTIONS,
 } from "./data";
+
+const ITEMS_PER_PAGE = 10;
+
+function getPaginationRange(
+  currentPage: number,
+  totalPages: number
+): (number | "ellipsis-start" | "ellipsis-end")[] {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, "ellipsis-end", totalPages];
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [
+      1,
+      "ellipsis-start",
+      totalPages - 4,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ];
+  }
+
+  return [
+    1,
+    "ellipsis-start",
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    "ellipsis-end",
+    totalPages,
+  ];
+}
 
 export interface ConsumerSearchViewProps {
   initialCategory?: string;
@@ -50,7 +81,7 @@ export interface ConsumerSearchViewProps {
 
 export function ConsumerSearchView({
   initialCategory,
-  initialQuery = "Plumbers in Lagos",
+  initialQuery = "",
   professionals = SEARCH_PROFESSIONALS_DATA,
 }: ConsumerSearchViewProps) {
   const router = useRouter();
@@ -59,51 +90,49 @@ export function ConsumerSearchView({
   const queryParam = searchParams.get("q");
   const categoryParam = searchParams.get("category") ?? initialCategory;
 
-  const isInitialInterior =
-    categoryParam === "interior-design" ||
-    queryParam?.toLowerCase().includes("interior");
-
   const [searchQuery, setSearchQuery] = React.useState(
-    queryParam ??
-      (isInitialInterior ? "Interior Designers in Lagos" : initialQuery)
+    queryParam ?? initialQuery
   );
 
-  const [cardLayout, setCardLayout] = React.useState<SearchCardLayout>(
-    isInitialInterior ? "studio" : "horizontal"
-  );
-
-  const [filters, setFilters] = React.useState<SearchFilterState>(() => {
-    if (isInitialInterior) {
-      return {
-        categories: ["interior-design", "home-staging"],
-        location: "all",
-        verifications: ["company"],
-        minRating: 4.0,
-      };
-    }
-    return {
-      categories: ["plumbing"],
-      location: "lagos-mainland",
-      verifications: [],
-      minRating: null,
-    };
-  });
+  const [filters, setFilters] = React.useState<SearchFilterState>(() => ({
+    categories: categoryParam ? [categoryParam] : [],
+    location: "all",
+    verifications: [],
+    minRating: null,
+  }));
 
   const [sortBy, setSortBy] = React.useState("best-match");
   const [currentPage, setCurrentPage] = React.useState(1);
-  const [favoriteIds, setFavoriteIds] = React.useState<string[]>([]);
 
-  // Determine active category filter options based on current mode
-  const isInteriorMode =
-    cardLayout === "studio" ||
-    filters.categories.some((c) =>
-      ["interior-design", "home-staging", "furniture-design"].includes(c)
-    ) ||
-    searchQuery.toLowerCase().includes("interior");
+  React.useEffect(() => {
+    setSearchQuery(queryParam ?? "");
+    setCurrentPage(1);
+  }, [queryParam]);
 
-  const activeCategoryOptions = isInteriorMode
-    ? INTERIOR_CATEGORY_OPTIONS
-    : PLUMBING_CATEGORY_OPTIONS;
+  React.useEffect(() => {
+    if (categoryParam) {
+      setFilters((prev) => ({
+        ...prev,
+        categories: [categoryParam],
+      }));
+      setCurrentPage(1);
+    }
+  }, [categoryParam]);
+
+  const locationOptions = React.useMemo<SelectOption[]>(() => {
+    const uniqueLocations = Array.from(
+      new Set(
+        professionals.map((pro) => pro.location.trim()).filter(Boolean)
+      )
+    );
+    return [
+      { value: "all", label: "All Locations" },
+      ...uniqueLocations.map((loc) => ({
+        value: loc,
+        label: loc,
+      })),
+    ];
+  }, [professionals]);
 
   const handleToggleCategory = (categoryId: string) => {
     setCurrentPage(1);
@@ -140,86 +169,87 @@ export function ConsumerSearchView({
 
   const handleResetFilters = () => {
     setCurrentPage(1);
-    setSearchQuery("Plumbers in Lagos");
-    setCardLayout("horizontal");
+    setSearchQuery("");
     setFilters({
-      categories: ["plumbing"],
-      location: "lagos-mainland",
+      categories: [],
+      location: "all",
       verifications: [],
       minRating: null,
     });
-  };
-
-  const handleToggleFavorite = (proId: string) => {
-    setFavoriteIds((prev) =>
-      prev.includes(proId)
-        ? prev.filter((id) => id !== proId)
-        : [...prev, proId]
-    );
-  };
-
-  const applyPreset = (preset: "plumbers" | "interior" | "empty") => {
-    setCurrentPage(1);
-    if (preset === "plumbers") {
-      setSearchQuery("Plumbers in Lagos");
-      setCardLayout("horizontal");
-      setFilters({
-        categories: ["plumbing"],
-        location: "lagos-mainland",
-        verifications: [],
-        minRating: null,
-      });
-    } else if (preset === "interior") {
-      setSearchQuery("Interior Designers in Lagos");
-      setCardLayout("studio");
-      setFilters({
-        categories: ["interior-design", "home-staging"],
-        location: "all",
-        verifications: ["company"],
-        minRating: 4.0,
-      });
-    } else {
-      setSearchQuery("Astronauts in Lagos");
-      setFilters({
-        categories: [],
-        location: "all",
-        verifications: [],
-        minRating: null,
-      });
-    }
+    router.push("/search");
   };
 
   const handlePopularSearchSelect = (term: string) => {
-    if (term.toLowerCase().includes("interior")) {
-      applyPreset("interior");
-    } else {
-      setSearchQuery(`${term} in Lagos`);
-      setCardLayout("horizontal");
-      setFilters({
-        categories: ["plumbing"],
-        location: "all",
-        verifications: [],
-        minRating: null,
-      });
-    }
+    setCurrentPage(1);
+    setSearchQuery(term);
+    setFilters({
+      categories: [],
+      location: "all",
+      verifications: [],
+      minRating: null,
+    });
+    router.push(`/search?q=${encodeURIComponent(term)}`);
   };
 
-  // Filter & sort professionals
   const filteredProfessionals = React.useMemo(() => {
-    const normalizedQuery = searchQuery.trim().toLowerCase();
-
-    // Check if query explicitly triggers empty state (e.g., "astronauts" or non-existent service)
-    if (
-      normalizedQuery.includes("astronaut") ||
-      normalizedQuery.includes("none") ||
-      normalizedQuery.includes("xyz")
-    ) {
-      return [];
-    }
+    const rawQuery = searchQuery.trim().toLowerCase();
 
     return professionals
       .filter((pro) => {
-        // Category match
+        if (rawQuery) {
+          const stopWords = new Set([
+            "in",
+            "at",
+            "for",
+            "the",
+            "a",
+            "an",
+            "of",
+            "and",
+            "near",
+            "to",
+            "top",
+            "services",
+          ]);
+          const tokens = rawQuery
+            .split(/\s+/)
+            .map((t) => t.replace(/^[^\w]+|[^\w]+$/g, ""))
+            .filter((t) => t.length > 0 && !stopWords.has(t));
+
+          const searchTokens = tokens.length > 0 ? tokens : [rawQuery];
+
+          const proText = [
+            pro.name,
+            pro.subtitle,
+            pro.location,
+            pro.cityGroup ?? "",
+            ...pro.categoryIds.map((c) => c.replace(/-/g, " ")),
+          ]
+            .join(" ")
+            .toLowerCase();
+
+          const matchesAllTokens = searchTokens.every((token) => {
+            if (proText.includes(token)) return true;
+            if (
+              token.endsWith("s") &&
+              token.length > 3 &&
+              proText.includes(token.slice(0, -1))
+            ) {
+              return true;
+            }
+            if (
+              token.endsWith("ing") &&
+              token.length > 4 &&
+              proText.includes(token.slice(0, -3))
+            ) {
+              return true;
+            }
+            return false;
+          });
+
+          if (!matchesAllTokens) return false;
+        }
+
         if (filters.categories.length > 0) {
           const hasMatchingCategory = pro.categoryIds.some((catId) =>
             filters.categories.includes(catId)
@@ -227,7 +257,15 @@ export function ConsumerSearchView({
           if (!hasMatchingCategory) return false;
         }
 
-        // Verification match
+        if (filters.location && filters.location !== "all") {
+          const normalizedFilterLoc = filters.location.toLowerCase();
+          const matchLoc =
+            pro.location.toLowerCase() === normalizedFilterLoc ||
+            pro.location.toLowerCase().includes(normalizedFilterLoc) ||
+            pro.cityGroup?.toLowerCase() === normalizedFilterLoc;
+          if (!matchLoc) return false;
+        }
+
         if (
           filters.verifications.length > 0 &&
           !filters.verifications.includes(pro.verification)
@@ -235,27 +273,37 @@ export function ConsumerSearchView({
           return false;
         }
 
-        // Minimum rating match
         if (filters.minRating !== null && pro.rating < filters.minRating) {
           return false;
         }
 
         return true;
       })
-      .map((pro) => ({
-        ...pro,
-        isFavorite: favoriteIds.includes(pro.id),
-      }))
       .sort((a, b) => {
         if (sortBy === "rating-desc") return b.rating - a.rating;
         if (sortBy === "reviews-desc")
           return (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
         return 0;
       });
-  }, [professionals, searchQuery, filters, sortBy, favoriteIds]);
+  }, [professionals, searchQuery, filters, sortBy]);
 
-  const isEmptyState = filteredProfessionals.length === 0;
-  const totalPages = isInteriorMode ? 8 : 12;
+  const totalItems = filteredProfessionals.length;
+  const isEmptyState = totalItems === 0;
+  const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
+  const safeCurrentPage = Math.min(currentPage, totalPages);
+
+  const paginatedProfessionals = React.useMemo(() => {
+    const startIndex = (safeCurrentPage - 1) * ITEMS_PER_PAGE;
+    return filteredProfessionals.slice(
+      startIndex,
+      startIndex + ITEMS_PER_PAGE
+    );
+  }, [filteredProfessionals, safeCurrentPage]);
+
+  const paginationItems = React.useMemo(
+    () => getPaginationRange(safeCurrentPage, totalPages),
+    [safeCurrentPage, totalPages]
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -266,18 +314,16 @@ export function ConsumerSearchView({
             searchValue={searchQuery}
             onSearchChange={(val) => {
               setSearchQuery(val);
-              if (val.toLowerCase().includes("interior")) {
-                setCardLayout("studio");
-                setFilters((prev) => ({
-                  ...prev,
-                  categories: ["interior-design", "home-staging"],
-                }));
-              } else if (val.toLowerCase().includes("plumb")) {
-                setCardLayout("horizontal");
-                setFilters((prev) => ({
-                  ...prev,
-                  categories: ["plumbing"],
-                }));
+              setCurrentPage(1);
+            }}
+            onSearchSubmit={(val) => {
+              const trimmed = val.trim();
+              setSearchQuery(trimmed);
+              setCurrentPage(1);
+              if (trimmed) {
+                router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+              } else {
+                router.push("/search");
               }
             }}
             onProfileClick={() => router.push("/dashboard")}
@@ -298,7 +344,7 @@ export function ConsumerSearchView({
           />
         ) : (
           <div className="space-y-6">
-            {/* Top Bar: Breadcrumb + Quick View Switcher */}
+            {/* Top Bar: Breadcrumb */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <Breadcrumb>
                 <BreadcrumbList>
@@ -310,103 +356,49 @@ export function ConsumerSearchView({
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <BreadcrumbLink onClick={handleResetFilters}>
-                      {isInteriorMode ? "Professionals" : "Search Results"}
+                      Search Results
                     </BreadcrumbLink>
                   </BreadcrumbItem>
                   <BreadcrumbSeparator />
                   <BreadcrumbItem>
                     <BreadcrumbPage>
-                      {isInteriorMode
-                        ? "Interior Designers"
-                        : `"${searchQuery}"`}
+                      {searchQuery
+                        ? `"${searchQuery}"`
+                        : "All Professionals"}
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
-
-              {/* Quick Figma Flow Switcher Pills */}
-              <div className="inline-flex items-center gap-1.5 self-start sm:self-auto bg-card border border-border rounded-lg p-1 shadow-2xs">
-                <button
-                  type="button"
-                  onClick={() => applyPreset("plumbers")}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer",
-                    cardLayout === "horizontal" && !isEmptyState
-                      ? "bg-primary text-primary-foreground font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <Rows3 className="size-3.5" />
-                  <span>Plumbers View</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => applyPreset("interior")}
-                  className={cn(
-                    "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors cursor-pointer",
-                    cardLayout === "studio" && !isEmptyState
-                      ? "bg-primary text-primary-foreground font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <LayoutGrid className="size-3.5" />
-                  <span>Studio View</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => applyPreset("empty")}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-                >
-                  <span>Empty State</span>
-                </button>
-              </div>
             </div>
 
             {/* 2-Column Layout: Left Filters Sidebar + Right Results Area */}
             <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
               <SearchFiltersSidebar
-                categoryOptions={activeCategoryOptions}
-                locationOptions={SEARCH_LOCATION_OPTIONS}
+                categoryOptions={SEARCH_CATEGORY_OPTIONS}
+                locationOptions={locationOptions}
                 filters={filters}
                 onToggleCategory={handleToggleCategory}
                 onLocationChange={handleLocationChange}
                 onToggleVerification={handleToggleVerification}
                 onToggleRating={handleToggleRating}
                 onResetFilters={handleResetFilters}
-                showStarsRow={isInteriorMode}
-                ratingOptions={
-                  isInteriorMode
-                    ? [
-                        { value: 4.0, label: "4.0 & Above", starsCount: 4 },
-                        { value: 3.0, label: "3.0 & Above", starsCount: 3 },
-                      ]
-                    : [
-                        { value: 4.5, label: "4.5 & Above" },
-                        { value: 4.0, label: "4.0 & Above" },
-                      ]
-                }
               />
 
               {/* Right Results Column */}
               <div className="flex-1 w-full space-y-6">
                 {/* Results Summary & Sort Toolbar */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  {isInteriorMode ? (
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      Found{" "}
-                      <span className="font-bold text-foreground">24</span>{" "}
-                      professionals for &ldquo;Interior Designers&rdquo;
-                    </p>
-                  ) : (
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      Showing{" "}
-                      <span className="font-bold text-foreground">1-12</span> of{" "}
-                      <span className="font-bold text-foreground">48</span>{" "}
-                      professionals found
-                    </p>
-                  )}
+                  <p className="text-xs sm:text-sm text-muted-foreground">
+                    Showing{" "}
+                    <span className="font-bold text-foreground">
+                      {paginatedProfessionals.length}
+                    </span>{" "}
+                    of{" "}
+                    <span className="font-bold text-foreground">
+                      {totalItems}
+                    </span>{" "}
+                    professionals found
+                  </p>
 
                   <div className="flex items-center gap-2.5 self-end sm:self-auto">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground shrink-0">
@@ -416,7 +408,10 @@ export function ConsumerSearchView({
                       <Select
                         options={SEARCH_SORT_OPTIONS}
                         value={sortBy}
-                        onChange={setSortBy}
+                        onChange={(val) => {
+                          setSortBy(val);
+                          setCurrentPage(1);
+                        }}
                         className="h-9 text-xs font-semibold"
                       />
                     </div>
@@ -424,65 +419,60 @@ export function ConsumerSearchView({
                 </div>
 
                 {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
-                  {filteredProfessionals.map((pro) =>
-                    cardLayout === "studio" ? (
-                      <SearchResultStudioCard
-                        key={pro.id}
-                        professional={pro}
-                        onToggleFavorite={handleToggleFavorite}
-                      />
-                    ) : (
-                      <SearchResultHorizontalCard
-                        key={pro.id}
-                        professional={pro}
-                      />
-                    )
-                  )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-stretch">
+                  {paginatedProfessionals.map((pro) => (
+                    <ProfessionalCard
+                      key={pro.id}
+                      professional={pro}
+                      variant="horizontal"
+                    />
+                  ))}
                 </div>
 
-                {/* Pagination Bar */}
+                {/* Dynamic Pagination Bar */}
                 <div className="pt-6 flex justify-center">
                   <Pagination className="justify-center">
                     <PaginationContent>
                       <PaginationItem>
                         <PaginationPrevious
-                          disabled={currentPage === 1}
+                          disabled={safeCurrentPage <= 1}
                           onClick={() =>
-                            setCurrentPage((p) => Math.max(1, p - 1))
+                            setCurrentPage(Math.max(1, safeCurrentPage - 1))
                           }
                         />
                       </PaginationItem>
 
-                      {[1, 2, 3].map((page) => (
-                        <PaginationItem key={page}>
-                          <PaginationLink
-                            isActive={currentPage === page}
-                            onClick={() => setCurrentPage(page)}
-                          >
-                            {page}
-                          </PaginationLink>
-                        </PaginationItem>
-                      ))}
+                      {paginationItems.map((item) => {
+                        if (
+                          item === "ellipsis-start" ||
+                          item === "ellipsis-end"
+                        ) {
+                          return (
+                            <PaginationItem key={item}>
+                              <PaginationEllipsis />
+                            </PaginationItem>
+                          );
+                        }
 
-                      <PaginationItem>
-                        <PaginationEllipsis />
-                      </PaginationItem>
-
-                      <PaginationItem>
-                        <PaginationLink
-                          isActive={currentPage === totalPages}
-                          onClick={() => setCurrentPage(totalPages)}
-                        >
-                          {totalPages}
-                        </PaginationLink>
-                      </PaginationItem>
+                        return (
+                          <PaginationItem key={item}>
+                            <PaginationLink
+                              isActive={safeCurrentPage === item}
+                              onClick={() => setCurrentPage(item)}
+                            >
+                              {item}
+                            </PaginationLink>
+                          </PaginationItem>
+                        );
+                      })}
 
                       <PaginationItem>
                         <PaginationNext
-                          disabled={currentPage === totalPages}
+                          disabled={safeCurrentPage >= totalPages}
                           onClick={() =>
-                            setCurrentPage((p) => Math.min(totalPages, p + 1))
+                            setCurrentPage(
+                              Math.min(totalPages, safeCurrentPage + 1)
+                            )
                           }
                         />
                       </PaginationItem>
