@@ -57,6 +57,11 @@ export const protectedRoutes: RouteConfig[] = [
     redirectTo: "/login",
   },
   {
+    path: "/search*",
+    roles: ["consumer"],
+    redirectTo: "/login",
+  },
+  {
     path: "/my-bookings*",
     roles: ["consumer"],
     redirectTo: "/login",
