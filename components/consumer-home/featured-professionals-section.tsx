@@ -115,7 +115,7 @@ export function FeaturedProfessionalsSection({
         ref={scrollContainerRef}
         className={cn(
           "flex flex-nowrap gap-6 overflow-x-auto scroll-smooth snap-x snap-mandatory pb-2",
-          "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          "[scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden no-scrollbar"
         )}
       >
         {professionals.map((pro) => (

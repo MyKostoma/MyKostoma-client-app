@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import { useAppSelector } from "@/store/hooks";
 import { selectCurrentUser, selectUserRole } from "@/store/slices/authSlice";
 
@@ -14,11 +13,6 @@ export function ConsumerDashboardView() {
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
           Welcome to your consumer portal, {user?.fullName || "Consumer"}. Here you can manage bookings, review requests, and track payments.
-        </p>
-      </div>
-      <div className="rounded-2xl border border-dashed border-border p-12 text-center bg-card/50">
-        <p className="text-sm text-muted-foreground">
-          Consumer Dashboard component placeholder — ready for Figma integration.
         </p>
       </div>
     </div>
@@ -35,11 +29,6 @@ export function ProfessionalDashboardView() {
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
           Welcome to your professional console, {user?.fullName || "Pro"}. Monitor your client requests, active jobs, and earnings.
-        </p>
-      </div>
-      <div className="rounded-2xl border border-dashed border-border p-12 text-center bg-card/50">
-        <p className="text-sm text-muted-foreground">
-          Professional Dashboard component placeholder — ready for Figma integration.
         </p>
       </div>
     </div>

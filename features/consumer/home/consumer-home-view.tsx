@@ -67,9 +67,6 @@ export function ConsumerHomeView({
       <div className="w-full bg-card border-b border-border/70 sticky top-0 z-40">
         <div className="container px-4 sm:px-6 lg:px-8">
           <AppHeader
-            onProfileClick={() => router.push("/dashboard")}
-            onSettingsClick={() => router.push("/settings")}
-            onMessagesClick={() => router.push("/messages")}
             className="rounded-none border-0 shadow-none px-0 py-3.5"
           />
         </div>

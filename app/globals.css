@@ -206,19 +206,44 @@
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1260px;
   margin: 0 auto;
+}
+
+/* Global Thin Scrollbar with faded primary tint */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 35%, transparent) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: color-mix(in srgb, var(--primary) 35%, transparent);
+  border-radius: 9999px;
+  transition: background-color 0.2s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--primary) 80%, transparent);
 }
 
 .no-scrollbar,
 .noscrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 
 .no-scrollbar::-webkit-scrollbar,
 .noscrollbar::-webkit-scrollbar {
-  display: none;
+  display: none !important;
 }
 
 /* 01 Typography Scale (Figma) */
