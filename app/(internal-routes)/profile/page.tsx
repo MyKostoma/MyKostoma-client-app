@@ -1,7 +1,5 @@
-function Profile() {
-    return (
-        <div>Profile</div>
-    )
-}
+import { ProfileView } from "@/features/profile";
 
-export default Profile;
+export default function ProfilePage() {
+  return <ProfileView />;
+}
