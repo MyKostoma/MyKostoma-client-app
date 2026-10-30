@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import { AppHeader } from "@/components/ui/headers";
-import { AppFooter } from "@/components/ui/footers";
 import {
   ProfileHeaderCard,
   AvailableServicesSection,
@@ -75,57 +73,47 @@ export function ProfileView({
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Sticky Top App Header */}
-      <div className="w-full bg-card border-b border-border/70 sticky top-0 z-40">
-        <div className="container px-4 sm:px-6 lg:px-8">
-          <AppHeader className="rounded-none border-0 shadow-none px-0 py-3.5" />
-        </div>
-      </div>
+    <main className="flex-1 container px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-10 sm:space-y-12">
+      <ProfileHeaderCard
+        profile={profile}
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        isFollowing={isFollowing}
+        onToggleFollow={handleToggleFollow}
+        isMessagingOpen={isMessagingOpen}
+        onToggleMessaging={handleToggleMessaging}
+        messageText={messageText}
+        onMessageTextChange={setMessageText}
+        onSendMessage={handleSendMessage}
+      />
 
-      {/* Main Content Area */}
-      <main className="flex-1 container px-4 sm:px-6 lg:px-8 py-8 sm:py-10 space-y-10 sm:space-y-12">
-        <ProfileHeaderCard
-          profile={profile}
-          activeTab={activeTab}
-          onTabChange={handleTabChange}
-          isFollowing={isFollowing}
-          onToggleFollow={handleToggleFollow}
-          isMessagingOpen={isMessagingOpen}
-          onToggleMessaging={handleToggleMessaging}
-          messageText={messageText}
-          onMessageTextChange={setMessageText}
-          onSendMessage={handleSendMessage}
+      {isMessagingOpen ? (
+        <ProfileInteractionDetails
+          recipientName={profile.name}
+          responseTimeText={profile.responseTimeText}
+          quickActions={profile.quickActions}
+          onSelectQuickAction={handleSelectQuickAction}
+          onSetFollowing={setIsFollowing}
         />
-
-        {isMessagingOpen ? (
-          <ProfileInteractionDetails
-            recipientName={profile.name}
-            responseTimeText={profile.responseTimeText}
-            quickActions={profile.quickActions}
-            onSelectQuickAction={handleSelectQuickAction}
-            onSetFollowing={setIsFollowing}
+      ) : (
+        <div className="space-y-10 sm:space-y-12">
+          <AvailableServicesSection
+            services={profile.services}
+            onServiceAction={handleServiceAction}
           />
-        ) : (
-          <div className="space-y-10 sm:space-y-12">
-            <AvailableServicesSection
-              services={profile.services}
-              onServiceAction={handleServiceAction}
-            />
 
-            <PortfolioShowcaseSection items={profile.portfolio} />
+          <PortfolioShowcaseSection items={profile.portfolio} />
 
-            <ClientReviewsSection
-              rating={profile.rating}
-              reviewCount={profile.reviewCount}
-              breakdown={profile.ratingBreakdown}
-              reviews={profile.reviews}
-            />
-          </div>
-        )}
-      </main>
-
-      <AppFooter className="mt-8" />
-    </div>
+          <ClientReviewsSection
+            rating={profile.rating}
+            reviewCount={profile.reviewCount}
+            breakdown={profile.ratingBreakdown}
+            reviews={profile.reviews}
+          />
+        </div>
+      )}
+    </main>
   );
 }
+
+export default ProfileView;

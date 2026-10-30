@@ -4,8 +4,8 @@
 import { useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Filter } from "lucide-react";
-import { AppHeader } from "@/components/ui/headers";
-import { AppFooter } from "@/components/ui/footers";
+import { useAppDispatch } from "@/store/hooks";
+import { setGlobalSearchQuery } from "@/store/slices/uiSlice";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -87,6 +87,7 @@ export function ConsumerSearchView({
   professionals = SEARCH_PROFESSIONALS_DATA,
 }: ConsumerSearchViewProps) {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
 
   const queryParam = searchParams.get("q");
@@ -143,9 +144,11 @@ export function ConsumerSearchView({
   }, [mobileFiltersOpen]);
 
   useEffect(() => {
-    setSearchQuery(queryParam ?? "");
+    const q = queryParam ?? "";
+    setSearchQuery(q);
+    dispatch(setGlobalSearchQuery(q));
     setCurrentPage(1);
-  }, [queryParam]);
+  }, [queryParam, dispatch]);
 
   useEffect(() => {
     if (categoryParam) {
@@ -208,6 +211,7 @@ export function ConsumerSearchView({
   const handleResetFilters = () => {
     setCurrentPage(1);
     setSearchQuery("");
+    dispatch(setGlobalSearchQuery(""));
     setFilters({
       categories: [],
       location: "all",
@@ -220,6 +224,7 @@ export function ConsumerSearchView({
   const handlePopularSearchSelect = (term: string) => {
     setCurrentPage(1);
     setSearchQuery(term);
+    dispatch(setGlobalSearchQuery(term));
     setFilters({
       categories: [],
       location: "all",
@@ -353,33 +358,7 @@ export function ConsumerSearchView({
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      {/* Top App Header */}
-      <div className="w-full bg-card border-b border-border/70 sticky top-0 z-40">
-        <div className="container px-4 sm:px-6 lg:px-8">
-          <AppHeader
-            searchValue={searchQuery}
-            onSearchChange={(val) => {
-              setSearchQuery(val);
-              setCurrentPage(1);
-            }}
-            onSearchSubmit={(val) => {
-              const trimmed = val.trim();
-              setSearchQuery(trimmed);
-              setCurrentPage(1);
-              if (trimmed) {
-                router.push(`/search?q=${encodeURIComponent(trimmed)}`);
-              } else {
-                router.push("/search");
-              }
-            }}
-            className="rounded-none border-0 shadow-none px-0 py-3.5"
-          />
-        </div>
-      </div>
-
-      {/* Main Content Container */}
-      <main className="flex-1 container px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+    <main className="flex-1 container px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
         {isEmptyState ? (
           <SearchEmptyState
             onClearFilters={handleResetFilters}
@@ -602,8 +581,5 @@ export function ConsumerSearchView({
           </div>
         )}
       </main>
-
-      <AppFooter className="mt-8" />
-    </div>
-  );
-}
+    );
+  }

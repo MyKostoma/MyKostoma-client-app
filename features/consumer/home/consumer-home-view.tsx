@@ -1,8 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { AppHeader } from "@/components/ui/headers";
-import { AppFooter } from "@/components/ui/footers";
 import {
   ConsumerHeroBanner,
   ServiceCategoriesSection,
@@ -46,7 +44,7 @@ export function ConsumerHomeView({
 
   const mappedCategories = useMemo(
     () =>
-      categories.slice(0,6).map((cat) => ({
+      categories.slice(0, 6).map((cat) => ({
         ...cat,
         onClick: cat.onClick ?? handleCategorySelect,
       })),
@@ -55,7 +53,7 @@ export function ConsumerHomeView({
 
   const mappedProfessionals = useMemo(
     () =>
-      featuredProfessionals.slice(0,12).map((pro) => ({
+      featuredProfessionals.slice(0, 12).map((pro) => ({
         ...pro,
         onBookClick: pro.onBookClick ?? handleBookPro,
       })),
@@ -63,29 +61,19 @@ export function ConsumerHomeView({
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex flex-col">
-      <div className="w-full bg-card border-b border-border/70 sticky top-0 z-40">
-        <div className="container px-4 sm:px-6 lg:px-8">
-          <AppHeader
-            className="rounded-none border-0 shadow-none px-0 py-3.5"
-          />
-        </div>
-      </div>
+    <main className="flex-1 container px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 space-y-12 sm:space-y-16 lg:space-y-24">
+      <ConsumerHeroBanner onPrimaryClick={handleBrowsePros} />
 
-      <main className="flex-1 container px-4 sm:px-6 lg:px-8 py-8 sm:py-10 lg:py-12 space-y-12 sm:space-y-16 lg:space-y-24">
-        <ConsumerHeroBanner onPrimaryClick={handleBrowsePros} />
+      <ServiceCategoriesSection
+        categories={mappedCategories}
+        onActionClick={handleBrowsePros}
+      />
 
-        <ServiceCategoriesSection
-          categories={mappedCategories}
-          onActionClick={handleBrowsePros}
-        />
+      <FeaturedProfessionalsSection professionals={mappedProfessionals} />
 
-        <FeaturedProfessionalsSection professionals={mappedProfessionals} />
-
-        <TopRatedSpotlightSection providers={spotlightProviders} />
-      </main>
-
-      <AppFooter className="mt-8" />
-    </div>
+      <TopRatedSpotlightSection providers={spotlightProviders} />
+    </main>
   );
 }
+
+export default ConsumerHomeView;

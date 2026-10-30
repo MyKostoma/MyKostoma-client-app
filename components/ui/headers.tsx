@@ -388,8 +388,10 @@ export function AppHeader({
   useEffect(() => {
     if (searchValue !== undefined) {
       setInternalSearch(searchValue);
+    } else {
+      setInternalSearch(storeSearchQuery ?? "");
     }
-  }, [searchValue]);
+  }, [searchValue, storeSearchQuery]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
