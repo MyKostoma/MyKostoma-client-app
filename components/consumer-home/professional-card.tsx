@@ -64,11 +64,11 @@ export function ProfessionalCard({
     return (
       <article
         className={cn(
-          "group h-full bg-card border border-border rounded-2xl overflow-hidden flex flex-col sm:flex-row shadow-2xs hover:shadow-md transition-all duration-200",
+          "group h-full bg-card border border-border rounded-xl md:rounded-2xl overflow-hidden flex flex-col md:flex-row shadow-2xs hover:shadow-md transition-all duration-200",
           className
         )}
       >
-        <div className="relative w-full sm:w-44 md:w-48 h-48 sm:h-auto sm:self-stretch shrink-0 overflow-hidden bg-secondary">
+        <div className="relative w-full md:w-48 h-28 xs:h-32 md:h-auto sm:self-stretch shrink-0 overflow-hidden bg-secondary">
           <img
             src={pro.imageUrl}
             alt={pro.name}
@@ -76,33 +76,33 @@ export function ProfessionalCard({
           />
         </div>
 
-        <div className="p-4 sm:p-5 flex flex-col flex-1 min-w-0 justify-between gap-4">
+        <div className="p-2.5 sm:p-5 flex flex-col flex-1 min-w-0 justify-between gap-2.5 sm:gap-4">
           <div>
-            <div className="flex items-start justify-between gap-2">
-              <h3 className="text-base font-bold text-foreground tracking-tight leading-snug line-clamp-1">
+            <div className="flex items-start justify-between gap-1.5 sm:gap-2">
+              <h3 className="text-xs sm:text-base font-bold text-foreground tracking-tight leading-snug line-clamp-1">
                 {pro.name}
               </h3>
 
               <span
                 title={isCompany ? "Company Verified" : "Individual Verified"}
                 className={cn(
-                  "size-4.5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-primary-foreground shadow-2xs",
+                  "size-3.5 sm:size-4.5 rounded-full flex items-center justify-center shrink-0 mt-0.5 text-primary-foreground shadow-2xs",
                   isCompany ? "bg-info" : "bg-warning"
                 )}
               >
-                <Check className="size-2.5 stroke-[3]" />
+                <Check className="size-2 sm:size-2.5 stroke-[3]" />
               </span>
             </div>
 
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed line-clamp-1">
+            <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 leading-tight sm:leading-relaxed line-clamp-1">
               {subtitle}
             </p>
           </div>
 
-          <div className="pt-2.5 border-t border-border/60 space-y-3">
-            <div className="flex items-center gap-1.5 text-xs min-w-0">
-              <span className="inline-flex items-center gap-1 font-bold text-foreground shrink-0">
-                <Star className="size-3.5 text-warning fill-warning shrink-0" />
+          <div className="pt-2 sm:pt-2.5 border-t border-border/60 space-y-2 sm:space-y-3">
+            <div className="flex items-center gap-1 sm:gap-1.5 text-[10px] sm:text-xs min-w-0">
+              <span className="inline-flex items-center gap-0.5 sm:gap-1 font-bold text-foreground shrink-0">
+                <Star className="size-3 sm:size-3.5 text-warning fill-warning shrink-0" />
                 {formattedRating}
               </span>
               <span className="text-border select-none shrink-0">•</span>
@@ -115,7 +115,7 @@ export function ProfessionalCard({
               variant="outline-primary"
               size="sm"
               onClick={handleAction}
-              className="w-full h-9 text-xs font-semibold rounded-lg"
+              className="w-full h-7 sm:h-9 text-[10px] sm:text-xs font-semibold rounded-md sm:rounded-lg px-2"
             >
               View Details
             </Button>

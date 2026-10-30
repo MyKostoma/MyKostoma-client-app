@@ -3,6 +3,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Filter } from "lucide-react";
 import { AppHeader } from "@/components/ui/headers";
 import { AppFooter } from "@/components/ui/footers";
 import {
@@ -104,6 +105,42 @@ export function ConsumerSearchView({
 
   const [sortBy, setSortBy] = useState("best-match");
   const [currentPage, setCurrentPage] = useState(1);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+  const [isDesktopCollapsed, setIsDesktopCollapsed] = useState(false);
+  const [hasUserManuallyToggled, setHasUserManuallyToggled] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (!hasUserManuallyToggled) {
+        // Default: collapsed on lg (<1280px), expanded on xl and above (>=1280px)
+        setIsDesktopCollapsed(window.innerWidth < 1280);
+      }
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, [hasUserManuallyToggled]);
+
+  const handleToggleDesktopCollapse = () => {
+    setHasUserManuallyToggled(true);
+    setIsDesktopCollapsed((prev) => !prev);
+  };
+
+  useEffect(() => {
+    if (!mobileFiltersOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMobileFiltersOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [mobileFiltersOpen]);
 
   useEffect(() => {
     setSearchQuery(queryParam ?? "");
@@ -191,6 +228,15 @@ export function ConsumerSearchView({
     });
     router.push(`/search?q=${encodeURIComponent(term)}`);
   };
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    count += filters.categories.length;
+    if (filters.location && filters.location !== "all") count += 1;
+    count += filters.verifications.length;
+    if (filters.minRating !== null) count += 1;
+    return count;
+  }, [filters]);
 
   const filteredProfessionals = useMemo(() => {
     const rawQuery = searchQuery.trim().toLowerCase();
@@ -327,16 +373,13 @@ export function ConsumerSearchView({
                 router.push("/search");
               }
             }}
-            onProfileClick={() => router.push("/dashboard")}
-            onSettingsClick={() => router.push("/settings")}
-            onMessagesClick={() => router.push("/messages")}
             className="rounded-none border-0 shadow-none px-0 py-3.5"
           />
         </div>
       </div>
 
       {/* Main Content Container */}
-      <main className="flex-1 container px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <main className="flex-1 container px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
         {isEmptyState ? (
           <SearchEmptyState
             onClearFilters={handleResetFilters}
@@ -372,23 +415,97 @@ export function ConsumerSearchView({
               </Breadcrumb>
             </div>
 
-            {/* 2-Column Layout: Left Filters Sidebar + Right Results Area */}
+            {/* Mobile Filter Drawer (slide-in from left) */}
+            {mobileFiltersOpen && (
+              <div
+                className="lg:hidden fixed inset-0 z-50 flex"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Search filters drawer"
+              >
+                {/* Backdrop */}
+                <div
+                  className="fixed inset-0 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  aria-hidden="true"
+                />
+
+                {/* Drawer Panel */}
+                <div className="relative z-10 w-full max-w-xs sm:max-w-sm h-full bg-card text-foreground shadow-2xl flex flex-col animate-in slide-in-from-left duration-200 overflow-y-auto no-scrollbar">
+                  <SearchFiltersSidebar
+                    categoryOptions={SEARCH_CATEGORY_OPTIONS}
+                    locationOptions={locationOptions}
+                    filters={filters}
+                    onToggleCategory={handleToggleCategory}
+                    onLocationChange={handleLocationChange}
+                    onToggleVerification={handleToggleVerification}
+                    onToggleRating={handleToggleRating}
+                    onResetFilters={handleResetFilters}
+                    onClose={() => setMobileFiltersOpen(false)}
+                    onApply={() => setMobileFiltersOpen(false)}
+                    className="w-full border-0 shadow-none rounded-none p-5 sm:p-6"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* 2-Column Layout: Left Filters Sidebar (desktop) + Right Results Area */}
             <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
-              <SearchFiltersSidebar
-                categoryOptions={SEARCH_CATEGORY_OPTIONS}
-                locationOptions={locationOptions}
-                filters={filters}
-                onToggleCategory={handleToggleCategory}
-                onLocationChange={handleLocationChange}
-                onToggleVerification={handleToggleVerification}
-                onToggleRating={handleToggleRating}
-                onResetFilters={handleResetFilters}
-              />
+              {/* Desktop Filters Sidebar */}
+              <div className="hidden lg:block shrink-0 transition-all duration-300">
+                <SearchFiltersSidebar
+                  categoryOptions={SEARCH_CATEGORY_OPTIONS}
+                  locationOptions={locationOptions}
+                  filters={filters}
+                  onToggleCategory={handleToggleCategory}
+                  onLocationChange={handleLocationChange}
+                  onToggleVerification={handleToggleVerification}
+                  onToggleRating={handleToggleRating}
+                  onResetFilters={handleResetFilters}
+                  isCollapsed={isDesktopCollapsed}
+                  onToggleCollapse={handleToggleDesktopCollapse}
+                />
+              </div>
 
               {/* Right Results Column */}
-              <div className="flex-1 w-full space-y-6">
-                {/* Results Summary & Sort Toolbar */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex-1 w-full space-y-4 sm:space-y-6">
+                {/* Mobile Filter & Sort Toolbar */}
+                <div className="flex items-center justify-between gap-3 lg:hidden">
+                  <button
+                    type="button"
+                    onClick={() => setMobileFiltersOpen(true)}
+                    aria-label="Open search filters"
+                    className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-border bg-card hover:bg-secondary text-foreground text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                  >
+                    <Filter className="size-4 text-primary shrink-0" />
+                    <span>Filters</span>
+                    {activeFilterCount > 0 && (
+                      <span className="size-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center shrink-0">
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </button>
+
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground shrink-0 hidden xs:inline">
+                      Sort by:
+                    </span>
+                    <div className="w-36">
+                      <Select
+                        options={SEARCH_SORT_OPTIONS}
+                        value={sortBy}
+                        onChange={(val) => {
+                          setSortBy(val);
+                          setCurrentPage(1);
+                        }}
+                        className="h-9 text-xs font-semibold"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Results Summary & Desktop Sort Toolbar */}
+                <div className="flex items-center justify-between gap-3">
                   <p className="text-xs sm:text-sm text-muted-foreground">
                     Showing{" "}
                     <span className="font-bold text-foreground">
@@ -401,7 +518,7 @@ export function ConsumerSearchView({
                     professionals found
                   </p>
 
-                  <div className="flex items-center gap-2.5 self-end sm:self-auto">
+                  <div className="hidden lg:flex items-center gap-2.5">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground shrink-0">
                       Sort by:
                     </span>
@@ -419,8 +536,8 @@ export function ConsumerSearchView({
                   </div>
                 </div>
 
-                {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6 items-stretch">
+                {/* Cards Grid: 2 per row on mobile and desktop */}
+                <div className="grid grid-cols-2 gap-3 sm:gap-6 items-stretch">
                   {paginatedProfessionals.map((pro) => (
                     <ProfessionalCard
                       key={pro.id}
