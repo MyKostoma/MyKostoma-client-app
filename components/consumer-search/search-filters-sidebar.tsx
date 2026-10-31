@@ -10,6 +10,7 @@ import {
   Layers,
   MapPin,
   RotateCcw,
+  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox, Select, type SelectOption } from "@/components/ui/form-fields";
@@ -42,6 +43,7 @@ export interface SearchFiltersSidebarProps
   onApply?: () => void;
   isCollapsed?: boolean;
   onToggleCollapse?: () => void;
+  defaultExpandedSections?: ("category" | "verification" | "rating")[];
 }
 
 export const DEFAULT_RATING_OPTIONS: RatingFilterOption[] = [
@@ -67,9 +69,26 @@ export function SearchFiltersSidebar({
   onApply,
   isCollapsed = false,
   onToggleCollapse,
+  defaultExpandedSections = ["category", "verification", "rating"],
   className,
   ...props
 }: SearchFiltersSidebarProps) {
+  // Collapsible section state: all sections are expanded by default
+  const [openSections, setOpenSections] = React.useState<
+    Record<"category" | "verification" | "rating", boolean>
+  >(() => ({
+    category: defaultExpandedSections.includes("category"),
+    verification: defaultExpandedSections.includes("verification"),
+    rating: defaultExpandedSections.includes("rating"),
+  }));
+
+  const toggleSection = (section: "category" | "verification" | "rating") => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
   const activeCount = React.useMemo(() => {
     let count = 0;
     count += filters.categories.length;
@@ -211,7 +230,7 @@ export function SearchFiltersSidebar({
     <aside
       aria-label="Search filters"
       className={cn(
-        "w-full lg:w-68 xl:w-72 shrink-0 rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-6 shadow-2xs self-start transition-all duration-300",
+        "w-full lg:w-68 xl:w-72 shrink-0 rounded-2xl border border-border bg-card p-5 sm:p-6 space-y-6 shadow-2xs self-start transition-all duration-300 max-h-screen overflow-auto noscrollbar",
         className
       )}
       {...props}
@@ -266,39 +285,66 @@ export function SearchFiltersSidebar({
       </div>
 
       {/* Category Filter Group */}
-      <div className="space-y-3">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-          CATEGORY
-        </h3>
-        <div className="flex flex-col gap-2.5">
-          {categoryOptions.map((cat) => {
-            const isChecked = filters.categories.includes(cat.id);
-            return (
-              <Checkbox
-                key={cat.id}
-                id={`filter-cat-${cat.id}`}
-                checked={isChecked}
-                onCheckedChange={() => onToggleCategory(cat.id)}
-                label={
-                  <span
-                    className={cn(
-                      "text-xs sm:text-sm",
-                      isChecked
-                        ? "font-semibold text-foreground"
-                        : "font-normal text-muted-foreground"
-                    )}
-                  >
-                    {cat.label}
-                  </span>
-                }
-              />
-            );
-          })}
-        </div>
+      <div className="border-b border-border/60 pb-4 space-y-3">
+        <button
+          type="button"
+          onClick={() => toggleSection("category")}
+          aria-expanded={openSections.category}
+          aria-controls="filter-category-options"
+          className="w-full flex items-center justify-between text-left group cursor-pointer select-none"
+        >
+          <div className="flex items-center gap-2">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">
+              CATEGORY
+            </h3>
+            {filters.categories.length > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold leading-none">
+                {filters.categories.length}
+              </span>
+            )}
+          </div>
+          <ChevronDown
+            className={cn(
+              "size-4 text-muted-foreground group-hover:text-foreground transition-transform duration-200",
+              openSections.category ? "rotate-180" : "rotate-0"
+            )}
+          />
+        </button>
+
+        {openSections.category && (
+          <div
+            id="filter-category-options"
+            className="flex flex-col gap-2.5 pt-1 animate-in fade-in-50 duration-200"
+          >
+            {categoryOptions.map((cat) => {
+              const isChecked = filters.categories.includes(cat.id);
+              return (
+                <Checkbox
+                  key={cat.id}
+                  id={`filter-cat-${cat.id}`}
+                  checked={isChecked}
+                  onCheckedChange={() => onToggleCategory(cat.id)}
+                  label={
+                    <span
+                      className={cn(
+                        "text-xs sm:text-sm",
+                        isChecked
+                          ? "font-semibold text-foreground"
+                          : "font-normal text-muted-foreground"
+                      )}
+                    >
+                      {cat.label}
+                    </span>
+                  }
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Location Filter Group */}
-      <div className="space-y-2.5">
+      <div className="border-b border-border/60 pb-4 space-y-2.5">
         <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
           LOCATION
         </h3>
@@ -312,109 +358,164 @@ export function SearchFiltersSidebar({
       </div>
 
       {/* Verification Filter Group */}
-      <div className="space-y-3">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-          VERIFICATION
-        </h3>
-        <div className="flex flex-col gap-2.5">
-          <Checkbox
-            id="filter-verify-company"
-            checked={filters.verifications.includes("company")}
-            onCheckedChange={() => onToggleVerification("company")}
-            label={
-              <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
-                <BadgeCheck className="size-4 text-info fill-info/15 shrink-0" />
-                <span
-                  className={cn(
-                    filters.verifications.includes("company") &&
-                      "font-semibold text-foreground"
-                  )}
-                >
-                  Company Verified
-                </span>
+      <div className="border-b border-border/60 pb-4 space-y-3">
+        <button
+          type="button"
+          onClick={() => toggleSection("verification")}
+          aria-expanded={openSections.verification}
+          aria-controls="filter-verification-options"
+          className="w-full flex items-center justify-between text-left group cursor-pointer select-none"
+        >
+          <div className="flex items-center gap-2">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">
+              VERIFICATION
+            </h3>
+            {filters.verifications.length > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold leading-none">
+                {filters.verifications.length}
               </span>
-            }
+            )}
+          </div>
+          <ChevronDown
+            className={cn(
+              "size-4 text-muted-foreground group-hover:text-foreground transition-transform duration-200",
+              openSections.verification ? "rotate-180" : "rotate-0"
+            )}
           />
+        </button>
 
-          <Checkbox
-            id="filter-verify-individual"
-            checked={filters.verifications.includes("individual")}
-            onCheckedChange={() => onToggleVerification("individual")}
-            label={
-              <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
-                <BadgeCheck className="size-4 text-warning fill-warning/15 shrink-0" />
-                <span
-                  className={cn(
-                    filters.verifications.includes("individual") &&
-                      "font-semibold text-foreground"
-                  )}
-                >
-                  Individual Verified
+        {openSections.verification && (
+          <div
+            id="filter-verification-options"
+            className="flex flex-col gap-2.5 pt-1 animate-in fade-in-50 duration-200"
+          >
+            <Checkbox
+              id="filter-verify-company"
+              checked={filters.verifications.includes("company")}
+              onCheckedChange={() => onToggleVerification("company")}
+              label={
+                <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
+                  <BadgeCheck className="size-4 text-info fill-info/15 shrink-0" />
+                  <span
+                    className={cn(
+                      filters.verifications.includes("company") &&
+                        "font-semibold text-foreground"
+                    )}
+                  >
+                    Company Verified
+                  </span>
                 </span>
-              </span>
-            }
-          />
-        </div>
+              }
+            />
+
+            <Checkbox
+              id="filter-verify-individual"
+              checked={filters.verifications.includes("individual")}
+              onCheckedChange={() => onToggleVerification("individual")}
+              label={
+                <span className="inline-flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
+                  <BadgeCheck className="size-4 text-warning fill-warning/15 shrink-0" />
+                  <span
+                    className={cn(
+                      filters.verifications.includes("individual") &&
+                        "font-semibold text-foreground"
+                    )}
+                  >
+                    Individual Verified
+                  </span>
+                </span>
+              }
+            />
+          </div>
+        )}
       </div>
 
       {/* Rating Filter Group */}
-      <div className="space-y-3">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-          RATING
-        </h3>
-        <div className="flex flex-col gap-2.5">
-          {ratingOptions.map((opt) => {
-            const isChecked = filters.minRating === opt.value;
-            return (
-              <Checkbox
-                key={opt.value}
-                id={`filter-rating-${opt.value}`}
-                checked={isChecked}
-                onCheckedChange={() => onToggleRating(opt.value)}
-                label={
-                  showStarsRow ? (
-                    <span className="inline-flex items-center gap-2 text-xs sm:text-sm">
-                      <span className="inline-flex items-center gap-0.5">
-                        {Array.from({ length: 5 }).map((_, idx) => (
-                          <Star
-                            key={idx}
-                            className={cn(
-                              "size-3.5",
-                              idx < (opt.starsCount ?? Math.floor(opt.value))
-                                ? "text-warning fill-warning"
-                                : "text-border fill-border"
-                            )}
-                          />
-                        ))}
+      <div className="border-b border-border/60 pb-4 space-y-3">
+        <button
+          type="button"
+          onClick={() => toggleSection("rating")}
+          aria-expanded={openSections.rating}
+          aria-controls="filter-rating-options"
+          className="w-full flex items-center justify-between text-left group cursor-pointer select-none"
+        >
+          <div className="flex items-center gap-2">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground group-hover:text-foreground transition-colors">
+              RATING
+            </h3>
+            {filters.minRating !== null && (
+              <span className="px-1.5 py-0.5 rounded-full bg-warning/15 text-warning text-[10px] font-bold leading-none flex items-center gap-0.5">
+                <span>{filters.minRating}+</span>
+                <Star className="size-2.5 fill-current" />
+              </span>
+            )}
+          </div>
+          <ChevronDown
+            className={cn(
+              "size-4 text-muted-foreground group-hover:text-foreground transition-transform duration-200",
+              openSections.rating ? "rotate-180" : "rotate-0"
+            )}
+          />
+        </button>
+
+        {openSections.rating && (
+          <div
+            id="filter-rating-options"
+            className="flex flex-col gap-2.5 pt-1 animate-in fade-in-50 duration-200"
+          >
+            {ratingOptions.map((opt) => {
+              const isChecked = filters.minRating === opt.value;
+              return (
+                <Checkbox
+                  key={opt.value}
+                  id={`filter-rating-${opt.value}`}
+                  checked={isChecked}
+                  onCheckedChange={() => onToggleRating(opt.value)}
+                  label={
+                    showStarsRow ? (
+                      <span className="inline-flex items-center gap-2 text-xs sm:text-sm">
+                        <span className="inline-flex items-center gap-0.5">
+                          {Array.from({ length: 5 }).map((_, idx) => (
+                            <Star
+                              key={idx}
+                              className={cn(
+                                "size-3.5",
+                                idx < (opt.starsCount ?? Math.floor(opt.value))
+                                  ? "text-warning fill-warning"
+                                  : "text-border fill-border"
+                              )}
+                            />
+                          ))}
+                        </span>
+                        <span
+                          className={cn(
+                            isChecked
+                              ? "font-bold text-foreground"
+                              : "text-muted-foreground"
+                          )}
+                        >
+                          {opt.label}
+                        </span>
                       </span>
+                    ) : (
                       <span
                         className={cn(
+                          "inline-flex items-center gap-1.5 text-xs sm:text-sm",
                           isChecked
-                            ? "font-bold text-foreground"
+                            ? "font-semibold text-foreground"
                             : "text-muted-foreground"
                         )}
                       >
-                        {opt.label}
+                        <span>{opt.label}</span>
+                        <Star className="size-3.5 text-warning fill-warning shrink-0" />
                       </span>
-                    </span>
-                  ) : (
-                    <span
-                      className={cn(
-                        "inline-flex items-center gap-1.5 text-xs sm:text-sm",
-                        isChecked
-                          ? "font-semibold text-foreground"
-                          : "text-muted-foreground"
-                      )}
-                    >
-                      <span>{opt.label}</span>
-                      <Star className="size-3.5 text-warning fill-warning shrink-0" />
-                    </span>
-                  )
-                }
-              />
-            );
-          })}
-        </div>
+                    )
+                  }
+                />
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Reset & Apply Filters Buttons */}
