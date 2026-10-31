@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { ArrowRight, Paintbrush, Sun } from "lucide-react";
+import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
 import type { SpotlightProviderItem } from "./types";
 
@@ -100,9 +101,10 @@ export function TopRatedSpotlightSection({
 
         <div className="lg:col-span-6">
           <div className="relative rounded-2xl overflow-hidden border border-background/15 shadow-lg aspect-4/3 bg-secondary/20">
-            <img
+            <FallbackImage
               src={spotlightImageUrl}
               alt={spotlightImageAlt}
+              fallbackType="portfolio"
               className="w-full h-full object-cover select-none"
             />
           </div>

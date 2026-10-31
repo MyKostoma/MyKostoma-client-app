@@ -2,27 +2,17 @@
 
 import { Calendar, Check, MapPin, MessageSquare, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
 import { FollowButton } from "./follow-button";
 import { ProfileMessageComposer } from "./profile-message-composer";
+import { PROFILE_TABS } from "./profile-tabs-nav";
 import type { ProfessionalProfileData, ProfileTabId } from "./types";
-
-export interface ProfileTabOption {
-  id: ProfileTabId;
-  label: string;
-}
-
-export const PROFILE_TABS: ProfileTabOption[] = [
-  { id: "services", label: "SERVICES" },
-  { id: "portfolio", label: "PORTFOLIO" },
-  { id: "reviews", label: "REVIEWS" },
-  { id: "about", label: "ABOUT" },
-];
 
 export interface ProfileHeaderCardProps {
   profile: ProfessionalProfileData;
-  activeTab: ProfileTabId;
-  onTabChange: (tab: ProfileTabId) => void;
+  activeTab?: ProfileTabId;
+  onTabChange?: (tab: ProfileTabId) => void;
   isFollowing: boolean;
   onToggleFollow: () => void;
   isMessagingOpen: boolean;
@@ -30,6 +20,7 @@ export interface ProfileHeaderCardProps {
   messageText: string;
   onMessageTextChange: (text: string) => void;
   onSendMessage: () => void;
+  showTabs?: boolean;
   className?: string;
 }
 
@@ -44,13 +35,14 @@ export function ProfileHeaderCard({
   messageText,
   onMessageTextChange,
   onSendMessage,
+  showTabs = false,
   className,
 }: ProfileHeaderCardProps) {
   return (
     <section
       aria-label={`${profile.name} profile overview`}
       className={cn(
-        "w-full rounded-2xl border border-border bg-card overflow-hidden shadow-2xs transition-all",
+        "w-full rounded-t-2xl border-t border-r border-l border-border bg-card overflow-hidden shadow-2xs transition-all",
         className
       )}
     >
@@ -62,16 +54,18 @@ export function ProfileHeaderCard({
 
       <div
         className={cn(
-          "px-5 sm:px-8",
-          isMessagingOpen ? "pb-6 sm:pb-8" : "pb-0"
+          "px-3 sm:px-8",
+          isMessagingOpen || !showTabs ? "pb-6 sm:pb-8" : "pb-0"
         )}
       >
         {/* Overlapping Profile Avatar */}
         <div className="relative -mt-12 sm:-mt-14 mb-3.5 inline-block">
           <div className="size-24 sm:size-28 rounded-2xl border-4 border-card bg-secondary shadow-md overflow-hidden">
-            <img
+            <FallbackImage
               src={profile.avatarUrl}
               alt={profile.name}
+              fallbackType="user"
+              variant="avatar"
               className="w-full h-full object-cover select-none"
             />
           </div>
@@ -130,10 +124,11 @@ export function ProfileHeaderCard({
               <Button
                 type="button"
                 variant={isMessagingOpen ? "default" : "secondary"}
+                size="default"
                 onClick={onToggleMessaging}
-                leadingIcon={<MessageSquare className="size-3.5 fill-current" />}
+                leadingIcon={<MessageSquare className="size-3 fill-current" />}
                 className={cn(
-                  "h-10 px-4 sm:px-5 rounded-xl text-[11px] font-bold uppercase tracking-wider",
+                  "h-10 px-4 sm:px-5 rounded-xl text-[11px] font-semibold uppercase tracking-wider",
                   isMessagingOpen ? "shadow-xs" : "text-foreground"
                 )}
               >
@@ -145,13 +140,6 @@ export function ProfileHeaderCard({
                 onToggleFollow={onToggleFollow}
               />
             </div>
-
-            {isMessagingOpen && (
-              <span className="text-[10px] font-bold italic uppercase tracking-wider text-muted-foreground/80 mt-0.5 select-none">
-                INTERACTION STATE:{" "}
-                {isFollowing ? "FOLLOWING (ACTIVE)" : "DEFAULT"}
-              </span>
-            )}
           </div>
         </div>
 
@@ -167,7 +155,9 @@ export function ProfileHeaderCard({
         ) : (
           <>
             {/* Professional Bio */}
-            <div id="about" className="mt-6 max-w-2xl space-y-2">
+            <div
+              className="mt-6 max-w-2xl space-y-2 scroll-mt-32 sm:scroll-mt-36"
+            >
               <h2 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 PROFESSIONAL BIO
               </h2>
@@ -176,39 +166,41 @@ export function ProfileHeaderCard({
               </p>
             </div>
 
-            {/* Bottom Navigation Tabs */}
-            <div
-              role="tablist"
-              aria-label="Profile sections"
-              className="mt-6 border-t border-border/70 -mx-5 sm:-mx-8 px-5 sm:px-8 flex items-center gap-6 sm:gap-9 overflow-x-auto no-scrollbar"
-            >
-              {PROFILE_TABS.map((tab) => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => onTabChange(tab.id)}
-                    className={cn(
-                      "relative py-3.5 px-1 text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap",
-                      isActive
-                        ? "text-primary"
-                        : "text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <span>{tab.label}</span>
-                    {isActive && (
-                      <span
-                        aria-hidden="true"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
-                      />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+            {/* Bottom Navigation Tabs (Optional inside header card) */}
+            {showTabs && (
+              <div
+                role="tablist"
+                aria-label="Profile sections"
+                className="mt-6 border-t border-border/70 -mx-5 sm:-mx-8 px-5 sm:px-8 flex items-center gap-6 sm:gap-9 overflow-x-auto no-scrollbar"
+              >
+                {PROFILE_TABS.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => onTabChange?.(tab.id)}
+                      className={cn(
+                        "relative py-3.5 px-1 text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap",
+                        isActive
+                          ? "text-primary"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
+                    >
+                      <span>{tab.label}</span>
+                      {isActive && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute bottom-0 left-0 right-0 h-2 bg-primary rounded-full"
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </>
         )}
       </div>

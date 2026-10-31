@@ -35,8 +35,8 @@ export const GENERAL_CATEGORY_OPTIONS = SEARCH_CATEGORY_OPTIONS;
 
 export const SEARCH_SORT_OPTIONS: SelectOption[] = [
   { value: "best-match", label: "Best Match" },
-  { value: "rating-desc", label: "Highest Rated (5.0 - 1.0)" },
-  { value: "rating-asc", label: "Lowest Rated (1.0 - 5.0)" },
+  { value: "rating-desc", label: "Highest Rated" },
+  { value: "rating-asc", label: "Lowest Rated" },
   { value: "reviews-desc", label: "Most Reviewed" },
   { value: "reviews-asc", label: "Least Reviewed" },
   { value: "name-asc", label: "Name (A - Z)" },
@@ -150,7 +150,7 @@ export const SEARCH_PROFESSIONALS_DATA: SearchProfessionalItem[] = [
     reviewCount: 62,
     verification: "individual",
     imageUrl:
-      "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80",
   },
   {
     id: "marcus-thorne",

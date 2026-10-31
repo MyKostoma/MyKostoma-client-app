@@ -70,7 +70,7 @@ export function FeaturedProfessionalsSection({
 
   return (
     <section className={cn("w-full space-y-6", className)} {...props}>
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <SectionHeader
           title={title}
           subtitle={subtitle}

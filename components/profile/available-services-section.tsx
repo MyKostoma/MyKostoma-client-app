@@ -42,14 +42,14 @@ export function AvailableServiceCard({
       )}
     >
       {/* Left Side: Icon + Service Details */}
-      <div className="flex items-start gap-4 sm:gap-5 min-w-0">
+      <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5 min-w-0">
         <div
           className={cn(
-            "size-12 sm:size-14 rounded-2xl flex items-center justify-center shrink-0",
+            "size-10 sm:size-14 rounded-lg sm:rounded-2xl flex items-center justify-center shrink-0",
             ICON_VARIANT_STYLES[service.iconVariant]
           )}
         >
-          <Icon className="size-5 sm:size-6" />
+          <Icon className="size-4 sm:size-6" />
         </div>
 
         <div className="min-w-0">
@@ -82,7 +82,7 @@ export function AvailableServiceCard({
           <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
             {service.priceLabel}
           </span>
-          <span className="block text-lg sm:text-xl font-bold text-foreground tracking-tight mt-0.5">
+          <span className="block text-base sm:text-xl font-bold text-foreground tracking-tight mt-0.5">
             {service.priceValue}
           </span>
         </div>
@@ -118,7 +118,7 @@ export function AvailableServicesSection({
   return (
     <section
       id="services"
-      className={cn("w-full space-y-5 scroll-mt-24", className)}
+      className={cn("w-full space-y-5 scroll-mt-32 sm:scroll-mt-36", className)}
       {...props}
     >
       <SectionHeader title={title} />

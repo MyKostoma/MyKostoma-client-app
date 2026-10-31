@@ -3,6 +3,7 @@
 import type { HTMLAttributes } from "react";
 import { ChevronRight } from "lucide-react";
 import { SectionHeader } from "@/components/consumer-home";
+import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
 import type { ProfilePortfolioItem } from "./types";
 
@@ -27,10 +28,10 @@ export function PortfolioShowcaseSection({
   return (
     <section
       id="portfolio"
-      className={cn("w-full space-y-5 scroll-mt-24", className)}
+      className={cn("w-full space-y-5 scroll-mt-32 sm:scroll-mt-36", className)}
       {...props}
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4">
         <SectionHeader title={title} />
 
         {actionLabel && (
@@ -52,9 +53,10 @@ export function PortfolioShowcaseSection({
             onClick={() => onItemClick?.(item)}
             className="group relative rounded-2xl overflow-hidden border border-border bg-secondary aspect-4/3 shadow-2xs hover:shadow-md transition-all cursor-pointer"
           >
-            <img
+            <FallbackImage
               src={item.imageUrl}
               alt={item.title}
+              fallbackType="portfolio"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 select-none"
             />
 

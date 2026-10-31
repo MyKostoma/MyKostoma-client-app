@@ -472,7 +472,7 @@ export const Select: React.FC<SelectProps> = ({
                                 disabled={option.disabled}
                                 onClick={() => handleSelect(option.value)}
                                 className={cn(
-                                    "w-full px-3.5 py-2.5 text-sm text-left flex items-center justify-between transition-colors cursor-pointer",
+                                    "w-full px-3.5 py-2.5 text-xs sm:text-sm text-left flex items-center justify-between transition-colors cursor-pointer",
                                     "hover:bg-muted active:bg-secondary",
                                     isSelected && "bg-primary/10 text-primary font-medium",
                                     option.disabled &&

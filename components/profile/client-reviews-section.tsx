@@ -3,6 +3,7 @@
 import type { HTMLAttributes } from "react";
 import { Star } from "lucide-react";
 import { SectionHeader } from "@/components/consumer-home";
+import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
 import type { ProfileRatingBarItem, ProfileReviewItem } from "./types";
 
@@ -88,9 +89,11 @@ export function ClientReviewCard({ review, className }: ClientReviewCardProps) {
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <img
+          <FallbackImage
             src={review.avatarUrl}
             alt={review.authorName}
+            fallbackType="user"
+            variant="avatar"
             className="size-10 rounded-full object-cover bg-secondary shrink-0 select-none"
           />
 
@@ -160,7 +163,7 @@ export function ClientReviewsSection({
   return (
     <section
       id="reviews"
-      className={cn("w-full space-y-5 scroll-mt-24", className)}
+      className={cn("w-full space-y-5 scroll-mt-32 sm:scroll-mt-36", className)}
       {...props}
     >
       <SectionHeader title={title} />

@@ -57,12 +57,13 @@ export function FollowButton({
       <Button
         type="button"
         variant="outline"
+        size="default"
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
-        leadingIcon={<X className="size-3.5 stroke-[2.5] text-error" />}
+        leadingIcon={<X className="size-3 stroke-[2.5] text-error" />}
         className={cn(
-          "h-10 min-w-32 px-5 rounded-xl text-[11px] font-bold uppercase tracking-wider border-error/35 bg-card hover:bg-error-bg/50 text-error shadow-2xs",
+          "h-10 min-w-32 px-5 rounded-xl text-[11px] font-semibold uppercase tracking-wider border-error/35 bg-card hover:bg-error-bg/50 text-error shadow-2xs",
           className
         )}
       >
@@ -76,12 +77,13 @@ export function FollowButton({
       <Button
         type="button"
         variant="outline"
+        size="default"
         onClick={handleClick}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         leadingIcon={
-          <span className="size-4 rounded-full bg-foreground text-card flex items-center justify-center shrink-0">
-            <Check className="size-2.5 stroke-[3]" />
+          <span className="size-4.5 p-0.5 rounded-full bg-foreground text-card flex items-center justify-center shrink-0">
+            <Check className="size-2 p-0.5" />
           </span>
         }
         className={cn(
@@ -98,6 +100,7 @@ export function FollowButton({
     <Button
       type="button"
       variant="default"
+      size="default"
       onClick={handleClick}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

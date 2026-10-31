@@ -11,6 +11,7 @@ import {
   Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
 import type { FeaturedProItem } from "./types";
 import type { SearchProfessionalItem } from "@/components/consumer-search/types";
@@ -69,9 +70,10 @@ export function ProfessionalCard({
         )}
       >
         <div className="relative w-full md:w-48 h-28 xs:h-32 md:h-auto sm:self-stretch shrink-0 overflow-hidden bg-secondary">
-          <img
+          <FallbackImage
             src={pro.imageUrl}
             alt={pro.name}
+            fallbackType={isCompany ? "company" : "user"}
             className="w-full h-full sm:absolute sm:inset-0 object-cover group-hover:scale-105 transition-transform duration-300 select-none"
           />
         </div>
@@ -146,9 +148,10 @@ export function ProfessionalCard({
         )}
       >
         <div className="relative h-52 sm:h-56 w-full overflow-hidden bg-secondary shrink-0">
-          <img
+          <FallbackImage
             src={pro.imageUrl}
             alt={pro.name}
+            fallbackType={isCompany ? "company" : "user"}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 select-none"
           />
 
@@ -276,9 +279,10 @@ export function ProfessionalCard({
       )}
     >
       <div className="relative h-48 w-full overflow-hidden bg-secondary shrink-0">
-        <img
+        <FallbackImage
           src={pro.imageUrl}
           alt={pro.name}
+          fallbackType={isCompany ? "company" : "user"}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 select-none"
         />
 
