@@ -1,9 +1,11 @@
 import {
   AirVent,
+  Armchair,
   Bug,
   Camera,
   Car,
   CookingPot,
+  Droplets,
   Flame,
   Hammer,
   HardHat,
@@ -15,6 +17,7 @@ import {
   Sofa,
   Sparkles,
   Sun,
+  SunMedium,
   Trees,
   Truck,
   WashingMachine,
@@ -35,16 +38,22 @@ export const DEFAULT_CONSUMER_CATEGORIES: ConsumerCategoryItem[] = [
     icon: Wrench,
   },
   {
+    id: "water-treatment",
+    name: "Water Treatment",
+    countLabel: "35 Professionals",
+    icon: Droplets,
+  },
+  {
+    id: "solar-heating",
+    name: "Solar Heating",
+    countLabel: "28 Professionals",
+    icon: SunMedium,
+  },
+  {
     id: "electricians",
     name: "Electricians",
     countLabel: "94 Professionals",
     icon: Zap,
-  },
-  {
-    id: "tailoring",
-    name: "Tailoring",
-    countLabel: "64 Professionals",
-    icon: Scissors,
   },
   {
     id: "carpentry",
@@ -53,16 +62,28 @@ export const DEFAULT_CONSUMER_CATEGORIES: ConsumerCategoryItem[] = [
     icon: Hammer,
   },
   {
+    id: "furniture-design",
+    name: "Furniture Design",
+    countLabel: "49 Professionals",
+    icon: Armchair,
+  },
+  {
     id: "painting",
     name: "Painting",
     countLabel: "45 Professionals",
     icon: Paintbrush,
   },
   {
-    id: "security",
-    name: "Security",
-    countLabel: "31 Professionals",
-    icon: ShieldCheck,
+    id: "interior-design",
+    name: "Interior Design",
+    countLabel: "52 Professionals",
+    icon: Sofa,
+  },
+  {
+    id: "home-staging",
+    name: "Home Staging",
+    countLabel: "42 Professionals",
+    icon: Home,
   },
   {
     id: "cleaning",
@@ -77,6 +98,18 @@ export const DEFAULT_CONSUMER_CATEGORIES: ConsumerCategoryItem[] = [
     icon: AirVent,
   },
   {
+    id: "tailoring",
+    name: "Tailoring",
+    countLabel: "64 Professionals",
+    icon: Scissors,
+  },
+  {
+    id: "security",
+    name: "Security",
+    countLabel: "31 Professionals",
+    icon: ShieldCheck,
+  },
+  {
     id: "roofing",
     name: "Roofing",
     countLabel: "39 Professionals",
@@ -87,12 +120,6 @@ export const DEFAULT_CONSUMER_CATEGORIES: ConsumerCategoryItem[] = [
     name: "Landscaping",
     countLabel: "73 Professionals",
     icon: Trees,
-  },
-  {
-    id: "interior-design",
-    name: "Interior Design",
-    countLabel: "52 Professionals",
-    icon: Sofa,
   },
   {
     id: "auto-mechanics",
@@ -184,7 +211,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Sarah Jenkins",
     specialty: "INTERIOR DESIGNER",
     location: "Queens, New York",
-    rating: "4.8",
+    rating: "4.2",
     imageUrl:
       "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -198,7 +225,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Marcus Thorne",
     specialty: "CUSTOM CARPENTRY",
     location: "Jersey City, NJ",
-    rating: "4.9",
+    rating: "3.8",
     imageUrl:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -212,7 +239,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Elena Rodriguez",
     specialty: "ARCHITECTURAL FINISHES",
     location: "Manhattan, NY",
-    rating: "4.9",
+    rating: "4.5",
     imageUrl:
       "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -226,7 +253,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Apex Climate Systems",
     specialty: "HVAC & COOLING",
     location: "Brooklyn, NY",
-    rating: "5.0",
+    rating: "4.9",
     imageUrl:
       "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=800&q=80",
     badgeText: "CORPORATE PARTNER",
@@ -240,7 +267,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Malik Adebayo",
     specialty: "SOLAR & INVERTER TECH",
     location: "Newark, NJ",
-    rating: "4.9",
+    rating: "3.4",
     imageUrl:
       "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -254,7 +281,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Clara Vance",
     specialty: "BESPOKE TAILORING",
     location: "SoHo, NY",
-    rating: "4.8",
+    rating: "4.6",
     imageUrl:
       "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -268,7 +295,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Brennan Stone",
     specialty: "MASTER ROOFER",
     location: "Staten Island, NY",
-    rating: "4.9",
+    rating: "2.9",
     imageUrl:
       "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -296,7 +323,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Tariq Mansoor",
     specialty: "MASONRY & BRICKWORK",
     location: "Queens, New York",
-    rating: "4.8",
+    rating: "3.1",
     imageUrl:
       "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -310,7 +337,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Maya Chen",
     specialty: "SMART HOME AUTOMATION",
     location: "Midtown, NY",
-    rating: "4.9",
+    rating: "4.7",
     imageUrl:
       "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -324,7 +351,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Vanguard Protection",
     specialty: "COMMERCIAL SECURITY",
     location: "Manhattan, NY",
-    rating: "5.0",
+    rating: "4.4",
     imageUrl:
       "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=800&q=80",
     badgeText: "CORPORATE PARTNER",
@@ -338,7 +365,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Andre Dupont",
     specialty: "FINE WOODWORKING",
     location: "Hoboken, NJ",
-    rating: "4.9",
+    rating: "2.4",
     imageUrl:
       "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -352,7 +379,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "SparkleCraft Facilities",
     specialty: "JANITORIAL & DEEP CLEAN",
     location: "Long Island City, NY",
-    rating: "4.8",
+    rating: "3.9",
     imageUrl:
       "https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&q=80",
     badgeText: "CORPORATE PARTNER",
@@ -366,7 +393,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Oliver Wright",
     specialty: "MASTER ELECTRICIAN",
     location: "Bronx, New York",
-    rating: "4.9",
+    rating: "4.8",
     imageUrl:
       "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -380,7 +407,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Nora Al-Mansoori",
     specialty: "LIGHTING DESIGN",
     location: "Greenwich Village, NY",
-    rating: "4.9",
+    rating: "4.3",
     imageUrl:
       "https://images.unsplash.com/photo-1573496799652-408c2ac9fe98?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -394,7 +421,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Kyle Reynolds",
     specialty: "EMERGENCY PLUMBING",
     location: "Brooklyn, New York",
-    rating: "4.7",
+    rating: "1.8",
     imageUrl:
       "https://images.unsplash.com/photo-1541888946425-d0fbb1862448?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -408,7 +435,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Titan Weld Works",
     specialty: "STRUCTURAL METALWORK",
     location: "Jersey City, NJ",
-    rating: "4.9",
+    rating: "3.6",
     imageUrl:
       "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=800&q=80",
     badgeText: "CORPORATE PARTNER",
@@ -436,7 +463,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Samuel Ortiz",
     specialty: "APPLIANCE DIAGNOSTICS",
     location: "Astoria, NY",
-    rating: "4.8",
+    rating: "2.7",
     imageUrl:
       "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -450,7 +477,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "SafeHaven Locksmiths",
     specialty: "BIOMETRIC & KEYLESS",
     location: "Chelsea, NY",
-    rating: "4.9",
+    rating: "4.1",
     imageUrl:
       "https://images.unsplash.com/photo-1556157382-97eda2d62296?auto=format&fit=crop&w=800&q=80",
     badgeText: "CORPORATE PARTNER",
@@ -464,7 +491,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Hannah Schmidt",
     specialty: "DRYWALL & FINISHES",
     location: "Forest Hills, NY",
-    rating: "4.8",
+    rating: "1.4",
     imageUrl:
       "https://images.unsplash.com/photo-1573497491765-dccce02b29df?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -478,7 +505,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Evergreen Eco-Pest",
     specialty: "ORGANIC EXTERMINATION",
     location: "Upper West Side, NY",
-    rating: "4.9",
+    rating: "4.7",
     imageUrl:
       "https://images.unsplash.com/photo-1537368910025-700350fe46c7?auto=format&fit=crop&w=800&q=80",
     badgeText: "CORPORATE PARTNER",
@@ -492,7 +519,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Liam Gallagher",
     specialty: "CERAMIC & MARBLE TILING",
     location: "Bay Ridge, NY",
-    rating: "4.9",
+    rating: "3.5",
     imageUrl:
       "https://images.unsplash.com/photo-1562788869-4ed32648eb72?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -520,7 +547,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Fatima Zahra",
     specialty: "GOURMET CATERING",
     location: "Flatiron, NY",
-    rating: "4.9",
+    rating: "4.8",
     imageUrl:
       "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -534,7 +561,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Derek Hollis",
     specialty: "AUTOMOTIVE RESTORATION",
     location: "Bushwick, NY",
-    rating: "4.8",
+    rating: "2.2",
     imageUrl:
       "https://images.unsplash.com/photo-1607990281513-2c110a25bd8c?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",
@@ -548,7 +575,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "SunPeak Microgrids",
     specialty: "RESIDENTIAL SOLAR",
     location: "Staten Island, NY",
-    rating: "4.9",
+    rating: "4.3",
     imageUrl:
       "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=800&q=80",
     badgeText: "CORPORATE PARTNER",
@@ -562,7 +589,7 @@ export const DEFAULT_FEATURED_PROFESSIONALS: FeaturedProItem[] = [
     name: "Chloe Bennett",
     specialty: "CUSTOM UPHOLSTERY",
     location: "Williamsburg, NY",
-    rating: "4.9",
+    rating: "3.7",
     imageUrl:
       "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&w=800&q=80",
     badgeText: "VERIFIED PRO",

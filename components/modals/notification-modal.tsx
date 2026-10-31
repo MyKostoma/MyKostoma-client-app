@@ -184,7 +184,7 @@ export function NotificationModal({
                       : "bg-card hover:bg-secondary/40"
                   )}
                 >
-                  <div className="mt-0.5 shrink-0">{getTypeIcon(notif.type)}</div>
+                  {/* <div className="mt-0.5 shrink-0">{getTypeIcon(notif.type)}</div> */}
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">

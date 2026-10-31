@@ -66,6 +66,7 @@ export function ConsumerHomeView({
 
       <ServiceCategoriesSection
         categories={mappedCategories}
+        actionLabel={`View all ${categories.length} categories`}
         onActionClick={handleBrowsePros}
       />
 

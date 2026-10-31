@@ -1,9 +1,9 @@
 "use client";
 
-
 import { useEffect, useState, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Filter } from "lucide-react";
+import { Filter, FilterX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useAppDispatch } from "@/store/hooks";
 import { setGlobalSearchQuery } from "@/store/slices/uiSlice";
 import {
@@ -39,6 +39,59 @@ import {
 } from "./data";
 
 const ITEMS_PER_PAGE = 10;
+
+function matchesQueryText(pro: SearchProfessionalItem, rawQuery: string): boolean {
+  if (!rawQuery) return true;
+  const stopWords = new Set([
+    "in",
+    "at",
+    "for",
+    "the",
+    "a",
+    "an",
+    "of",
+    "and",
+    "near",
+    "to",
+    "top",
+    "services",
+  ]);
+  const tokens = rawQuery
+    .split(/\s+/)
+    .map((t) => t.replace(/^[^\w]+|[^\w]+$/g, ""))
+    .filter((t) => t.length > 0 && !stopWords.has(t));
+
+  const searchTokens = tokens.length > 0 ? tokens : [rawQuery];
+
+  const proText = [
+    pro.name,
+    pro.subtitle,
+    pro.location,
+    pro.cityGroup ?? "",
+    ...pro.categoryIds.map((c) => c.replace(/-/g, " ")),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return searchTokens.every((token) => {
+    if (proText.includes(token)) return true;
+    if (
+      token.endsWith("s") &&
+      token.length > 3 &&
+      proText.includes(token.slice(0, -1))
+    ) {
+      return true;
+    }
+    if (
+      token.endsWith("ing") &&
+      token.length > 4 &&
+      proText.includes(token.slice(0, -3))
+    ) {
+      return true;
+    }
+    return false;
+  });
+}
 
 function getPaginationRange(
   currentPage: number,
@@ -143,22 +196,31 @@ export function ConsumerSearchView({
     };
   }, [mobileFiltersOpen]);
 
+  // Synchronize state whenever URL query params change.
+  // This guarantees that entering a new search or navigating back to /search clears old stale filters.
   useEffect(() => {
     const q = queryParam ?? "";
     setSearchQuery(q);
     dispatch(setGlobalSearchQuery(q));
     setCurrentPage(1);
-  }, [queryParam, dispatch]);
 
-  useEffect(() => {
-    if (categoryParam) {
-      setFilters((prev) => ({
+    setFilters((prev) => {
+      const nextCategories = categoryParam ? [categoryParam] : [];
+      // Clean slate when visiting /search with no query or category parameters
+      if (queryParam === null && !categoryParam) {
+        return {
+          categories: [],
+          location: "all",
+          verifications: [],
+          minRating: null,
+        };
+      }
+      return {
         ...prev,
-        categories: [categoryParam],
-      }));
-      setCurrentPage(1);
-    }
-  }, [categoryParam]);
+        categories: nextCategories,
+      };
+    });
+  }, [queryParam, categoryParam, dispatch]);
 
   const locationOptions = useMemo<SelectOption[]>(() => {
     const uniqueLocations = Array.from(
@@ -243,63 +305,20 @@ export function ConsumerSearchView({
     return count;
   }, [filters]);
 
+  // Determine if a raw text query was entered that has zero matches anywhere in the database
+  const isGlobalQueryUnmatched = useMemo(() => {
+    const rawQuery = searchQuery.trim().toLowerCase();
+    if (!rawQuery) return false;
+    return !professionals.some((pro) => matchesQueryText(pro, rawQuery));
+  }, [searchQuery, professionals]);
+
   const filteredProfessionals = useMemo(() => {
     const rawQuery = searchQuery.trim().toLowerCase();
 
     return professionals
       .filter((pro) => {
-        if (rawQuery) {
-          const stopWords = new Set([
-            "in",
-            "at",
-            "for",
-            "the",
-            "a",
-            "an",
-            "of",
-            "and",
-            "near",
-            "to",
-            "top",
-            "services",
-          ]);
-          const tokens = rawQuery
-            .split(/\s+/)
-            .map((t) => t.replace(/^[^\w]+|[^\w]+$/g, ""))
-            .filter((t) => t.length > 0 && !stopWords.has(t));
-
-          const searchTokens = tokens.length > 0 ? tokens : [rawQuery];
-
-          const proText = [
-            pro.name,
-            pro.subtitle,
-            pro.location,
-            pro.cityGroup ?? "",
-            ...pro.categoryIds.map((c) => c.replace(/-/g, " ")),
-          ]
-            .join(" ")
-            .toLowerCase();
-
-          const matchesAllTokens = searchTokens.every((token) => {
-            if (proText.includes(token)) return true;
-            if (
-              token.endsWith("s") &&
-              token.length > 3 &&
-              proText.includes(token.slice(0, -1))
-            ) {
-              return true;
-            }
-            if (
-              token.endsWith("ing") &&
-              token.length > 4 &&
-              proText.includes(token.slice(0, -3))
-            ) {
-              return true;
-            }
-            return false;
-          });
-
-          if (!matchesAllTokens) return false;
+        if (rawQuery && !matchesQueryText(pro, rawQuery)) {
+          return false;
         }
 
         if (filters.categories.length > 0) {
@@ -333,14 +352,18 @@ export function ConsumerSearchView({
       })
       .sort((a, b) => {
         if (sortBy === "rating-desc") return b.rating - a.rating;
+        if (sortBy === "rating-asc") return a.rating - b.rating;
         if (sortBy === "reviews-desc")
           return (b.reviewCount ?? 0) - (a.reviewCount ?? 0);
-        return 0;
+        if (sortBy === "reviews-asc")
+          return (a.reviewCount ?? 0) - (b.reviewCount ?? 0);
+        if (sortBy === "name-asc") return a.name.localeCompare(b.name);
+        if (sortBy === "name-desc") return b.name.localeCompare(a.name);
+        return 0; // best-match
       });
   }, [professionals, searchQuery, filters, sortBy]);
 
   const totalItems = filteredProfessionals.length;
-  const isEmptyState = totalItems === 0;
   const totalPages = Math.max(1, Math.ceil(totalItems / ITEMS_PER_PAGE));
   const safeCurrentPage = Math.min(currentPage, totalPages);
 
@@ -359,79 +382,64 @@ export function ConsumerSearchView({
 
   return (
     <main className="flex-1 container px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
-        {isEmptyState ? (
-          <SearchEmptyState
-            onClearFilters={handleResetFilters}
-            onBackToBrowse={() => router.push("/home")}
-            onPopularSearchSelect={handlePopularSearchSelect}
-          />
-        ) : (
-          <div className="space-y-6">
-            {/* Top Bar: Breadcrumb */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <Breadcrumb>
-                <BreadcrumbList>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink onClick={() => router.push("/home")}>
-                      Home
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbLink onClick={handleResetFilters}>
-                      Search Results
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator />
-                  <BreadcrumbItem>
-                    <BreadcrumbPage>
-                      {searchQuery
-                        ? `"${searchQuery}"`
-                        : "All Professionals"}
-                    </BreadcrumbPage>
-                  </BreadcrumbItem>
-                </BreadcrumbList>
-              </Breadcrumb>
-            </div>
+      {isGlobalQueryUnmatched ? (
+        /* Full-page empty state for unrecognized search terms */
+        <SearchEmptyState
+          onClearFilters={handleResetFilters}
+          onBackToBrowse={() => router.push("/home")}
+          onPopularSearchSelect={handlePopularSearchSelect}
+        />
+      ) : (
+        /* Standard search view with filters, toolbar and cards grid */
+        <div className="space-y-6">
+          {/* Top Bar: Breadcrumb */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <Breadcrumb>
+              <BreadcrumbList>
+                <BreadcrumbItem>
+                  <BreadcrumbLink onClick={() => router.push("/home")}>
+                    Home
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbLink onClick={handleResetFilters}>
+                    Search Results
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbSeparator />
+                <BreadcrumbItem>
+                  <BreadcrumbPage>
+                    {searchQuery
+                      ? `"${searchQuery}"`
+                      : filters.categories.length === 1
+                      ? SEARCH_CATEGORY_OPTIONS.find(
+                          (c) => c.id === filters.categories[0]
+                        )?.label ?? "Category"
+                      : "All Professionals"}
+                  </BreadcrumbPage>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
 
-            {/* Mobile Filter Drawer (slide-in from left) */}
-            {mobileFiltersOpen && (
+          {/* Mobile Filter Drawer (slide-in from left) */}
+          {mobileFiltersOpen && (
+            <div
+              className="lg:hidden fixed inset-0 z-50 flex"
+              role="dialog"
+              aria-modal="true"
+              aria-label="Search filters drawer"
+            >
+              {/* Backdrop */}
               <div
-                className="lg:hidden fixed inset-0 z-50 flex"
-                role="dialog"
-                aria-modal="true"
-                aria-label="Search filters drawer"
-              >
-                {/* Backdrop */}
-                <div
-                  className="fixed inset-0 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200"
-                  onClick={() => setMobileFiltersOpen(false)}
-                  aria-hidden="true"
-                />
+                className="fixed inset-0 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200"
+                onClick={() => setMobileFiltersOpen(false)}
+                aria-hidden="true"
+              />
 
-                {/* Drawer Panel */}
-                <div className="relative z-10 w-full max-w-xs sm:max-w-sm h-full bg-card text-foreground shadow-2xl flex flex-col animate-in slide-in-from-left duration-200 overflow-y-auto no-scrollbar">
-                  <SearchFiltersSidebar
-                    categoryOptions={SEARCH_CATEGORY_OPTIONS}
-                    locationOptions={locationOptions}
-                    filters={filters}
-                    onToggleCategory={handleToggleCategory}
-                    onLocationChange={handleLocationChange}
-                    onToggleVerification={handleToggleVerification}
-                    onToggleRating={handleToggleRating}
-                    onResetFilters={handleResetFilters}
-                    onClose={() => setMobileFiltersOpen(false)}
-                    onApply={() => setMobileFiltersOpen(false)}
-                    className="w-full border-0 shadow-none rounded-none p-5 sm:p-6"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* 2-Column Layout: Left Filters Sidebar (desktop) + Right Results Area */}
-            <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
-              {/* Desktop Filters Sidebar */}
-              <div className="hidden lg:block shrink-0 transition-all duration-300">
+              {/* Drawer Panel */}
+              <div className="relative z-10 w-full max-w-xs sm:max-w-sm h-full bg-card text-foreground shadow-2xl flex flex-col animate-in slide-in-from-left duration-200 overflow-y-auto no-scrollbar">
                 <SearchFiltersSidebar
                   categoryOptions={SEARCH_CATEGORY_OPTIONS}
                   locationOptions={locationOptions}
@@ -441,145 +449,215 @@ export function ConsumerSearchView({
                   onToggleVerification={handleToggleVerification}
                   onToggleRating={handleToggleRating}
                   onResetFilters={handleResetFilters}
-                  isCollapsed={isDesktopCollapsed}
-                  onToggleCollapse={handleToggleDesktopCollapse}
+                  onClose={() => setMobileFiltersOpen(false)}
+                  onApply={() => setMobileFiltersOpen(false)}
+                  className="w-full border-0 shadow-none rounded-none p-5 sm:p-6"
                 />
               </div>
+            </div>
+          )}
 
-              {/* Right Results Column */}
-              <div className="flex-1 w-full space-y-4 sm:space-y-6">
-                {/* Mobile Filter & Sort Toolbar */}
-                <div className="flex items-center justify-between gap-3 lg:hidden">
-                  <button
-                    type="button"
-                    onClick={() => setMobileFiltersOpen(true)}
-                    aria-label="Open search filters"
-                    className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-border bg-card hover:bg-secondary text-foreground text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
-                  >
-                    <Filter className="size-4 text-primary shrink-0" />
-                    <span>Filters</span>
-                    {activeFilterCount > 0 && (
-                      <span className="size-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center shrink-0">
-                        {activeFilterCount}
-                      </span>
-                    )}
-                  </button>
+          {/* 2-Column Layout: Left Filters Sidebar (desktop) + Right Results Area */}
+          <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
+            {/* Desktop Filters Sidebar */}
+            <div className="hidden lg:block shrink-0 transition-all duration-300">
+              <SearchFiltersSidebar
+                categoryOptions={SEARCH_CATEGORY_OPTIONS}
+                locationOptions={locationOptions}
+                filters={filters}
+                onToggleCategory={handleToggleCategory}
+                onLocationChange={handleLocationChange}
+                onToggleVerification={handleToggleVerification}
+                onToggleRating={handleToggleRating}
+                onResetFilters={handleResetFilters}
+                isCollapsed={isDesktopCollapsed}
+                onToggleCollapse={handleToggleDesktopCollapse}
+              />
+            </div>
 
-                  <div className="flex items-center gap-2">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground shrink-0 hidden xs:inline">
-                      Sort by:
+            {/* Right Results Column */}
+            <div className="flex-1 w-full space-y-4 sm:space-y-6">
+              {/* Mobile Filter & Sort Toolbar */}
+              <div className="flex items-center justify-between gap-3 lg:hidden">
+                <button
+                  type="button"
+                  onClick={() => setMobileFiltersOpen(true)}
+                  aria-label="Open search filters"
+                  className="inline-flex items-center gap-2 h-9 px-3 rounded-lg border border-border bg-card hover:bg-secondary text-foreground text-xs font-semibold shadow-2xs transition-colors cursor-pointer"
+                >
+                  <Filter className="size-4 text-primary shrink-0" />
+                  <span>Filters</span>
+                  {activeFilterCount > 0 && (
+                    <span className="size-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center shrink-0">
+                      {activeFilterCount}
                     </span>
-                    <div className="w-36">
-                      <Select
-                        options={SEARCH_SORT_OPTIONS}
-                        value={sortBy}
-                        onChange={(val) => {
-                          setSortBy(val);
-                          setCurrentPage(1);
-                        }}
-                        className="h-9 text-xs font-semibold"
-                      />
-                    </div>
-                  </div>
-                </div>
+                  )}
+                </button>
 
-                {/* Results Summary & Desktop Sort Toolbar */}
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs sm:text-sm text-muted-foreground">
-                    Showing{" "}
-                    <span className="font-bold text-foreground">
-                      {paginatedProfessionals.length}
-                    </span>{" "}
-                    of{" "}
-                    <span className="font-bold text-foreground">
-                      {totalItems}
-                    </span>{" "}
-                    professionals found
-                  </p>
-
-                  <div className="hidden lg:flex items-center gap-2.5">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground shrink-0">
-                      Sort by:
-                    </span>
-                    <div className="w-40">
-                      <Select
-                        options={SEARCH_SORT_OPTIONS}
-                        value={sortBy}
-                        onChange={(val) => {
-                          setSortBy(val);
-                          setCurrentPage(1);
-                        }}
-                        className="h-9 text-xs font-semibold"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Cards Grid: 2 per row on mobile and desktop */}
-                <div className="grid grid-cols-2 gap-3 sm:gap-6 items-stretch">
-                  {paginatedProfessionals.map((pro) => (
-                    <ProfessionalCard
-                      key={pro.id}
-                      professional={pro}
-                      variant="horizontal"
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground shrink-0 hidden xs:inline">
+                    Sort by:
+                  </span>
+                  <div className="w-44">
+                    <Select
+                      options={SEARCH_SORT_OPTIONS}
+                      value={sortBy}
+                      onChange={(val) => {
+                        setSortBy(val);
+                        setCurrentPage(1);
+                      }}
+                      className="h-9 text-xs font-semibold"
                     />
-                  ))}
-                </div>
-
-                {/* Dynamic Pagination Bar */}
-                <div className="pt-6 flex justify-center">
-                  <Pagination className="justify-center">
-                    <PaginationContent>
-                      <PaginationItem>
-                        <PaginationPrevious
-                          disabled={safeCurrentPage <= 1}
-                          onClick={() =>
-                            setCurrentPage(Math.max(1, safeCurrentPage - 1))
-                          }
-                        />
-                      </PaginationItem>
-
-                      {paginationItems.map((item) => {
-                        if (
-                          item === "ellipsis-start" ||
-                          item === "ellipsis-end"
-                        ) {
-                          return (
-                            <PaginationItem key={item}>
-                              <PaginationEllipsis />
-                            </PaginationItem>
-                          );
-                        }
-
-                        return (
-                          <PaginationItem key={item}>
-                            <PaginationLink
-                              isActive={safeCurrentPage === item}
-                              onClick={() => setCurrentPage(item)}
-                            >
-                              {item}
-                            </PaginationLink>
-                          </PaginationItem>
-                        );
-                      })}
-
-                      <PaginationItem>
-                        <PaginationNext
-                          disabled={safeCurrentPage >= totalPages}
-                          onClick={() =>
-                            setCurrentPage(
-                              Math.min(totalPages, safeCurrentPage + 1)
-                            )
-                          }
-                        />
-                      </PaginationItem>
-                    </PaginationContent>
-                  </Pagination>
+                  </div>
                 </div>
               </div>
+
+              {/* Results Summary & Desktop Sort Toolbar */}
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  Showing{" "}
+                  <span className="font-bold text-foreground">
+                    {paginatedProfessionals.length}
+                  </span>{" "}
+                  of{" "}
+                  <span className="font-bold text-foreground">
+                    {totalItems}
+                  </span>{" "}
+                  professionals found
+                </p>
+
+                <div className="hidden lg:flex items-center gap-2.5">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground shrink-0">
+                    Sort by:
+                  </span>
+                  <div className="w-52">
+                    <Select
+                      options={SEARCH_SORT_OPTIONS}
+                      value={sortBy}
+                      onChange={(val) => {
+                        setSortBy(val);
+                        setCurrentPage(1);
+                      }}
+                      className="h-9 text-xs font-semibold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Cards Grid OR Cards Area Empty State */}
+              {totalItems === 0 ? (
+                /* Cards-only empty state for categories/filters with no results */
+                <div className="w-full rounded-2xl border border-dashed border-border bg-card/60 p-8 sm:p-12 text-center flex flex-col items-center justify-center space-y-4 my-2">
+                  <div className="size-16 rounded-2xl bg-secondary/80 flex items-center justify-center text-muted-foreground shadow-2xs">
+                    <FilterX className="size-8 text-muted-foreground/70" />
+                  </div>
+                  <div className="space-y-1.5 max-w-md">
+                    <h3 className="text-base sm:text-lg font-bold text-foreground tracking-tight">
+                      No professionals found
+                    </h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                      {filters.categories.length > 0
+                        ? "There are currently no registered professionals in this category matching your active filters."
+                        : "No professionals match your current filter selections. Try broadening your criteria."}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={handleResetFilters}
+                      className="h-9 px-4 text-xs font-semibold rounded-lg shadow-2xs"
+                    >
+                      Clear all filters
+                    </Button>
+                    {filters.categories.length > 0 && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setFilters((prev) => ({ ...prev, categories: [] }));
+                          setCurrentPage(1);
+                        }}
+                        className="h-9 px-4 text-xs font-semibold rounded-lg"
+                      >
+                        View all categories
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                /* Regular cards grid */
+                <>
+                  <div className="grid grid-cols-2 gap-3 sm:gap-6 items-stretch">
+                    {paginatedProfessionals.map((pro) => (
+                      <ProfessionalCard
+                        key={pro.id}
+                        professional={pro}
+                        variant="horizontal"
+                      />
+                    ))}
+                  </div>
+
+                  {/* Dynamic Pagination Bar (only visible when totalPages > 1) */}
+                  {totalPages > 1 && (
+                    <div className="pt-6 flex justify-center">
+                      <Pagination className="justify-center">
+                        <PaginationContent>
+                          <PaginationItem>
+                            <PaginationPrevious
+                              disabled={safeCurrentPage <= 1}
+                              onClick={() =>
+                                setCurrentPage(Math.max(1, safeCurrentPage - 1))
+                              }
+                            />
+                          </PaginationItem>
+
+                          {paginationItems.map((item) => {
+                            if (
+                              item === "ellipsis-start" ||
+                              item === "ellipsis-end"
+                            ) {
+                              return (
+                                <PaginationItem key={item}>
+                                  <PaginationEllipsis />
+                                </PaginationItem>
+                              );
+                            }
+
+                            return (
+                              <PaginationItem key={item}>
+                                <PaginationLink
+                                  isActive={safeCurrentPage === item}
+                                  onClick={() => setCurrentPage(item)}
+                                >
+                                  {item}
+                                </PaginationLink>
+                              </PaginationItem>
+                            );
+                          })}
+
+                          <PaginationItem>
+                            <PaginationNext
+                              disabled={safeCurrentPage >= totalPages}
+                              onClick={() =>
+                                setCurrentPage(
+                                  Math.min(totalPages, safeCurrentPage + 1)
+                                )
+                              }
+                            />
+                          </PaginationItem>
+                        </PaginationContent>
+                      </Pagination>
+                    </div>
+                  )}
+                </>
+              )}
             </div>
           </div>
-        )}
-      </main>
-    );
-  }
+        </div>
+      )}
+    </main>
+  );
+}
+
+export default ConsumerSearchView;
