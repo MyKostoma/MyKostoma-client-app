@@ -46,13 +46,8 @@ export function ProfileMessageComposer({
       </span>
 
       {/* Avatar + Textarea Row */}
-      <div className="flex items-start gap-3 sm:gap-4">
-        <div
-          aria-hidden="true"
-          className="size-9 sm:size-10 rounded-full bg-info/25 border border-info/20 shrink-0 mt-0.5"
-        />
-
-        <div className="flex-1 min-w-0">
+      <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4">
+        <div className="sm:flex-1 min-w-full sm:min-w-0">
           <Textarea
             value={messageValue}
             onChange={(e) => onMessageChange(e.target.value)}

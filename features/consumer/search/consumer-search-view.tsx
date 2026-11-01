@@ -588,15 +588,16 @@ export function ConsumerSearchView({
               ) : (
                 /* Regular cards grid */
                 <>
-                  <div className="grid grid-cols-2 gap-3 sm:gap-6 items-stretch">
-                    {paginatedProfessionals.map((pro) => (
-                      <ProfessionalCard
-                        key={pro.id}
-                        professional={pro}
-                        variant="horizontal"
-                      />
-                    ))}
-                  </div>
+                    <div className="grid grid-cols-2 gap-3 sm:gap-6 items-stretch">
+                      {paginatedProfessionals.map((pro) => (
+                        <ProfessionalCard
+                          key={pro.id}
+                          professional={pro}
+                          variant="horizontal"
+                          onViewDetails={(id) => router.push(`/profile/${id}`)}
+                        />
+                      ))}
+                    </div>
 
                   {/* Dynamic Pagination Bar (only visible when totalPages > 1) */}
                   {totalPages > 1 && (

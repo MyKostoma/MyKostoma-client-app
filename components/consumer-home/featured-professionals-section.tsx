@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SectionHeader } from "./section-header";
@@ -27,6 +28,7 @@ export function FeaturedProfessionalsSection({
   className,
   ...props
 }: FeaturedProfessionalsSectionProps) {
+  const router = useRouter();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -123,7 +125,11 @@ export function FeaturedProfessionalsSection({
             key={pro.id}
             className="w-full sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] shrink-0 snap-start"
           >
-            <ProfessionalCard professional={pro} />
+            <ProfessionalCard
+              professional={pro}
+              onBookNow={(id) => router.push(`/profile/${id}`)}
+              onViewDetails={(id) => router.push(`/profile/${id}`)}
+            />
           </div>
         ))}
       </div>

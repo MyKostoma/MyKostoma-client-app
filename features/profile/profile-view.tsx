@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 import {
   ProfileHeaderCard,
   ProfileTabsNav,
@@ -26,6 +35,7 @@ export function ProfileView({
   initialMessagingOpen = false,
   initialFollowing = false,
 }: ProfileViewProps) {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<ProfileTabId>("services");
   const [isFollowing, setIsFollowing] = useState<boolean>(initialFollowing);
   const [isMessagingOpen, setIsMessagingOpen] = useState<boolean>(
@@ -37,6 +47,14 @@ export function ProfileView({
   const sentinelRef = useRef<HTMLDivElement>(null);
   const isProgrammaticScrollRef = useRef<boolean>(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Reset state whenever the active profile changes
+  useEffect(() => {
+    setActiveTab("services");
+    setIsMessagingOpen(initialMessagingOpen);
+    setIsFollowing(initialFollowing);
+    setMessageText("");
+  }, [profile.id, initialMessagingOpen, initialFollowing]);
 
   // Monitor sticky status: triggers when the tab bar reaches sticky offset beneath AppHeader (~68px)
   useEffect(() => {
@@ -131,7 +149,36 @@ export function ProfileView({
   };
 
   return (
-    <main className="flex-1 container px-3 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <main className="flex-1 container px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
+      {/* Top Breadcrumb Navigation */}
+      <Breadcrumb className="pb-4">
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              onClick={() => router.push("/home")}
+              className="cursor-pointer"
+            >
+              Home
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink
+              onClick={() => router.push("/search")}
+              className="cursor-pointer"
+            >
+              Find Professionals
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="font-semibold text-foreground">
+              {profile.name}
+            </BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <ProfileHeaderCard
         profile={profile}
         isFollowing={isFollowing}

@@ -10,6 +10,7 @@ import {
   Plus,
   Star,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
@@ -45,6 +46,8 @@ export function ProfessionalCard({
   onToggleFavorite,
   className,
 }: ProfessionalCardProps) {
+  const router = useRouter();
+
   const isCompany = isSearchProItem(pro)
     ? pro.verification === "company"
     : pro.badgeVariant === "corporate";
@@ -59,6 +62,8 @@ export function ProfessionalCard({
         onViewDetails(pro.id);
       } else if (!isSearchProItem(pro) && pro.onBookClick) {
         pro.onBookClick(pro.id);
+      } else {
+        router.push(`/profile/${pro.id}`);
       }
     };
 
@@ -69,7 +74,10 @@ export function ProfessionalCard({
           className
         )}
       >
-        <div className="relative w-full md:w-48 h-28 xs:h-32 md:h-auto sm:self-stretch shrink-0 overflow-hidden bg-secondary">
+        <div
+          onClick={handleAction}
+          className="relative w-full md:w-48 h-28 xs:h-32 md:h-auto sm:self-stretch shrink-0 overflow-hidden bg-secondary cursor-pointer"
+        >
           <FallbackImage
             src={pro.imageUrl}
             alt={pro.name}
@@ -81,7 +89,10 @@ export function ProfessionalCard({
         <div className="p-2.5 sm:p-5 flex flex-col flex-1 min-w-0 justify-between gap-2.5 sm:gap-4">
           <div>
             <div className="flex items-start justify-between gap-1.5 sm:gap-2">
-              <h3 className="text-xs sm:text-base font-bold text-foreground tracking-tight leading-snug line-clamp-1">
+              <h3
+                onClick={handleAction}
+                className="text-xs sm:text-base font-bold text-foreground tracking-tight leading-snug line-clamp-1 cursor-pointer hover:text-primary transition-colors"
+              >
                 {pro.name}
               </h3>
 
@@ -137,6 +148,8 @@ export function ProfessionalCard({
         onBookNow(pro.id);
       } else if (!isSearchProItem(pro) && pro.onBookClick) {
         pro.onBookClick(pro.id);
+      } else {
+        router.push(`/profile/${pro.id}`);
       }
     };
 
@@ -147,7 +160,10 @@ export function ProfessionalCard({
           className
         )}
       >
-        <div className="relative h-52 sm:h-56 w-full overflow-hidden bg-secondary shrink-0">
+        <div
+          onClick={handleBook}
+          className="relative h-52 sm:h-56 w-full overflow-hidden bg-secondary shrink-0 cursor-pointer"
+        >
           <FallbackImage
             src={pro.imageUrl}
             alt={pro.name}
@@ -164,7 +180,10 @@ export function ProfessionalCard({
 
           <button
             type="button"
-            onClick={() => onToggleFavorite?.(pro.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleFavorite?.(pro.id);
+            }}
             aria-label={`Save ${pro.name}`}
             className="absolute top-3.5 right-3.5 size-8 rounded-full bg-card/90 hover:bg-card text-muted-foreground hover:text-primary backdrop-blur-xs shadow-xs flex items-center justify-center transition-all cursor-pointer active:scale-95"
           >
@@ -181,7 +200,10 @@ export function ProfessionalCard({
           <div>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h3 className="text-base sm:text-lg font-bold text-foreground tracking-tight leading-snug truncate">
+                <h3
+                  onClick={handleBook}
+                  className="text-base sm:text-lg font-bold text-foreground tracking-tight leading-snug truncate cursor-pointer hover:text-primary transition-colors"
+                >
                   {pro.name}
                 </h3>
                 <p className="text-xs text-muted-foreground mt-1 truncate">
@@ -266,8 +288,10 @@ export function ProfessionalCard({
   const handleBookClick = () => {
     if (onBookNow) {
       onBookNow(pro.id);
-    } else if (!isSearchProItem(pro)) {
-      pro.onBookClick?.(pro.id);
+    } else if (!isSearchProItem(pro) && pro.onBookClick) {
+      pro.onBookClick(pro.id);
+    } else {
+      router.push(`/profile/${pro.id}`);
     }
   };
 
@@ -278,7 +302,10 @@ export function ProfessionalCard({
         className
       )}
     >
-      <div className="relative h-48 w-full overflow-hidden bg-secondary shrink-0">
+      <div
+        onClick={handleBookClick}
+        className="relative h-48 w-full overflow-hidden bg-secondary shrink-0 cursor-pointer"
+      >
         <FallbackImage
           src={pro.imageUrl}
           alt={pro.name}
@@ -298,7 +325,10 @@ export function ProfessionalCard({
         {showQuickAction && !isSearchProItem(pro) && (
           <button
             type="button"
-            onClick={() => pro.onQuickActionClick?.(pro.id)}
+            onClick={(e) => {
+              e.stopPropagation();
+              pro.onQuickActionClick?.(pro.id);
+            }}
             aria-label={`Quick save ${pro.name}`}
             className="absolute bottom-3 right-3 size-8 rounded-full bg-primary hover:bg-primary-hover text-primary-foreground shadow-md flex items-center justify-center transition-transform active:scale-95 cursor-pointer"
           >
@@ -310,7 +340,10 @@ export function ProfessionalCard({
       <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between gap-5">
         <div>
           <div className="flex items-start justify-between gap-2">
-            <h3 className="text-base font-bold text-foreground tracking-tight leading-snug">
+            <h3
+              onClick={handleBookClick}
+              className="text-base font-bold text-foreground tracking-tight leading-snug cursor-pointer hover:text-primary transition-colors"
+            >
               {pro.name}
             </h3>
 
