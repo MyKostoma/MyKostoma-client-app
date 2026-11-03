@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { AppHeader } from "@/components/layouts/headers";
+import { AppHeader } from "@/components/layouts/headers/headers";
 import {
   ConsumerSidebar,
   ProfessionalSidebar,
@@ -29,7 +29,7 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { Footer, PublicFooter, AppFooter } from "@/components/layouts/footers";
+import { Footer, PublicFooter, AppFooter } from "@/components/layouts/footers/footers";
 import { Button } from "@/components/ui/button";
 import {
   Moon,
