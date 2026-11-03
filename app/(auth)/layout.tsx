@@ -1,4 +1,4 @@
-import { PublicFooter } from "@/components/ui/footers";
+import { PublicFooter } from "@/components/layouts/footers";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (

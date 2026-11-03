@@ -15,7 +15,7 @@ import {
   CodeSquare,
 } from "lucide-react";
 import { threeWomen } from "@/lib";
-import Header from "@/components/ui/headers";
+import Header from "@/components/layouts/headers";
 import {
   HeroSection,
   CategoriesSection,
@@ -25,7 +25,7 @@ import {
   type FeatureItem,
   type CtaCardItem,
 } from "@/components/landing";
-import { PublicFooter } from "@/components/ui/footers";
+import { PublicFooter } from "@/components/layouts/footers";
 import { useAppDispatch } from "@/store/hooks";
 import {
   clearRegistrationRole,

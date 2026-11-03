@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { AppHeader } from "@/components/ui/headers";
-import { AppFooter } from "@/components/ui/footers";
+import { AppHeader } from "@/components/layouts/headers";
+import { AppFooter } from "@/components/layouts/footers";
 
 export const metadata: Metadata = {
   title: "MyKostoma",

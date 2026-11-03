@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useState, useEffect } from "react";
-import { AppHeader } from "@/components/ui/headers";
+import { AppHeader } from "@/components/layouts/headers";
 import {
   ConsumerSidebar,
   ProfessionalSidebar,
@@ -29,7 +29,7 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { Footer, PublicFooter, AppFooter } from "@/components/ui/footers";
+import { Footer, PublicFooter, AppFooter } from "@/components/layouts/footers";
 import { Button } from "@/components/ui/button";
 import {
   Moon,
@@ -110,12 +110,12 @@ export function NavigationShowcase() {
       document.documentElement.classList.add("dark");
       try {
         localStorage.setItem("theme", "dark");
-      } catch {}
+      } catch { }
     } else {
       document.documentElement.classList.remove("dark");
       try {
         localStorage.setItem("theme", "light");
-      } catch {}
+      } catch { }
     }
   };
 
@@ -194,20 +194,20 @@ export function NavigationShowcase() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           <div>
             <div className="space-y-3">
-                <div className="flex items-center justify-between px-1">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    CONSUMER PERSPECTIVE
-                  </span>
-                  <span className="px-2 py-0.5 rounded-xs text-[10px] font-bold tracking-wide uppercase bg-success/15 text-success">
-                      ACTIVE
-                  </span>
-                </div>
-            <ConsumerSidebar
-              items={consumerNavItems}
-              activeItemId={consumerSidebarActive}
-              onItemSelect={setConsumerSidebarActive}
-            />
-          </div>
+              <div className="flex items-center justify-between px-1">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  CONSUMER PERSPECTIVE
+                </span>
+                <span className="px-2 py-0.5 rounded-xs text-[10px] font-bold tracking-wide uppercase bg-success/15 text-success">
+                  ACTIVE
+                </span>
+              </div>
+              <ConsumerSidebar
+                items={consumerNavItems}
+                activeItemId={consumerSidebarActive}
+                onItemSelect={setConsumerSidebarActive}
+              />
+            </div>
           </div>
 
 
@@ -221,11 +221,11 @@ export function NavigationShowcase() {
                   WORKSPACE
                 </span>
               </div>
-            <ProfessionalSidebar
-              items={professionalNavItems}
-              activeItemId={proSidebarActive}
-              onItemSelect={setProSidebarActive}
-            />
+              <ProfessionalSidebar
+                items={professionalNavItems}
+                activeItemId={proSidebarActive}
+                onItemSelect={setProSidebarActive}
+              />
             </div>
           </div>
         </div>

@@ -52,7 +52,7 @@ export const protectedRoutes: RouteConfig[] = [
     redirectTo: "/login",
   },
   {
-    path: "/find-pros*",
+    path: "/search",
     roles: ["consumer"],
     redirectTo: "/login",
   },
