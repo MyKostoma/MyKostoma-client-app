@@ -149,7 +149,6 @@ export function SidebarNav({
   );
 }
 
-// Standalone Consumer Sidebar with Header Tag
 export function ConsumerSidebar({
   items = [],
   className,
@@ -168,7 +167,6 @@ export function ConsumerSidebar({
   );
 }
 
-// Standalone Professional Sidebar with Header Tag
 export function ProfessionalSidebar({
   items = [],
   className,
