@@ -11,6 +11,7 @@ import {
   DashboardTopBarSlot,
   RequestFormTopBar,
 } from "@/components/layouts/top-bars";
+import { Button } from "@/components/ui/button";
 import { DEFAULT_EDIT_REQUEST_VALUES } from "./data";
 
 export interface EditRequestViewProps {
@@ -37,7 +38,6 @@ export function EditRequestView({
 
   return (
     <>
-      {/* Dynamic TopBar mounted into DashboardLayout */}
       <DashboardTopBarSlot>
         <RequestFormTopBar
           title="Edit Request"
@@ -51,6 +51,26 @@ export function EditRequestView({
       </DashboardTopBarSlot>
 
       <div className="space-y-6">
+        <div className="flex md:hidden items-center justify-end gap-2.5 sm:gap-3 shrink-0 ml-auto">
+          <button
+            type="button"
+            onClick={handleBackToDetail}
+            className="px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Discard Changes
+          </button>
+
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={handleSaveChanges}
+            className="h-9 px-4 rounded-lg text-xs font-semibold shadow-xs"
+          >
+            Save Changes
+          </Button>
+        </div>
+
         <RequestForm
           mode="edit"
           values={formValues}
@@ -62,3 +82,4 @@ export function EditRequestView({
     </>
   );
 }
+export default EditRequestView;

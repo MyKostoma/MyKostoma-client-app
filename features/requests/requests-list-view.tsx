@@ -16,6 +16,9 @@ import {
   RequestsListTopBar,
 } from "@/components/layouts/top-bars";
 import { DEFAULT_CONSUMER_REQUESTS } from "./data";
+import { Button } from "@/components/ui/button";
+import { SearchInput } from "@/components/ui/form-fields";
+import { Plus } from "lucide-react";
 
 export interface RequestsListViewProps {
   requests?: ConsumerRequestItem[];
@@ -63,7 +66,6 @@ export function RequestsListView({
 
   return (
     <>
-      {/* Dynamic TopBar mounted into DashboardLayout */}
       <DashboardTopBarSlot>
         <RequestsListTopBar
           totalCountLabel={totalCountLabel}
@@ -74,13 +76,34 @@ export function RequestsListView({
       </DashboardTopBarSlot>
 
       <div className="space-y-6">
-        {/* Status Filter Tabs (includes Closed tab) */}
+        <div className="flex md:hidden items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
+          <div className="w-full md:w-64">
+            <SearchInput
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search requests..."
+              className="h-9 text-xs bg-secondary/40"
+            />
+          </div>
+
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={() => handleCreateRequest()}
+            leadingIcon={<Plus className="size-4" />}
+            className="h-9 px-3.5 sm:px-4 rounded-lg text-xs font-semibold shadow-xs shrink-0"
+          >
+            <span className="hidden sm:inline">Create Request</span>
+            <span className="sm:hidden">New</span>
+          </Button>
+        </div>
+      
         <RequestsFilterTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
 
-        {/* Error state if data fetch fails */}
         {error ? (
           <RequestsErrorState
             title="Failed to load requests"

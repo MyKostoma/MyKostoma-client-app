@@ -4,8 +4,7 @@ import { Menu, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/form-fields";
 import { cn } from "@/lib/utils";
-import { useDashboardMobileMenu } from "./dashboard-top-bar-context";
-import { TopBarUtilities } from "./top-bar-utilities";
+import { useDashboardMobileMenu } from "../../../providers/dashboard-top-bar-context";
 
 export interface RequestsListTopBarProps {
   totalCountLabel?: string;
@@ -17,9 +16,6 @@ export interface RequestsListTopBarProps {
   className?: string;
 }
 
-/**
- * Top bar header component for the Requests List page.
- */
 export function RequestsListTopBar({
   totalCountLabel = "12 Total",
   searchQuery,
@@ -38,7 +34,6 @@ export function RequestsListTopBar({
         className
       )}
     >
-      {/* Left: Mobile Menu Trigger + Title & Count */}
       <div className="flex items-center gap-3 min-w-0">
         {effectiveMenuClick && (
           <button
@@ -60,9 +55,8 @@ export function RequestsListTopBar({
           </span>
         </div>
       </div>
-
-      {/* Right: Search Input + Create Request Action + Utilities */}
-      <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
+      
+      <div className="hidden md:flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
         <div className="w-36 sm:w-56 md:w-64">
           <SearchInput
             value={searchQuery}

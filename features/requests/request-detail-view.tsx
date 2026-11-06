@@ -15,6 +15,7 @@ import {
   RequestDetailTopBar,
 } from "@/components/layouts/top-bars";
 import { DEFAULT_CONSUMER_REQUESTS } from "./data";
+import { Button } from "@/components/ui/button";
 
 export interface RequestDetailViewProps {
   requestId?: string;
@@ -45,6 +46,7 @@ export function RequestDetailView({
   const handleConfirmClose = () => {
     setCloseModalOpen(false);
     toast.success("Request has been closed and archived.");
+    router.push("/requests")
   };
 
   if (error) {
@@ -70,7 +72,6 @@ export function RequestDetailView({
 
   return (
     <>
-      {/* Dynamic TopBar mounted into DashboardLayout */}
       <DashboardTopBarSlot>
         <RequestDetailTopBar
           requestCode={resolvedRequest.code}
@@ -82,7 +83,32 @@ export function RequestDetailView({
       </DashboardTopBarSlot>
 
       <div className="space-y-6">
-        {/* Main Request Workspace Detail */}
+            <div className="flex sm:hidden items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
+          {resolvedRequest.status !== "closed" && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+              onClick={() => setCloseModalOpen(true)}
+                  className="h-9 px-3.5 sm:px-4 rounded-lg text-xs font-semibold"
+                >
+                  Close Request
+                </Button>
+              )}
+      
+              {resolvedRequest.status !== "closed" && (
+                <Button
+                  type="button"
+                  variant="default"
+                  size="sm"
+              onClick={handleEditRequest}
+                  className="h-9 px-3.5 sm:px-4 rounded-lg text-xs font-semibold shadow-xs"
+                >
+                  Edit Request
+                </Button>
+              )}
+            </div>
+
         <RequestWorkspaceDetail
           request={resolvedRequest}
           onViewQuote={(quote) =>
@@ -94,7 +120,6 @@ export function RequestDetailView({
           }
         />
 
-        {/* Close Modal */}
         <CloseRequestModal
           isOpen={closeModalOpen}
           onClose={() => setCloseModalOpen(false)}

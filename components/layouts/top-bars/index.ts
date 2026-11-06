@@ -3,7 +3,7 @@ export * from "./dashboard-top-bar";
 export * from "./header-top-bar";
 export * from "./minimal-top-bar";
 export * from "./top-bar-utilities";
-export * from "./dashboard-top-bar-context";
+export * from "../../../providers/dashboard-top-bar-context";
 export * from "./requests-list-top-bar";
 export * from "./request-detail-top-bar";
 export * from "./request-form-top-bar";

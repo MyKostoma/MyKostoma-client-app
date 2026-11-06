@@ -1,11 +1,9 @@
 "use client";
 
-import * as React from "react";
 import { ArrowLeft, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useDashboardMobileMenu } from "./dashboard-top-bar-context";
-import { TopBarUtilities } from "./top-bar-utilities";
+import { useDashboardMobileMenu } from "../../../providers/dashboard-top-bar-context";
 
 export interface RequestDetailTopBarProps {
   requestCode: string;
@@ -18,9 +16,6 @@ export interface RequestDetailTopBarProps {
   className?: string;
 }
 
-/**
- * Top bar header component for the Request Detail page.
- */
 export function RequestDetailTopBar({
   requestCode,
   onBackToRequests,
@@ -40,7 +35,6 @@ export function RequestDetailTopBar({
         className
       )}
     >
-      {/* Left: Mobile Menu + Back to Requests + Request Code */}
       <div className="flex items-center gap-3 min-w-0">
         {effectiveMenuClick && (
           <button
@@ -70,8 +64,7 @@ export function RequestDetailTopBar({
         </span>
       </div>
 
-      {/* Right: Close Request + Edit Request Actions + Utilities */}
-      <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
+      <div className="hidden sm:flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
         {canClose && onCloseRequest && (
           <Button
             type="button"
@@ -101,4 +94,3 @@ export function RequestDetailTopBar({
 }
 
 export default RequestDetailTopBar;
-

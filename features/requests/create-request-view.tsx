@@ -12,6 +12,7 @@ import {
   DashboardTopBarSlot,
   RequestFormTopBar,
 } from "@/components/layouts/top-bars";
+import { Button } from "@/components/ui/button";
 
 export interface CreateRequestViewProps {
   initialSubmitted?: boolean;
@@ -56,7 +57,6 @@ export function CreateRequestView({
 
   return (
     <>
-      {/* Dynamic TopBar mounted into DashboardLayout */}
       <DashboardTopBarSlot>
         <RequestFormTopBar
           title="Create New Request"
@@ -70,6 +70,26 @@ export function CreateRequestView({
       </DashboardTopBarSlot>
 
       <div className="space-y-6">
+        <div className="flex md:hidden items-center justify-end gap-2.5 sm:gap-3 shrink-0 ml-auto">
+          <button
+            type="button"
+            onClick={handleSaveDraft}
+            className="px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+          >
+            Save as Draft
+          </button>
+
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={handleSubmit}
+            className="h-9 px-4 rounded-lg text-xs font-semibold shadow-xs"
+          >
+            Submit Request
+          </Button>
+        </div>
+
         <RequestForm
           mode="create"
           values={formValues}
@@ -81,3 +101,4 @@ export function CreateRequestView({
     </>
   );
 }
+export default CreateRequestView;

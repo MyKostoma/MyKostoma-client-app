@@ -1,11 +1,9 @@
 "use client";
 
-import * as React from "react";
 import { ArrowLeft, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useDashboardMobileMenu } from "./dashboard-top-bar-context";
-import { TopBarUtilities } from "./top-bar-utilities";
+import { useDashboardMobileMenu } from "../../../providers/dashboard-top-bar-context";
 
 export interface RequestFormTopBarProps {
   title: string;
@@ -20,9 +18,6 @@ export interface RequestFormTopBarProps {
   className?: string;
 }
 
-/**
- * Top bar header component for Create and Edit Request pages.
- */
 export function RequestFormTopBar({
   title,
   backLabel = "Back to Requests",
@@ -44,7 +39,6 @@ export function RequestFormTopBar({
         className
       )}
     >
-      {/* Left: Mobile Menu + Back + Page Title */}
       <div className="flex items-center gap-3 min-w-0">
         {effectiveMenuClick && (
           <button
@@ -74,8 +68,7 @@ export function RequestFormTopBar({
         </h1>
       </div>
 
-      {/* Right: Actions + Utilities */}
-      <div className="flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
+      <div className="hidden md:flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
         {onSecondaryAction && secondaryActionLabel && (
           <button
             type="button"
