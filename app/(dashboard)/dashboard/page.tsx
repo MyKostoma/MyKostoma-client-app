@@ -39,12 +39,12 @@ export default function DashboardPage() {
   const userRole = useAppSelector(selectUserRole);
 
   return (
-    <main className="flex-1 container px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+    <div className="space-y-6">
       {userRole === "professional" ? (
         <ProfessionalDashboardView />
       ) : (
         <ConsumerDashboardView />
       )}
-    </main>
+    </div>
   );
 }

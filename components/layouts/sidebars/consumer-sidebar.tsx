@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
-  Search,
+  ListOrdered,
   Calendar,
   Heart,
   Settings,
@@ -18,7 +18,14 @@ import type { SidebarNavItem, SidebarProps } from "./types";
 
 export const DEFAULT_CONSUMER_NAV_ITEMS: SidebarNavItem[] = [
   { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: Home },
-  { id: "find-pros", label: "Find Pros", href: "/search", icon: Search },
+  {
+    id: "requests",
+    label: "Requests",
+    href: "/requests",
+    icon: ListOrdered,
+    badge: 12,
+    badgeVariant: "primary",
+  },
   { id: "my-bookings", label: "My Bookings", href: "/bookings", icon: Calendar },
   {
     id: "saved-items",

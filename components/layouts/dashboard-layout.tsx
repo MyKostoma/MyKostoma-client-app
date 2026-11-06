@@ -4,6 +4,7 @@ import * as React from "react";
 import { useState, useEffect, useCallback, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { getDashboardPageTitle, getDashboardRouteConfig } from "@/lib/route-config";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectCurrentUser, selectUserRole } from "@/store/slices/authSlice";
 import {
@@ -38,7 +39,6 @@ export interface DashboardLayoutProps {
 const DEFAULT_PAGE_TITLES: Record<string, string> = {
   "/dashboard": "Dashboard",
   "/search": "Find Pros",
-  "/find-pros": "Find Pros",
   "/bookings": "My Bookings",
   "/my-bookings": "My Bookings",
   "/saved": "Saved Items",
@@ -56,6 +56,10 @@ const DEFAULT_PAGE_TITLES: Record<string, string> = {
 };
 
 function getPageTitle(pathname: string): string {
+  const configuredRoute = getDashboardRouteConfig(pathname);
+  if (configuredRoute) {
+    return getDashboardPageTitle(pathname);
+  }
   if (DEFAULT_PAGE_TITLES[pathname]) {
     return DEFAULT_PAGE_TITLES[pathname];
   }

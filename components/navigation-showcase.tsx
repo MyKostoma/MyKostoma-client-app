@@ -6,8 +6,8 @@ import { AppHeader } from "@/components/layouts/headers/headers";
 import {
   ConsumerSidebar,
   ProfessionalSidebar,
-  type NavItemConfig,
-} from "@/components/ui/sidebar-nav";
+  type SidebarNavItem,
+} from "@/components/layouts/sidebars";
 import {
   ConsumerMobileNav,
   ProfessionalMobileNav,
@@ -48,7 +48,7 @@ import {
 import { cn } from "cn";
 
 // Nav items defined at parent level to keep SidebarNav reusable as a template
-const consumerNavItems: NavItemConfig[] = [
+const consumerNavItems: SidebarNavItem[] = [
   { id: "dashboard", label: "Dashboard", icon: Home },
   { id: "find-pros", label: "Find Pros", icon: Search },
   { id: "my-bookings", label: "My Bookings", icon: Calendar },
@@ -56,7 +56,7 @@ const consumerNavItems: NavItemConfig[] = [
   { id: "settings", label: "Settings", icon: Settings },
 ];
 
-const professionalNavItems: NavItemConfig[] = [
+const professionalNavItems: SidebarNavItem[] = [
   { id: "overview", label: "Overview", icon: PieChart },
   { id: "requests", label: "Requests", icon: ListOrdered, badge: 12, badgeVariant: "primary" },
   { id: "my-shop", label: "My Shop", icon: Store },

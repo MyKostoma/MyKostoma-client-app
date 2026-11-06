@@ -4,4 +4,7 @@ export * from "./sidebars";
 export * from "./top-bars";
 export * from "./mobile-drawer";
 export * from "./dashboard-layout";
+export * from "./internal-routes-shell";
+export * from "./dashboard-routes-shell";
+
 
