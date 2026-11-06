@@ -31,6 +31,15 @@ export interface PublicFooterProps extends React.HTMLAttributes<HTMLElement> {
   version?: string;
 }
 
+export interface PublicFooter2Props extends React.HTMLAttributes<HTMLElement> {
+  tagline?: string;
+  columns?: FooterColumnItem[];
+  bottomLinks?: FooterLinkItem[];
+  copyrightText?: string;
+  copyrightYear?: number | string;
+  companyName?: string;
+}
+
 export interface AppFooterProps extends React.HTMLAttributes<HTMLElement> {
   tagline?: string;
   logoHref?: string;
@@ -47,6 +56,8 @@ export interface AppFooterProps extends React.HTMLAttributes<HTMLElement> {
 
 export type FooterVariant =
   | "public"
+  | "public2"
+  | "publicFooter2"
   | "app"
   | "logged-out"
   | "logged-in"
@@ -61,4 +72,3 @@ export interface FooterProps extends React.HTMLAttributes<HTMLElement> {
   copyrightYear?: number | string;
   [key: string]: any;
 }
-

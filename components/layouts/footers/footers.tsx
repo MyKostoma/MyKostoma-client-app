@@ -4,13 +4,16 @@ import * as React from "react";
 import { useAppSelector } from "@/store/hooks";
 import { selectIsAuthenticated } from "@/store/slices/authSlice";
 import { PublicFooter } from "./public-footer";
+import { PublicFooter2 } from "./public-footer-2";
 import { AppFooter } from "./app-footer";
 import type { FooterProps } from "./types";
-
 
 const FOOTER_VARIANTS: Record<string, React.ComponentType<any>> = {
   public: PublicFooter,
   "logged-out": PublicFooter,
+  public2: PublicFooter2,
+  publicFooter2: PublicFooter2,
+  "public-footer-2": PublicFooter2,
   app: AppFooter,
   "logged-in": AppFooter,
 };
@@ -41,9 +44,11 @@ export function Footer({
 export const Footers = Footer;
 export const LoggedOutFooter = PublicFooter;
 export const LoggedInFooter = AppFooter;
+export const publicFooter2 = PublicFooter2;
 
 export * from "./types";
 export * from "./public-footer";
+export * from "./public-footer-2";
 export * from "./app-footer";
 export * from "./icons";
 
