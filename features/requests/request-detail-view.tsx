@@ -112,7 +112,7 @@ export function RequestDetailView({
         <RequestWorkspaceDetail
           request={resolvedRequest}
           onViewQuote={(quote) =>
-            toast.info(`Viewing quote from ${quote.providerName}`)
+            router.push(`/quotations/${encodeURIComponent(quote.id)}`)
           }
           onEditRequest={handleEditRequest}
           onPromoteRequest={() =>

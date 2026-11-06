@@ -1,7 +1,6 @@
 "use client";
 
-import * as React from "react";
-import { useState, useEffect, useCallback, type ReactNode } from "react";
+import { useState, useCallback, type ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { getDashboardPageTitle, getDashboardRouteConfig } from "@/lib/route-config";
@@ -48,6 +47,7 @@ const DEFAULT_PAGE_TITLES: Record<string, string> = {
   "/saved": "Saved Items",
   "/saved-items": "Saved Items",
   "/requests": "My Requests",
+  "/quotations": "Quotations",
   "/shop": "My Shop",
   "/my-shop": "My Shop",
   "/reels": "Reels Console",

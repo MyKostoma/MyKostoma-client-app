@@ -1,11 +1,11 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   Search,
+  FileText,
   Wallet,
   Store,
   Clapperboard,
@@ -32,6 +32,7 @@ import type { SidebarNavItem, SidebarProps } from "./types";
 export const DEFAULT_CONSUMER_NAV_ITEMS: SidebarNavItem[] = [
   { id: "browse", label: "Browse", href: "/dashboard", icon: Home },
   { id: "requests", label: "Requests", href: "/requests", icon: Search },
+  { id: "quotations", label: "Quotations", href: "/quotations", icon: FileText },
   { id: "orders", label: "Orders", href: "/orders", icon: Wallet },
   { id: "shop", label: "Shop", href: "/shop", icon: Store },
   { id: "reels", label: "Reels", href: "/reels", icon: Clapperboard },

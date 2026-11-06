@@ -7,6 +7,8 @@ export * from "../../../providers/dashboard-top-bar-context";
 export * from "./requests-list-top-bar";
 export * from "./request-detail-top-bar";
 export * from "./request-form-top-bar";
+export * from "./quotations-list-top-bar";
+export * from "./quotation-detail-top-bar";
+export * from "./compare-quotations-top-bar";
 export * from "./top-bars";
 export { default } from "./top-bars";
-
