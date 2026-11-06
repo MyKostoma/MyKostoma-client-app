@@ -4,39 +4,43 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  PieChart,
-  ListOrdered,
+  TrendingUp,
+  Search,
+  FileText,
   Store,
-  Film,
   Wallet,
+  Cog,
+  Clapperboard,
+  MessageSquare,
+  Star,
+  IdCard,
+  Bell,
   Settings,
+  LogOut,
   ChevronLeft,
-  Briefcase,
+  BadgeCheck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { SidebarUserCard } from "./sidebar-user-card";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import {
+  logout,
+  selectCurrentUser,
+} from "@/store/slices/authSlice";
+import { clearAuthCookies } from "@/lib/cookies";
+import { baseApi } from "@/store/api/baseApi";
 import type { SidebarNavItem, SidebarProps } from "./types";
 
 export const DEFAULT_PROFESSIONAL_NAV_ITEMS: SidebarNavItem[] = [
-  { id: "overview", label: "Overview", href: "/dashboard", icon: PieChart },
-  {
-    id: "requests",
-    label: "Requests",
-    href: "/requests",
-    icon: ListOrdered,
-    badge: 12,
-    badgeVariant: "primary",
-  },
+  { id: "dashboard", label: "Dashboard", href: "/dashboard", icon: TrendingUp },
+  { id: "requests", label: "Requests", href: "/requests", icon: Search },
+  { id: "quotations", label: "Quotations", href: "/quotations", icon: FileText },
   { id: "my-shop", label: "My Shop", href: "/shop", icon: Store },
-  { id: "reels-console", label: "Reels Console", href: "/reels", icon: Film },
-  {
-    id: "earnings",
-    label: "Earnings",
-    href: "/earnings",
-    icon: Wallet,
-    isDividerBefore: true,
-  },
-  { id: "settings", label: "Settings", href: "/settings", icon: Settings },
+  { id: "orders", label: "Orders", href: "/orders", icon: Wallet },
+  { id: "wallet", label: "Wallet", href: "/wallet", icon: Cog },
+  { id: "reels", label: "Reels", href: "/reels", icon: Clapperboard },
+  { id: "messages", label: "Messages", href: "/messages", icon: MessageSquare },
+  { id: "reviews", label: "Reviews", href: "/reviews", icon: Star },
+  { id: "verification", label: "Verification", href: "/verification", icon: IdCard },
 ];
 
 export function ProfessionalSidebar({
@@ -47,28 +51,53 @@ export function ProfessionalSidebar({
   items = DEFAULT_PROFESSIONAL_NAV_ITEMS,
   header,
   footer,
-  user,
+  user: userProp,
   onLogout,
   collapsible = true,
+  logoHref = "/dashboard",
   className,
 }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const storeUser = useAppSelector(selectCurrentUser);
+  const user = userProp !== undefined ? userProp : storeUser;
 
-  const isItemActive = (item: SidebarNavItem) => {
-    if (activeItemId !== undefined) {
-      return activeItemId === item.id;
-    }
-    if (item.href) {
-      if (item.href === "/dashboard") {
-        return pathname === "/dashboard" || pathname === "/dashboard/";
+  const displayName =
+    user?.fullName ||
+    (user?.firstName ? `${user.firstName} ${user.lastName || ""}`.trim() : "") ||
+    "Marcus Webb";
+  const categoryLabel = user?.category
+    ? `Pro ${String(user.category).replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}`
+    : "Pro Tailor";
+  const avatarUrl = user?.avatarUrl;
+
+  const handleSignOut = async () => {
+    try {
+      if (onLogout) {
+        await onLogout();
+      } else {
+        router.push("/login");
       }
-      return pathname === item.href || pathname.startsWith(`${item.href}/`);
+    } finally {
+      dispatch(logout());
+      clearAuthCookies();
+      dispatch(baseApi.util.resetApiState());
     }
-    return false;
   };
 
-  const handleItemClick = (item: SidebarNavItem) => {
+  const isItemActive = (href?: string, id?: string) => {
+    if (activeItemId !== undefined && id) {
+      return activeItemId === id;
+    }
+    if (!href) return false;
+    if (href === "/dashboard") {
+      return pathname === "/dashboard" || pathname === "/dashboard/";
+    }
+    return pathname === href || pathname.startsWith(`${href}/`);
+  };
+
+  const handleNavClick = (item: SidebarNavItem) => {
     if (item.disabled) return;
     if (item.onClick) {
       item.onClick(item);
@@ -83,7 +112,7 @@ export function ProfessionalSidebar({
     <aside
       aria-label="Professional navigation sidebar"
       className={cn(
-        "relative hidden lg:flex flex-col h-screen shrink-0 bg-card border-r border-border transition-[width] duration-300 ease-in-out select-none z-30",
+        "relative hidden lg:flex flex-col h-screen shrink-0 bg-card border-r border-border transition-[width] duration-300 ease-in-out select-none z-30 justify-between",
         isOpen ? "w-64" : "w-20",
         className
       )}
@@ -105,59 +134,111 @@ export function ProfessionalSidebar({
         </button>
       )}
 
-      {/* Brand Header */}
-      {header || (
-        <div className="h-16 px-4 flex items-center border-b border-border/70 overflow-hidden">
-          <Link
-            href="/"
-            className="flex items-center gap-3 group focus:outline-hidden"
-          >
-            <div className="h-9 w-9 rounded-xl bg-foreground text-background flex items-center justify-center font-bold shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-              <Briefcase className="h-5 w-5" />
-            </div>
-            {isOpen && (
-              <div className="flex flex-col min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-extrabold text-sm tracking-tight text-foreground truncate">
-                    MyKostoma
-                  </span>
-                  <span className="inline-flex items-center px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-primary text-white">
-                    PRO
+      {/* Top Section: Header & User Card */}
+      <div className="flex flex-col shrink-0">
+        {header || (
+          isOpen ? (
+            <div className="p-4 pb-2">
+              <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-secondary/40 border border-border/50">
+                <div className="relative shrink-0">
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt={displayName}
+                      className="h-10 w-10 rounded-full object-cover border border-border/60"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20">
+                      {displayName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .slice(0, 2)
+                        .join("")
+                        .toUpperCase() || "MW"}
+                    </div>
+                  )}
+                  {/* Blue Verified Badge */}
+                  <span className="absolute -bottom-0.5 -right-0.5 h-4 w-4 rounded-full bg-card flex items-center justify-center">
+                    <BadgeCheck className="h-3.5 w-3.5 text-blue-500 fill-blue-500" />
                   </span>
                 </div>
-                <span className="text-[10px] font-medium text-muted-foreground truncate uppercase tracking-wider">
-                  Partner Console
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1">
+                    <p className="text-sm font-semibold text-foreground truncate leading-tight">
+                      {displayName}
+                    </p>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                    {categoryLabel}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="pt-4 pb-2 flex flex-col items-center gap-3">
+              {/* Brand Logo Badge */}
+              <Link
+                href={logoHref}
+                className="h-10 w-10 rounded-xl bg-primary flex items-center justify-center p-2 shadow-xs hover:scale-105 transition-transform"
+                aria-label="MyKostoma Home"
+              >
+                <img
+                  src="/mykostoma_logo_white.png"
+                  alt="MyKostoma"
+                  className="h-5 w-5 object-contain"
+                />
+              </Link>
+              {/* User Avatar with Blue Verified Badge */}
+              <div className="relative">
+                {avatarUrl ? (
+                  <img
+                    src={avatarUrl}
+                    alt={displayName}
+                    className="h-9 w-9 rounded-full object-cover border border-border/60"
+                  />
+                ) : (
+                  <div className="h-9 w-9 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-xs border border-primary/20">
+                    {displayName
+                      .split(" ")
+                      .map((n) => n[0])
+                      .slice(0, 2)
+                      .join("")
+                      .toUpperCase() || "MW"}
+                  </div>
+                )}
+                <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-card flex items-center justify-center">
+                  <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500" />
                 </span>
               </div>
-            )}
-          </Link>
-        </div>
-      )}
+            </div>
+          )
+        )}
 
-      {/* Nav Items List */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const active = isItemActive(item);
+        {/* Main Nav Items */}
+        <nav
+          className={cn(
+            "px-3 py-2 space-y-1 overflow-y-auto max-h-[calc(100vh-270px)]",
+            !isOpen && "px-2"
+          )}
+        >
+          {items.map((item) => {
+            const Icon = item.icon;
+            const active = isItemActive(item.href, item.id);
 
-          return (
-            <React.Fragment key={item.id}>
-              {item.isDividerBefore && (
-                <div className="my-2 border-t border-border/60" />
-              )}
-              <div className="relative group">
+            return (
+              <div key={item.id} className="relative group">
                 <button
                   type="button"
                   disabled={item.disabled}
-                  onClick={() => handleItemClick(item)}
+                  onClick={() => handleNavClick(item)}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer outline-none",
                     item.disabled &&
                       "opacity-50 cursor-not-allowed pointer-events-none",
                     active
-                      ? "bg-primary text-white font-semibold shadow-xs"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/70",
-                    !isOpen && "justify-center px-0"
+                      ? "bg-primary/10 text-primary font-semibold shadow-2xs"
+                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+                    !isOpen && "justify-center px-0 py-2.5"
                   )}
                 >
                   {Icon && (
@@ -165,7 +246,7 @@ export function ProfessionalSidebar({
                       className={cn(
                         "h-5 w-5 shrink-0 transition-colors",
                         active
-                          ? "text-white"
+                          ? "text-primary"
                           : "text-muted-foreground group-hover:text-foreground"
                       )}
                     />
@@ -181,8 +262,8 @@ export function ProfessionalSidebar({
                     <span
                       className={cn(
                         "inline-flex items-center justify-center px-2 py-0.5 rounded-full text-[10px] font-bold leading-3.5 shrink-0 transition-colors",
-                        active
-                          ? "bg-white text-primary"
+                        item.badgeVariant === "secondary"
+                          ? "bg-secondary text-secondary-foreground"
                           : "bg-primary text-white"
                       )}
                     >
@@ -199,20 +280,84 @@ export function ProfessionalSidebar({
                   </div>
                 )}
               </div>
-            </React.Fragment>
-          );
-        })}
-      </nav>
+            );
+          })}
+        </nav>
+      </div>
 
-      {/* Footer User Card */}
+      {/* Bottom Section (Stacked one after the other in both open and collapsed) */}
       {footer || (
-        <SidebarUserCard
-          user={user}
-          isOpen={isOpen}
-          onLogout={onLogout}
-        />
+        <div
+          className={cn(
+            "p-3 border-t border-border/70 shrink-0 space-y-1 mt-auto",
+            !isOpen && "px-2 py-3 flex flex-col items-center"
+          )}
+        >
+          {/* Notifications */}
+          <div className="relative group w-full">
+            <Link
+              href="/notifications"
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer",
+                isItemActive("/notifications")
+                  ? "bg-primary/10 text-primary font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+                !isOpen && "justify-center px-0 py-2.5"
+              )}
+            >
+              <Bell className="h-5 w-5 shrink-0" />
+              {isOpen && <span className="truncate">Notifications</span>}
+            </Link>
+            {!isOpen && (
+              <div className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50 hidden rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background shadow-md group-hover:block whitespace-nowrap">
+                Notifications
+              </div>
+            )}
+          </div>
+
+          {/* Settings */}
+          <div className="relative group w-full">
+            <Link
+              href="/settings"
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors cursor-pointer",
+                isItemActive("/settings")
+                  ? "bg-primary/10 text-primary font-semibold"
+                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
+                !isOpen && "justify-center px-0 py-2.5"
+              )}
+            >
+              <Settings className="h-5 w-5 shrink-0" />
+              {isOpen && <span className="truncate">Settings</span>}
+            </Link>
+            {!isOpen && (
+              <div className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50 hidden rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background shadow-md group-hover:block whitespace-nowrap">
+                Settings
+              </div>
+            )}
+          </div>
+
+          {/* Log Out */}
+          <div className="relative group w-full">
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className={cn(
+                "w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer",
+                !isOpen && "justify-center px-0 py-2.5"
+              )}
+            >
+              <LogOut className="h-5 w-5 shrink-0" />
+              {isOpen && <span className="truncate">Log Out</span>}
+            </button>
+            {!isOpen && (
+              <div className="pointer-events-none absolute left-full ml-3 top-1/2 -translate-y-1/2 z-50 hidden rounded-md bg-foreground px-2 py-1 text-xs font-medium text-background shadow-md group-hover:block whitespace-nowrap">
+                Log Out
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </aside>
   );
 }
-

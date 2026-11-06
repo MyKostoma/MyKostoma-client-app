@@ -10,6 +10,7 @@ import {
 } from "@/store/slices/uiSlice";
 import { ConsumerSidebar } from "./consumer-sidebar";
 import { ProfessionalSidebar } from "./professional-sidebar";
+import { PremiumVendorSidebar } from "./premium-vendor-sidebar";
 import type { SidebarProps } from "./types";
 
 export const SIDEBAR_VARIANTS: Record<
@@ -18,6 +19,8 @@ export const SIDEBAR_VARIANTS: Record<
 > = {
   consumer: ConsumerSidebar,
   professional: ProfessionalSidebar,
+  "premium-vendor": PremiumVendorSidebar,
+  vendor: PremiumVendorSidebar,
 };
 
 export function Sidebar({
@@ -63,6 +66,6 @@ export * from "./types";
 export * from "./sidebar-user-card";
 export * from "./consumer-sidebar";
 export * from "./professional-sidebar";
+export * from "./premium-vendor-sidebar";
 
 export default Sidebar;
-

@@ -3,7 +3,12 @@
 import * as React from "react";
 import type { User, UserRole } from "@/types/user";
 
-export type SidebarVariant = "consumer" | "professional" | (string & {});
+export type SidebarVariant =
+  | "consumer"
+  | "professional"
+  | "premium-vendor"
+  | "vendor"
+  | (string & {});
 
 export interface SidebarNavChild {
   id: string;

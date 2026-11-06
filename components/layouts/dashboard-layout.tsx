@@ -111,7 +111,12 @@ function DashboardLayoutContent({
 
   const effectiveRole = roleProp || storeUserRole || activePerspective || "consumer";
   const effectiveSidebarVariant: SidebarVariant =
-    sidebarVariantProp || (effectiveRole === "professional" ? "professional" : "consumer");
+    sidebarVariantProp ||
+    ((effectiveRole as string) === "premium-vendor" || (effectiveRole as string) === "vendor"
+      ? "premium-vendor"
+      : effectiveRole === "professional"
+      ? "professional"
+      : "consumer");
 
   const effectiveTitle = title || getPageTitle(pathname);
   const effectiveSubtitle =
