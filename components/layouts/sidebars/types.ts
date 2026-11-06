@@ -38,6 +38,7 @@ export interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
   user?: User | null;
   onLogout?: () => void | Promise<void>;
   collapsible?: boolean;
+  logoHref?: string;
   className?: string;
 }
 

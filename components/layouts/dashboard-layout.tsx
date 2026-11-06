@@ -13,7 +13,11 @@ import {
   selectActivePerspective,
 } from "@/store/slices/uiSlice";
 import { Sidebar } from "./sidebars";
-import { TopBar } from "./top-bars";
+import {
+  TopBar,
+  DashboardTopBarProvider,
+  useDashboardTopBar,
+} from "./top-bars";
 import { MobileDrawer } from "./mobile-drawer";
 import type { SidebarVariant } from "./sidebars/types";
 import type { TopBarVariant, BreadcrumbItemConfig } from "./top-bars/types";
@@ -43,7 +47,7 @@ const DEFAULT_PAGE_TITLES: Record<string, string> = {
   "/my-bookings": "My Bookings",
   "/saved": "Saved Items",
   "/saved-items": "Saved Items",
-  "/requests": "Client Requests",
+  "/requests": "My Requests",
   "/shop": "My Shop",
   "/my-shop": "My Shop",
   "/reels": "Reels Console",
@@ -71,11 +75,13 @@ function getPageTitle(pathname: string): string {
   return "Dashboard";
 }
 
-/**
- * Main dashboard layout wrapper that dynamically renders navigation, topbar,
- * and content views according to user role and configurable variants.
- */
-export function DashboardLayout({
+interface DashboardLayoutContentProps extends DashboardLayoutProps {
+  mobileOpen: boolean;
+  onCloseMobile: () => void;
+  onMenuClick: () => void;
+}
+
+function DashboardLayoutContent({
   children,
   role: roleProp,
   sidebarVariant: sidebarVariantProp,
@@ -90,7 +96,10 @@ export function DashboardLayout({
   onSearchClick,
   className,
   contentClassName,
-}: DashboardLayoutProps) {
+  mobileOpen,
+  onCloseMobile,
+  onMenuClick,
+}: DashboardLayoutContentProps) {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectCurrentUser);
@@ -98,12 +107,7 @@ export function DashboardLayout({
   const activePerspective = useAppSelector(selectActivePerspective);
   const sidebarOpen = useAppSelector(selectSidebarOpen);
 
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  // Close mobile drawer on route changes
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+  const { hasCustomTopBar, setPortalTarget } = useDashboardTopBar();
 
   const effectiveRole = roleProp || storeUserRole || activePerspective || "consumer";
   const effectiveSidebarVariant: SidebarVariant =
@@ -141,16 +145,27 @@ export function DashboardLayout({
       <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         {/* Dynamic Top-Bar */}
         {showTopBar && (
-          <TopBar
-            variant={topBarVariant}
-            title={effectiveTitle}
-            subtitle={effectiveSubtitle}
-            breadcrumbs={breadcrumbs}
-            actions={actions}
-            searchPlaceholder={searchPlaceholder}
-            onMenuClick={() => setMobileOpen(true)}
-            onSearchClick={onSearchClick}
-          />
+          <>
+            {/* Slot for pages with custom dynamic top bar */}
+            <div
+              ref={setPortalTarget}
+              className={cn("w-full shrink-0", !hasCustomTopBar && "hidden")}
+            />
+
+            {/* Default TopBar when page has not mounted a custom top bar */}
+            {!hasCustomTopBar && (
+              <TopBar
+                variant={topBarVariant}
+                title={effectiveTitle}
+                subtitle={effectiveSubtitle}
+                breadcrumbs={breadcrumbs}
+                actions={actions}
+                searchPlaceholder={searchPlaceholder}
+                onMenuClick={onMenuClick}
+                onSearchClick={onSearchClick}
+              />
+            )}
+          </>
         )}
 
         {/* Scrollable Main Viewport */}
@@ -167,10 +182,32 @@ export function DashboardLayout({
       {/* Mobile Slide-in Drawer */}
       <MobileDrawer
         isOpen={mobileOpen}
-        onClose={() => setMobileOpen(false)}
+        onClose={onCloseMobile}
         variant={effectiveSidebarVariant}
       />
     </div>
+  );
+}
+
+/**
+ * Main dashboard layout wrapper that dynamically renders navigation, topbar,
+ * and content views according to user role and configurable variants.
+ * Supports dynamic page-specific top bars via `<DashboardTopBarSlot />`.
+ */
+export function DashboardLayout(props: DashboardLayoutProps) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const handleMenuClick = useCallback(() => setMobileOpen(true), []);
+  const handleCloseMobile = useCallback(() => setMobileOpen(false), []);
+
+  return (
+    <DashboardTopBarProvider onMenuClick={handleMenuClick}>
+      <DashboardLayoutContent
+        {...props}
+        mobileOpen={mobileOpen}
+        onCloseMobile={handleCloseMobile}
+        onMenuClick={handleMenuClick}
+      />
+    </DashboardTopBarProvider>
   );
 }
 

@@ -2,14 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
 import {
   RequestForm,
   RequestSubmittedSuccess,
   type RequestFormValues,
 } from "@/components/requests";
+import {
+  DashboardTopBarSlot,
+  RequestFormTopBar,
+} from "@/components/layouts/top-bars";
 
 export interface CreateRequestViewProps {
   initialSubmitted?: boolean;
@@ -53,54 +55,29 @@ export function CreateRequestView({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Top Header & Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-border/60">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => router.push("/requests")}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="size-3.5" />
-            <span>Back to Requests</span>
-          </button>
+    <>
+      {/* Dynamic TopBar mounted into DashboardLayout */}
+      <DashboardTopBarSlot>
+        <RequestFormTopBar
+          title="Create New Request"
+          backLabel="Back to Requests"
+          onBack={() => router.push("/requests")}
+          secondaryActionLabel="Save as Draft"
+          onSecondaryAction={handleSaveDraft}
+          primaryActionLabel="Submit Request"
+          onPrimaryAction={handleSubmit}
+        />
+      </DashboardTopBarSlot>
 
-          <span aria-hidden="true" className="h-4 w-px bg-border" />
-
-          <h1 className="text-base sm:text-lg font-bold text-foreground tracking-tight">
-            Create New Request
-          </h1>
-        </div>
-
-        <div className="flex items-center gap-3 ml-auto">
-          <button
-            type="button"
-            onClick={handleSaveDraft}
-            className="px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-          >
-            Save as Draft
-          </button>
-
-          <Button
-            type="button"
-            variant="default"
-            size="sm"
-            onClick={handleSubmit}
-            className="h-9 px-4 rounded-lg text-xs font-semibold shadow-xs"
-          >
-            Submit Request
-          </Button>
-        </div>
+      <div className="space-y-6">
+        <RequestForm
+          mode="create"
+          values={formValues}
+          onChange={setFormValues}
+          onCancel={() => router.push("/requests")}
+          onSubmit={handleSubmit}
+        />
       </div>
-
-      <RequestForm
-        mode="create"
-        values={formValues}
-        onChange={setFormValues}
-        onCancel={() => router.push("/requests")}
-        onSubmit={handleSubmit}
-      />
-    </div>
+    </>
   );
 }

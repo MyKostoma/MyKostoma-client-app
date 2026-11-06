@@ -1,6 +1,11 @@
 export type RequestStatus = "open" | "in-progress" | "completed" | "closed";
 
-export type RequestTabFilter = "all" | "open" | "in-progress" | "completed";
+export type RequestTabFilter =
+  | "all"
+  | "open"
+  | "in-progress"
+  | "completed"
+  | "closed";
 
 export type RequestsPageViewState =
   | "default"

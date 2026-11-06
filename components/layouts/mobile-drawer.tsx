@@ -3,7 +3,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { X, Sparkles, Briefcase } from "lucide-react";
+import { X, Sparkles, Briefcase, User2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
 import { selectUserRole, selectCurrentUser } from "@/store/slices/authSlice";
@@ -33,6 +33,7 @@ export interface MobileDrawerProps {
   onLogout?: () => void | Promise<void>;
   className?: string;
   children?: React.ReactNode;
+  logoHref?: string;
 }
 
 export function MobileDrawer({
@@ -44,6 +45,7 @@ export function MobileDrawer({
   items: itemsProp,
   title,
   user: userProp,
+  logoHref = "/home",
   onLogout,
   className,
   children,
@@ -66,8 +68,12 @@ export function MobileDrawer({
   const items = itemsProp || defaultItems;
 
   // Close on route change
+  const prevPathnameRef = React.useRef(pathname);
   React.useEffect(() => {
-    onClose();
+    if (prevPathnameRef.current !== pathname) {
+      prevPathnameRef.current = pathname;
+      onClose();
+    }
   }, [pathname, onClose]);
 
   // Handle escape key
@@ -144,30 +150,48 @@ export function MobileDrawer({
         {/* Header */}
         <div className="h-16 px-4 flex items-center justify-between border-b border-border/70 shrink-0">
           <Link
-            href="/"
-            onClick={onClose}
+            href={logoHref}
             className="flex items-center gap-2.5 group"
+            aria-label="MyKostoma Home"
+            onClick={onClose}
           >
-            <div
-              className={cn(
-                "h-8 w-8 rounded-xl flex items-center justify-center font-bold text-white shadow-xs",
-                isProfessional ? "bg-foreground text-background" : "bg-primary"
-              )}
-            >
-              {isProfessional ? (
-                <Briefcase className="h-4 w-4" />
-              ) : (
-                <Sparkles className="h-4 w-4" />
-              )}
-            </div>
-            <div className="flex flex-col">
-              <span className="font-extrabold text-sm tracking-tight text-foreground">
-                MyKostoma
-              </span>
-              <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
-                {isProfessional ? "Partner Portal" : "Consumer Portal"}
-              </span>
-            </div>
+            {isOpen ? (
+              <div className="inline-flex items-center shrink-0">
+                <img
+                  src="/mykostoma_full_logo.png"
+                  alt="MyKostoma"
+                  className="h-7 sm:h-8 w-auto object-contain dark:hidden select-none"
+                />
+                <img
+                  src="/mykostoma_full_logo_white.png"
+                  alt="MyKostoma"
+                  className="h-7 sm:h-8 w-auto object-contain hidden dark:block select-none"
+                />
+              </div>
+            ) : (
+              <>
+                <div
+                  className={cn(
+                    "h-8 w-8 rounded-xl flex items-center justify-center font-bold text-white shadow-xs",
+                    isProfessional ? "bg-foreground text-background" : "bg-primary"
+                  )}
+                >
+                  {isProfessional ? (
+                    <Briefcase className="h-4 w-4" />
+                  ) : (
+                    <User2 className="h-4 w-4" />
+                  )}
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-extrabold text-sm tracking-tight text-foreground">
+                    MyKostoma
+                  </span>
+                  <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+                    {isProfessional ? "Partner Portal" : "Consumer Portal"}
+                  </span>
+                </div>
+              </>
+            )}
           </Link>
 
           <button
@@ -200,7 +224,7 @@ export function MobileDrawer({
                       className={cn(
                         "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer outline-none",
                         item.disabled &&
-                          "opacity-50 cursor-not-allowed pointer-events-none",
+                        "opacity-50 cursor-not-allowed pointer-events-none",
                         active
                           ? isProfessional
                             ? "bg-primary text-white font-semibold shadow-xs"

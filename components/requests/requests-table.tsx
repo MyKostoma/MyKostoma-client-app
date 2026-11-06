@@ -16,6 +16,7 @@ export const REQUEST_FILTER_TABS: RequestTabOption[] = [
   { id: "open", label: "Open" },
   { id: "in-progress", label: "In Progress" },
   { id: "completed", label: "Completed" },
+  { id: "closed", label: "Closed" },
 ];
 
 export interface RequestsFilterTabsProps {

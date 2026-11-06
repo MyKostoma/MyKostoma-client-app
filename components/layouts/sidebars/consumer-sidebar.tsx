@@ -49,6 +49,7 @@ export function ConsumerSidebar({
   user,
   onLogout,
   collapsible = true,
+  logoHref = "/home",
   className,
 }: SidebarProps) {
   const pathname = usePathname();
@@ -106,23 +107,38 @@ export function ConsumerSidebar({
 
       {/* Brand Header */}
       {header || (
-        <div className="h-16 px-4 flex items-center border-b border-border/70 overflow-hidden">
+        <div className="h-16 px-re flex items-center border-b border-border/70 overflow-hidden">
           <Link
-            href="/"
-            className="flex items-center gap-3 group focus:outline-hidden"
+            href={logoHref}
+            className="flex items-center group focus:outline-hidden"
+            aria-label="MyKostoma Home"
           >
-            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center text-white font-bold shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-              <Sparkles className="h-5 w-5" />
-            </div>
-            {isOpen && (
-              <div className="flex flex-col min-w-0">
-                <span className="font-extrabold text-sm tracking-tight text-foreground truncate">
-                  MyKostoma
-                </span>
-                <span className="text-[10px] font-medium text-muted-foreground truncate uppercase tracking-wider">
-                  Consumer Portal
-                </span>
+            {isOpen ? (
+              <div className="inline-flex items-center shrink-0">
+                <img
+                  src="/mykostoma_full_logo.png"
+                  alt="MyKostoma"
+                  className="h-7 sm:h-8 w-auto object-contain dark:hidden select-none"
+                />
+                <img
+                  src="/mykostoma_full_logo_white.png"
+                  alt="MyKostoma"
+                  className="h-7 sm:h-8 w-auto object-contain hidden dark:block select-none"
+                />
               </div>
+            ) : (
+              <div className="inline-flex items-center shrink-0">
+                <img
+                  src="/mykostoma_logo.png"
+                  alt="MyKostoma"
+                  className="h-7 sm:h-8 w-auto object-contain dark:hidden select-none"
+                />
+                <img
+                  src="/mykostoma_logo_white.png"
+                  alt="MyKostoma"
+                  className="h-7 sm:h-8 w-auto object-contain hidden dark:block select-none"
+                />
+                </div>
             )}
           </Link>
         </div>

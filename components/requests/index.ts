@@ -7,3 +7,9 @@ export * from "./request-submitted-success";
 export * from "./close-request-modal";
 export * from "./request-workspace-detail";
 export * from "./request-marketplace-detail";
+export {
+  RequestsListTopBar,
+  RequestDetailTopBar,
+  RequestFormTopBar,
+  DashboardTopBarSlot,
+} from "@/components/layouts/top-bars";
