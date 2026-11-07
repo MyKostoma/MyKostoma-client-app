@@ -2,10 +2,7 @@
 
 import { MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  OrderDetailModeSwitch,
-  OrderDetailOverview,
-} from "@/components/orders/order-detail-overview";
+import { OrderDetailOverview } from "@/components/orders/order-detail-overview";
 import { OrderStatusWorkspace } from "@/components/orders/order-status-workspace";
 import { OrderCompletionWorkspace } from "@/components/orders/order-completion-workspace";
 import { ReleaseMilestoneModal } from "@/components/modals/order-modals";
@@ -112,11 +109,6 @@ export function OrderDetailView({
             </Button>
           )}
         </div>
-
-        <OrderDetailModeSwitch
-          activeMode={activeMode}
-          onModeChange={setActiveMode}
-        />
 
         {activeMode === "overview" && (
           <OrderDetailOverview

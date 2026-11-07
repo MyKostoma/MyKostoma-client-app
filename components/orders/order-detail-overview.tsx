@@ -1,6 +1,5 @@
 "use client";
 
-import { useRef, useCallback, useEffect } from "react";
 import {
   AlertTriangle,
   BadgeCheck,
@@ -15,94 +14,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { OrderStatusBadge } from "./order-status-badge";
-import type {
-  OrderDetailModeSwitchProps,
-  OrderDetailOverviewProps,
-  OrderDetailViewMode,
-} from "./types";
+import type { OrderDetailOverviewProps } from "./types";
 
-export type {
-  OrderDetailModeSwitchProps,
-  OrderDetailOverviewProps,
-} from "./types";
-
-const DETAIL_MODES: { id: OrderDetailViewMode; label: string }[] = [
-  { id: "overview", label: "Overview & Milestones" },
-  { id: "status", label: "Order Status & Escrow" },
-  { id: "completion", label: "Order Completion" },
-];
-
-export function OrderDetailModeSwitch({
-  activeMode,
-  onModeChange,
-  className,
-}: OrderDetailModeSwitchProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
-
-  const scrollToMode = useCallback(
-    (modeId: OrderDetailViewMode, smooth = true) => {
-      const container = containerRef.current;
-      const tabEl = tabRefs.current[modeId];
-      if (!container || !tabEl) return;
-
-      const scrollTarget =
-        tabEl.offsetLeft - container.offsetWidth / 2 + tabEl.offsetWidth / 2;
-
-      container.scrollTo({
-        left: Math.max(0, scrollTarget),
-        behavior: smooth ? "smooth" : "auto",
-      });
-    },
-    []
-  );
-
-  useEffect(() => {
-    const frameId = requestAnimationFrame(() => {
-      scrollToMode(activeMode, true);
-    });
-    return () => cancelAnimationFrame(frameId);
-  }, [activeMode, scrollToMode]);
-
-  return (
-    <div
-      ref={containerRef}
-      role="tablist"
-      aria-label="Order detail view sections"
-      className={cn(
-        "w-full flex items-center gap-1.5 overflow-x-auto no-scrollbar scroll-smooth p-1.5 rounded-2xl bg-card border border-border/80 shadow-2xs sm:w-fit",
-        className
-      )}
-    >
-      {DETAIL_MODES.map((mode) => {
-        const isActive = activeMode === mode.id;
-        return (
-          <button
-            key={mode.id}
-            ref={(el) => {
-              tabRefs.current[mode.id] = el;
-            }}
-            type="button"
-            role="tab"
-            aria-selected={isActive}
-            onClick={() => {
-              onModeChange(mode.id);
-              scrollToMode(mode.id, true);
-            }}
-            className={cn(
-              "px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer shrink-0 select-none",
-              isActive
-                ? "bg-primary text-white font-bold shadow-xs"
-                : "text-muted-foreground hover:text-foreground hover:bg-secondary/60"
-            )}
-          >
-            {mode.label}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+export type { OrderDetailOverviewProps } from "./types";
 
 export function OrderDetailOverview({
   order,

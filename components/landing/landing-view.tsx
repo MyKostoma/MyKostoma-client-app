@@ -57,7 +57,7 @@ export function LandingView() {
     router.push("/register");
   };
   const handleCategorySelect = (id: string) => {
-    router.push(`/category/${id}`);
+    router.push(`/search/category/${id}`);
   };
   const handleConsumerBrowse = () => {
     dispatch(setRegistrationRole("consumer"));

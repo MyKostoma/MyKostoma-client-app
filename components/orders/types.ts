@@ -129,12 +129,6 @@ export interface OrderSupportCardProps {
   className?: string;
 }
 
-export interface OrderDetailModeSwitchProps {
-  activeMode: OrderDetailViewMode;
-  onModeChange: (mode: OrderDetailViewMode) => void;
-  className?: string;
-}
-
 export interface OrderDetailOverviewProps {
   order: ConsumerOrderItem;
   onViewOriginalQuote: () => void;
