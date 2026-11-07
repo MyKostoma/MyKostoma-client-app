@@ -1,4 +1,16 @@
+import type { Metadata } from "next";
+import { PAGE_METADATA_GENERATORS } from "@/config/metadata";
 import { EditRequestView } from "@/features/requests/edit-request-view";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const decodedId = decodeURIComponent(id);
+  return PAGE_METADATA_GENERATORS.requestEdit(decodedId);
+}
 
 export default async function EditRequestPage({
   params,

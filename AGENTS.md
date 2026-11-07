@@ -51,3 +51,9 @@ For every feature module in `features/<module>/`:
 - **No Barrel `index.ts` Files**: Never create `index.ts` files that only serve as re-export barrels. Import directly from the concrete file path.
 - **Named React Imports**: Always import directly from `"react"` (e.g. `import { useState, useMemo, type ReactNode } from "react"`). Never use `import * as React from "react"` or `React.useState`.
 - **Minimal, Meaningful Comments**: Do not clutter code with obvious or boilerplate comments; preserve only comments that explain non-trivial logic.
+
+## 6. Page Metadata & Next.js Route Standards
+- **Mandatory Metadata on Every Page**: Every route page (`app/**/page.tsx`) must export either a static `metadata: Metadata` object or a `generateMetadata` function (for dynamic segments like `[id]`).
+- **Title Template Convention**: The root layout (`app/layout.tsx`) defines `title: { default: "MyKostoma", template: "%s | MyKostoma" }`. Child pages should define `title: "<Page Name>"` so Next.js automatically outputs `"<Page Name> | MyKostoma"`.
+- **Server Component Page Wrapper**: Always keep `app/**/page.tsx` as a Server Component (never add `"use client"` directly to `page.tsx`). Client interactivity, hooks, and state belong in feature views (`features/<module>/`) or presentational components (`components/<module>/`).
+

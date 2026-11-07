@@ -1,4 +1,8 @@
+import type { Metadata } from "next";
+import { PAGE_METADATA } from "@/config/metadata";
 import { CompareQuotationsView } from "@/features/quotations/compare-quotations-view";
+
+export const metadata: Metadata = PAGE_METADATA.quotationsCompare;
 
 export default async function CompareQuotationsPage({
   searchParams,
@@ -15,4 +19,3 @@ export default async function CompareQuotationsPage({
 
   return <CompareQuotationsView selectedIds={selectedIds} />;
 }
-

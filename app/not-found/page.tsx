@@ -3,12 +3,10 @@ import Link from "next/link";
 import { Compass, Search, Grid, LayoutDashboard, UserCheck } from "lucide-react";
 import Header from "@/components/layouts/headers/headers";
 import { Footer } from "@/components/layouts/footers/footers";
+import { PAGE_METADATA } from "@/config/metadata";
 import { NotFoundActions } from "./not-found-actions";
 
-export const metadata: Metadata = {
-  title: "404 - Page Not Found | MyKostoma",
-  description: "The page you are looking for does not exist on MyKostoma.",
-};
+export const metadata: Metadata = PAGE_METADATA.notFound;
 
 export default function NotFoundPage() {
   const quickLinks = [

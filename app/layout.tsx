@@ -3,6 +3,8 @@ import { Inter, Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/providers/providers";
 
+import { SITE_METADATA } from "@/config/metadata";
+
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -17,8 +19,11 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "MyKostoma",
-  description: "Comprehensive UI components for standardized actions and triggers.",
+  title: {
+    default: SITE_METADATA.defaultTitle,
+    template: SITE_METADATA.titleTemplate,
+  },
+  description: SITE_METADATA.defaultDescription,
 };
 
 export default function RootLayout({
