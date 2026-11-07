@@ -35,11 +35,6 @@ export const protectedRoutes: RouteConfig[] = [
     redirectTo: "/login",
   },
   {
-    path: "/reels-console*",
-    roles: ["professional"],
-    redirectTo: "/login",
-  },
-  {
     path: "/earnings*",
     roles: ["professional"],
     redirectTo: "/login",
@@ -80,6 +75,11 @@ export const protectedRoutes: RouteConfig[] = [
   },
   {
     path: "/requests*",
+    roles: ["consumer", "professional"],
+    redirectTo: "/login",
+  },
+  {
+    path: "/reels*",
     roles: ["consumer", "professional"],
     redirectTo: "/login",
   },

@@ -51,7 +51,7 @@ export function getRoleDestination(role: UserRole | string | null | undefined): 
   const normalized = normalizeRole(role) ?? "consumer";
   if (normalized === "professional") {
     return {
-      href: "/pro/overview",
+      href: "/overview",
       destinationLabel: "Professional Workspace",
       roleLabel: RoleDisplayNames.professional,
     };

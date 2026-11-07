@@ -11,15 +11,15 @@ import {
   selectSidebarOpen,
   selectActivePerspective,
 } from "@/store/slices/uiSlice";
-import { Sidebar } from "./sidebars";
+import { Sidebar } from "../sidebars";
 import {
   TopBar,
   DashboardTopBarProvider,
   useDashboardTopBar,
-} from "./top-bars";
-import { MobileDrawer } from "./mobile-drawer";
-import type { SidebarVariant } from "./sidebars/types";
-import type { TopBarVariant, BreadcrumbItemConfig } from "./top-bars/types";
+} from "../top-bars";
+import { MobileDrawer } from "../mobile-drawer";
+import type { SidebarVariant } from "../sidebars/types";
+import type { TopBarVariant, BreadcrumbItemConfig } from "../top-bars/types";
 import type { UserRole } from "@/types/user";
 
 export interface DashboardLayoutProps {
@@ -115,16 +115,16 @@ function DashboardLayoutContent({
     ((effectiveRole as string) === "premium-vendor" || (effectiveRole as string) === "vendor"
       ? "premium-vendor"
       : effectiveRole === "professional"
-      ? "professional"
-      : "consumer");
+        ? "professional"
+        : "consumer");
 
   const effectiveTitle = title || getPageTitle(pathname);
   const effectiveSubtitle =
     subtitle !== undefined
       ? subtitle
       : user
-      ? `Welcome back, ${user.firstName || user.fullName || "there"}.`
-      : undefined;
+        ? `Welcome back, ${user.firstName || user.fullName || "there"}.`
+        : undefined;
 
   const handleToggleSidebar = useCallback(() => {
     dispatch(toggleSidebar());

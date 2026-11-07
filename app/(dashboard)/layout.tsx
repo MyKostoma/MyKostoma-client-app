@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DashboardRoutesShell } from "@/components/layouts/dashboard-routes-shell";
+import { DashboardRoutesShell } from "@/components/layouts/dashboard/dashboard-routes-shell";
 
 export const metadata: Metadata = {
   title: "Dashboard | MyKostoma",

@@ -3,32 +3,28 @@
 import { ArrowLeft, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useDashboardMobileMenu } from "../../../providers/dashboard-top-bar-context";
+import { useDashboardMobileMenu } from "../../../../providers/dashboard-top-bar-context";
 
-export interface RequestFormTopBarProps {
-  title: string;
-  backLabel?: string;
-  onBack: () => void;
-  onSecondaryAction?: () => void;
-  secondaryActionLabel?: string;
-  primaryActionLabel: string;
-  onPrimaryAction: () => void;
+export interface RequestDetailTopBarProps {
+  requestCode: string;
+  onBackToRequests: () => void;
+  onEditRequest?: () => void;
+  onCloseRequest?: () => void;
+  canClose?: boolean;
   onMenuClick?: () => void;
   showUtilities?: boolean;
   className?: string;
 }
 
-export function RequestFormTopBar({
-  title,
-  backLabel = "Back to Requests",
-  onBack,
-  onSecondaryAction,
-  secondaryActionLabel,
-  primaryActionLabel,
-  onPrimaryAction,
+export function RequestDetailTopBar({
+  requestCode,
+  onBackToRequests,
+  onEditRequest,
+  onCloseRequest,
+  canClose = true,
   onMenuClick,
   className,
-}: RequestFormTopBarProps) {
+}: RequestDetailTopBarProps) {
   const contextMenuClick = useDashboardMobileMenu();
   const effectiveMenuClick = onMenuClick ?? contextMenuClick;
 
@@ -53,45 +49,48 @@ export function RequestFormTopBar({
 
         <button
           type="button"
-          onClick={onBack}
+          onClick={onBackToRequests}
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
         >
           <ArrowLeft className="size-3.5" />
-          <span className="hidden sm:inline">{backLabel}</span>
+          <span className="hidden sm:inline">Back to Requests</span>
           <span className="sm:hidden">Back</span>
         </button>
 
         <span aria-hidden="true" className="h-4 w-px bg-border shrink-0" />
 
-        <h1 className="text-base sm:text-lg font-bold text-foreground tracking-tight truncate">
-          {title}
-        </h1>
+        <span className="text-xs sm:text-sm font-bold text-foreground tracking-tight truncate">
+          {requestCode}
+        </span>
       </div>
 
-      <div className="hidden md:flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
-        {onSecondaryAction && secondaryActionLabel && (
-          <button
+      <div className="hidden sm:flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
+        {canClose && onCloseRequest && (
+          <Button
             type="button"
-            onClick={onSecondaryAction}
-            className="px-3 py-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            variant="outline"
+            size="sm"
+            onClick={onCloseRequest}
+            className="h-9 px-3.5 sm:px-4 rounded-lg text-xs font-semibold"
           >
-            {secondaryActionLabel}
-          </button>
+            Close Request
+          </Button>
         )}
 
-        <Button
-          type="button"
-          variant="default"
-          size="sm"
-          onClick={onPrimaryAction}
-          className="h-9 px-4 rounded-lg text-xs font-semibold shadow-xs"
-        >
-          {primaryActionLabel}
-        </Button>
+        {onEditRequest && (
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={onEditRequest}
+            className="h-9 px-3.5 sm:px-4 rounded-lg text-xs font-semibold shadow-xs"
+          >
+            Edit Request
+          </Button>
+        )}
       </div>
     </div>
   );
 }
 
-export default RequestFormTopBar;
-
+export default RequestDetailTopBar;

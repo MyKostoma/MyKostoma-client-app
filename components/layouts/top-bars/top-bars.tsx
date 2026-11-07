@@ -3,7 +3,7 @@
 import * as React from "react";
 import { DashboardTopBar } from "./dashboard-top-bar";
 import { HeaderTopBar } from "./header-top-bar";
-import { MinimalTopBar } from "./minimal-top-bar";
+import { MinimalTopBar } from "./quotations/minimal-top-bar";
 import type { TopBarProps } from "./types";
 
 export const TOP_BAR_VARIANTS: Record<
@@ -35,7 +35,7 @@ export const Topbar = TopBar;
 export * from "./types";
 export * from "./dashboard-top-bar";
 export * from "./header-top-bar";
-export * from "./minimal-top-bar";
+export * from "./quotations/minimal-top-bar";
 
 export default TopBar;
 

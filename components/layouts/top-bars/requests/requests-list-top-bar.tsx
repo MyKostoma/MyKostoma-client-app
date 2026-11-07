@@ -4,7 +4,7 @@ import { Menu, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/form-fields";
 import { cn } from "@/lib/utils";
-import { useDashboardMobileMenu } from "../../../providers/dashboard-top-bar-context";
+import { useDashboardMobileMenu } from "../../../../providers/dashboard-top-bar-context";
 
 export interface RequestsListTopBarProps {
   totalCountLabel?: string;
@@ -55,7 +55,7 @@ export function RequestsListTopBar({
           </span>
         </div>
       </div>
-      
+
       <div className="hidden md:flex items-center gap-2.5 sm:gap-3 shrink-0 ml-auto">
         <div className="w-36 sm:w-56 md:w-64">
           <SearchInput

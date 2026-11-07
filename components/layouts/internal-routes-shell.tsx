@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import Header from "@/components/layouts/headers";
 import { Footer } from "@/components/layouts/footers";
-import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { DashboardLayout } from "@/components/layouts/dashboard/dashboard-layout";
 import { getDashboardRouteConfig } from "@/lib/route-config";
 
 export interface InternalRoutesShellProps {

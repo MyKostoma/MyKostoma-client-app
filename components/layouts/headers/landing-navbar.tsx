@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Sun, Moon, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useHeaders } from "@/components/layouts/hooks/useHeaders";
+import { useHeaders } from "@/components/layouts/headers/useHeaders";
 import type { LandingNavbarProps } from "./types";
 
 export function LandingNavbar({

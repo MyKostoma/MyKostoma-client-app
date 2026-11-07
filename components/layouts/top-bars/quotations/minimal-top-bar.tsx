@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { TopBarProps } from "./types";
+import type { TopBarProps } from "../types";
 
 export function MinimalTopBar({
   title,

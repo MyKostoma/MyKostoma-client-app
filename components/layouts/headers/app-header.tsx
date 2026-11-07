@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import NotificationModal from "@/components/modals/notification-modal";
-import { useHeaders } from "@/components/layouts/hooks/useHeaders";
+import { useHeaders } from "@/components/layouts/headers/useHeaders";
 import type { AppHeaderProps } from "./types";
 
 export function AppHeader({
