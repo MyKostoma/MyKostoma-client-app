@@ -1,21 +1,8 @@
 import type { Metadata } from "next";
-import { PAGE_METADATA_GENERATORS } from "@/config/metadata";
+import { PAGE_METADATA } from "@/config/metadata";
 import { OrderDetailView } from "@/features/orders/order-detail-view";
-import { DEFAULT_CONSUMER_ORDERS } from "@/features/orders/data";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}): Promise<Metadata> {
-  const { id } = await params;
-  const decodedId = decodeURIComponent(id);
-  const matched = DEFAULT_CONSUMER_ORDERS.find(
-    (o) => o.id === decodedId || o.code === decodedId
-  );
-
-  return PAGE_METADATA_GENERATORS.orderStatus(matched?.code ?? decodedId);
-}
+export const metadata: Metadata = PAGE_METADATA.orderStatusDefault;
 
 export default async function OrderStatusPage({
   params,

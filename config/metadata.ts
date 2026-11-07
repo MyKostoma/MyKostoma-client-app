@@ -103,6 +103,44 @@ export const PAGE_METADATA = {
       "Track active service jobs, inspect milestones, release escrow funds, and view receipts on MyKostoma.",
   },
 
+  // Parameterized Route Fallback Defaults
+  categorySearchDefault: {
+    title: "Category Search",
+    description: "Browse verified service providers by category on MyKostoma.",
+  },
+  requestDetailDefault: {
+    title: "Request Details",
+    description: "View detailed service request specifications and received artisan bids on MyKostoma.",
+  },
+  requestEditDefault: {
+    title: "Edit Service Request",
+    description: "Update your service request details, budget, and project schedule on MyKostoma.",
+  },
+  quotationDetailDefault: {
+    title: "Quotation Details",
+    description: "Inspect detailed quotation breakdown, milestone pricing, and artisan credentials on MyKostoma.",
+  },
+  quotationRevisionDefault: {
+    title: "Request Quotation Revision",
+    description: "Submit feedback and request revisions for received artisan quotations on MyKostoma.",
+  },
+  orderDetailDefault: {
+    title: "Order Details",
+    description: "Track active service order progress, milestones, and deliverables on MyKostoma.",
+  },
+  orderCompletionDefault: {
+    title: "Complete Order",
+    description: "Review and approve completed service orders and release escrow payments on MyKostoma.",
+  },
+  orderFeedbackDefault: {
+    title: "Order Feedback",
+    description: "Leave feedback and rating for completed service orders on MyKostoma.",
+  },
+  orderStatusDefault: {
+    title: "Order Status",
+    description: "Track active order progress and milestones on MyKostoma.",
+  },
+
   // Not Found
   notFound: {
     title: "404 - Page Not Found",
