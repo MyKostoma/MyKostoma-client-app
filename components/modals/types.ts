@@ -36,3 +36,32 @@ export interface AcceptQuotationModalProps {
   onClose: () => void;
   onConfirmAccept: () => void;
 }
+
+export interface ReleaseMilestoneModalProps {
+  isOpen: boolean;
+  orderCode: string;
+  orderTitle: string;
+  providerName: string;
+  milestoneTitle: string;
+  releaseAmount: string;
+  onClose: () => void;
+  onConfirmRelease: () => void;
+}
+
+export interface CancelOrderModalProps {
+  isOpen: boolean;
+  orderCode: string;
+  providerName: string;
+  onClose: () => void;
+  onConfirmCancel: (reason: string) => void;
+}
+
+export interface RaiseDisputeModalProps {
+  isOpen: boolean;
+  orderCode: string;
+  providerName: string;
+  escrowAmount: string;
+  onClose: () => void;
+  onSubmitDispute: (reason: string, description: string) => void;
+}
+

@@ -48,6 +48,7 @@ const DEFAULT_PAGE_TITLES: Record<string, string> = {
   "/saved-items": "Saved Items",
   "/requests": "My Requests",
   "/quotations": "Quotations",
+  "/orders": "My Orders",
   "/shop": "My Shop",
   "/my-shop": "My Shop",
   "/reels": "Reels Console",
