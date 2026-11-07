@@ -6,7 +6,6 @@ import {
   FileQuestion,
   MessageSquare,
   Plus,
-  Sparkles,
   Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -109,7 +108,7 @@ export function OrderCard({
               </span>
             ) : isPending ? (
               <span className="inline-flex items-center gap-1 text-muted-foreground">
-                <Sparkles className="size-3" />
+                  <Star className="size-3 fill-muted-foreground/70 text-muted-foreground" />
                 <span>{order.escrowStatusLabel}</span>
               </span>
             ) : (
