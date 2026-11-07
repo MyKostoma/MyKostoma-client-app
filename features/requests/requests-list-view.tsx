@@ -1,68 +1,39 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { Plus } from "lucide-react";
 import {
   RequestsFilterTabs,
   RequestsTableCard,
   RequestSupportHelpCard,
-  RequestsErrorState,
-  type ConsumerRequestItem,
-  type RequestTabFilter,
-} from "@/components/requests";
+} from "@/components/requests/requests-table";
 import {
-  DashboardTopBarSlot,
-  RequestsListTopBar,
-} from "@/components/layouts/top-bars";
-import { DEFAULT_CONSUMER_REQUESTS } from "./data";
+  RequestsErrorState,
+} from "@/components/requests/requests-state-cards";
+import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
+import { RequestsListTopBar } from "@/components/layouts/top-bars/requests/requests-list-top-bar";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/form-fields";
-import { Plus } from "lucide-react";
+import { useRequestsListService } from "./services/requestsApi";
+import type { RequestsListViewProps } from "./types";
 
-export interface RequestsListViewProps {
-  requests?: ConsumerRequestItem[];
-  totalCountLabel?: string;
-  error?: string | null;
-  onRetry?: () => void;
-}
+export type { RequestsListViewProps } from "./types";
 
 export function RequestsListView({
-  requests = DEFAULT_CONSUMER_REQUESTS,
+  requests,
   totalCountLabel = "12 Total",
   error = null,
   onRetry,
 }: RequestsListViewProps) {
-  const router = useRouter();
-  const [activeTab, setActiveTab] = useState<RequestTabFilter>("all");
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const filteredRequests = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
-    return requests.filter((req) => {
-      if (activeTab !== "all" && req.status !== activeTab) {
-        return false;
-      }
-      if (q) {
-        const text =
-          `${req.title} ${req.category} ${req.location} ${req.code}`.toLowerCase();
-        if (!text.includes(q)) return false;
-      }
-      return true;
-    });
-  }, [requests, activeTab, searchQuery]);
-
-  const handleViewDetails = (request: ConsumerRequestItem) => {
-    router.push(`/requests/${encodeURIComponent(request.id)}`);
-  };
-
-  const handleCreateRequest = () => {
-    router.push("/requests/new");
-  };
-
-  const handleContactSupport = () => {
-    toast.info("Connecting you with MyKostoma 24/7 Support...");
-  };
+  const {
+    activeTab,
+    setActiveTab,
+    searchQuery,
+    setSearchQuery,
+    filteredRequests,
+    handleViewDetails,
+    handleCreateRequest,
+    handleContactSupport,
+  } = useRequestsListService(requests);
 
   return (
     <>
@@ -98,7 +69,7 @@ export function RequestsListView({
             <span className="sm:hidden">New</span>
           </Button>
         </div>
-      
+
         <RequestsFilterTabs
           activeTab={activeTab}
           onTabChange={setActiveTab}

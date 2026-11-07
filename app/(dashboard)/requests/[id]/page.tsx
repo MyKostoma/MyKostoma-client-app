@@ -1,4 +1,4 @@
-import { RequestDetailView } from "@/features/requests";
+import { RequestDetailView } from "@/features/requests/request-detail-view";
 
 export default async function RequestDetailPage({
   params,

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Compass, Search, Grid, LayoutDashboard, UserCheck } from "lucide-react";
-import Header from "@/components/layouts/headers";
-import { Footer } from "@/components/layouts/footers";
+import Header from "@/components/layouts/headers/headers";
+import { Footer } from "@/components/layouts/footers/footers";
 import { NotFoundActions } from "./not-found-actions";
 
 export const metadata: Metadata = {

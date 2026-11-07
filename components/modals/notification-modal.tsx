@@ -14,19 +14,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Notification } from "@/store/slices/uiSlice";
+import type { NotificationModalProps } from "./types";
 
-export interface NotificationModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  notifications: Notification[];
-  onMarkAsRead: (id: string) => void;
-  onMarkSelectedAsRead?: (ids: string[]) => void;
-  onMarkAllAsRead: () => void;
-  onRemoveNotification: (id: string) => void;
-  onClearAll: () => void;
-  onRestoreMock: () => void;
-  className?: string;
-}
+export type { NotificationModalProps } from "./types";
 
 export function NotificationModal({
   isOpen,

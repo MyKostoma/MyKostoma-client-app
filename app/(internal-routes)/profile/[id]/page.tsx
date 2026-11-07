@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { ProfileView } from "@/features/profile";
+import { ProfileView } from "@/features/profile/profile-view";
 import { getProfessionalProfileById } from "@/features/profile/data";
 
 export interface ProfileDynamicPageProps {

@@ -1,13 +1,16 @@
-import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import type { AuthAltActionProps, AuthCardProps } from "./types";
 
 export function AuthLogo({ className }: { className?: string }) {
   return (
     <Link
       href="/"
       aria-label="MyKostoma Home"
-      className={cn("inline-flex items-center transition-opacity hover:opacity-90", className)}
+      className={cn(
+        "inline-flex items-center transition-opacity hover:opacity-90",
+        className
+      )}
     >
       <img
         src="/mykostoma_full_logo.png"
@@ -22,16 +25,6 @@ export function AuthLogo({ className }: { className?: string }) {
     </Link>
   );
 }
-
-export interface AuthCardProps {
-  title: string;
-  subtitle?: React.ReactNode;
-  header?: React.ReactNode;
-  size?: "md" | "lg";
-  children: React.ReactNode;
-  className?: string;
-}
-
 
 export function AuthCard({
   title,
@@ -51,7 +44,9 @@ export function AuthCard({
     >
       <div className="flex flex-col items-center text-center">
         {header ?? <AuthLogo />}
-        <h1 className="mt-6 text-xl sm:text-2xl font-bold text-foreground">{title}</h1>
+        <h1 className="mt-6 text-xl sm:text-2xl font-bold text-foreground">
+          {title}
+        </h1>
         {subtitle && (
           <p className="mt-2 text-sm text-muted-foreground max-w-xs sm:max-w-sm">
             {subtitle}
@@ -63,16 +58,7 @@ export function AuthCard({
   );
 }
 
-
-export function AuthAltAction({
-  text,
-  linkText,
-  href,
-}: {
-  text: string;
-  linkText: string;
-  href: string;
-}) {
+export function AuthAltAction({ text, linkText, href }: AuthAltActionProps) {
   return (
     <p className="mt-6 border-t border-border pt-5 text-center text-sm text-muted-foreground">
       {text}{" "}

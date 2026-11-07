@@ -1,11 +1,21 @@
 "use client";
 
-import * as React from "react";
-import { ArrowRight, ChevronLeft, Faucet, Zap, Mop, Flower2, BookOpen, CalendarCheck } from "lucide-react";
+import { useState } from "react";
+import {
+  ArrowRight,
+  ChevronLeft,
+  Faucet,
+  Zap,
+  Mop,
+  Flower2,
+  BookOpen,
+  CalendarCheck,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/form-fields";
 import { AuthCard } from "./auth-card";
 import { SelectableCard } from "./selectable-card";
+import type { CategoryStepProps } from "./types";
 
 export const SERVICE_CATEGORIES = [
   { id: "plumbing", label: "Plumbing", icon: Faucet },
@@ -16,16 +26,6 @@ export const SERVICE_CATEGORIES = [
   { id: "event-planning", label: "Event Planning", icon: CalendarCheck },
 ];
 
-export interface CategoryStepProps {
-  value: string | null;
-  onChange: (id: string) => void;
-  onSubmit: () => void;
-  onBack: () => void;
-  backLabel?: string;
-  stepLabel?: string;
-  loading?: boolean;
-}
-
 export function CategoryStep({
   value,
   onChange,
@@ -35,7 +35,7 @@ export function CategoryStep({
   stepLabel = "Step 3 of 4",
   loading,
 }: CategoryStepProps) {
-  const [query, setQuery] = React.useState("");
+  const [query, setQuery] = useState("");
   const filtered = SERVICE_CATEGORIES.filter((c) =>
     c.label.toLowerCase().includes(query.trim().toLowerCase())
   );
@@ -53,7 +53,11 @@ export function CategoryStep({
         aria-label="Search categories"
       />
 
-      <div role="radiogroup" aria-label="Service category" className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <div
+        role="radiogroup"
+        aria-label="Service category"
+        className="mt-6 grid grid-cols-2 sm:grid-cols-3 gap-3"
+      >
         {filtered.map((c) => (
           <SelectableCard
             key={c.id}
@@ -90,7 +94,7 @@ export function CategoryStep({
             onClick={onBack}
             disabled={loading}
           >
-            {backLabel} 
+            {backLabel}
           </Button>
           <span className="text-xs text-muted-foreground">{stepLabel}</span>
         </div>

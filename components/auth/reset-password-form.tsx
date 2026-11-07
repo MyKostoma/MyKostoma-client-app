@@ -1,40 +1,32 @@
 "use client";
 
-import * as React from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField, PasswordInput } from "@/components/ui/form-fields";
 import { AuthCard } from "./auth-card";
-import { mockResetPassword } from "./mock-handlers";
-import { useAppDispatch } from "@/store/hooks";
-import { clearPendingVerification } from "@/store/slices/authSlice";
+import { useAuthService } from "@/features/auth/services/authApi";
 
 export function ResetPasswordForm() {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
-  const [password, setPassword] = React.useState("");
-  const [confirm, setConfirm] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+  const { loading, handleResetPassword } = useAuthService();
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
 
   const tooShort = password.length > 0 && password.length < 8;
   const mismatch = confirm.length > 0 && confirm !== password;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (tooShort || mismatch || !password) return;
-    setLoading(true);
-    const res = await mockResetPassword(password);
-    setLoading(false);
-    if (res.ok) {
-      dispatch(clearPendingVerification());
-      router.push("/login");
-    }
+    await handleResetPassword(password);
   };
 
   return (
-    <AuthCard title="Reset your password" subtitle="Enter your new security credentials below.">
+    <AuthCard
+      title="Reset your password"
+      subtitle="Enter your new security credentials below."
+    >
       <form onSubmit={handleSubmit} className="space-y-10">
         <div className="space-y-6">
           <FormField
@@ -71,7 +63,12 @@ export function ResetPasswordForm() {
             />
           </FormField>
         </div>
-        <Button type="submit" className="w-full" loading={loading} trailingIcon={<ArrowRight />}>
+        <Button
+          type="submit"
+          className="w-full"
+          loading={loading}
+          trailingIcon={<ArrowRight />}
+        >
           Reset Password
         </Button>
       </form>

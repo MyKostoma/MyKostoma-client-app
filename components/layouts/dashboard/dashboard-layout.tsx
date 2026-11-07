@@ -11,12 +11,12 @@ import {
   selectSidebarOpen,
   selectActivePerspective,
 } from "@/store/slices/uiSlice";
-import { Sidebar } from "../sidebars";
+import { Sidebar } from "../sidebars/sidebars";
+import { TopBar } from "../top-bars/top-bars";
 import {
-  TopBar,
   DashboardTopBarProvider,
   useDashboardTopBar,
-} from "../top-bars";
+} from "@/providers/dashboard-top-bar-context";
 import { MobileDrawer } from "../mobile-drawer";
 import type { SidebarVariant } from "../sidebars/types";
 import type { TopBarVariant, BreadcrumbItemConfig } from "../top-bars/types";

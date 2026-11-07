@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { ConsumerSearchView } from "@/features/consumer/search";
+import { ConsumerSearchView } from "@/features/consumer/search/consumer-search-view";
 
 export default function SearchPage() {
   return (

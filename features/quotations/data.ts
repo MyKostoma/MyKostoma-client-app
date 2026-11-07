@@ -1,4 +1,4 @@
-import type { QuotationItem } from "@/components/quotations";
+import type { QuotationItem } from "@/components/quotations/types";
 
 export const DEFAULT_QUOTATIONS: QuotationItem[] = [
   {

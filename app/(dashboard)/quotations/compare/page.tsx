@@ -1,4 +1,4 @@
-import { CompareQuotationsView } from "@/features/quotations";
+import { CompareQuotationsView } from "@/features/quotations/compare-quotations-view";
 
 export default async function CompareQuotationsPage({
   searchParams,

@@ -1,255 +1,63 @@
-import { baseApi, type RefreshResponse } from "@/store/api";
+"use client";
+
+import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  setCredentials,
-  logout,
-  updateTokens,
-  setPendingVerification,
+  authEndpoints,
   clearPendingVerification,
+  clearRegistrationRole,
+  logout,
+  selectCurrentUser,
+  selectPendingVerification,
+  selectRegistrationRole,
+  setCredentials,
+  setPendingVerification,
+  setRegistrationRole,
+  useForgotPasswordMutation,
+  useLoginMutation,
+  useLogoutMutation,
+  useRegisterMutation,
+  useResendVerificationCodeMutation,
+  useResetPasswordMutation,
+  useVerifyAccountMutation,
+  useGetMeQuery,
+  useRefreshTokenMutation,
 } from "@/store/slices/authSlice";
 import { setActivePerspective } from "@/store/slices/uiSlice";
-import type { User, UserRole, ServiceCategoryId } from "@/types/user";
-import { setAuthCookies, clearAuthCookies } from "@/lib/cookies";
-import { normalizeRole } from "@/lib/role-utils";
+import {
+  clearAuthCookies,
+  getRedirectAfterLogin,
+  setAuthCookies,
+} from "@/lib/cookies";
+import { getDefaultDashboard } from "@/lib/default-dashboard";
+import { getRoleDestination } from "@/lib/role-utils";
+import { baseApi } from "@/store/api/baseApi";
+import {
+  buildMockAuthenticatedUser,
+  inferRoleFromIdentifier,
+  mockLogin,
+  mockRegister,
+  mockResendCode,
+  mockResetPassword,
+  mockSendResetCode,
+  mockVerifyCode,
+} from "./authHelpers";
+import type {
+  AuthResponse,
+  ForgotPasswordRequest,
+  LoginRequest,
+  RegisterDetails,
+  RegisterRequest,
+  ResendCodeRequest,
+  ResetPasswordRequest,
+  Role,
+  VerifyAccountRequest,
+} from "../types";
 
-export interface LoginRequest {
-  identifier: string;
-  password: string;
-}
+export const authApi = authEndpoints;
 
-export interface RegisterRequest {
-  fullName: string;
-  identifier: string;
-  password: string;
-  role: UserRole;
-  category?: ServiceCategoryId | null;
-}
-
-export interface VerifyAccountRequest {
-  identifier: string;
-  code: string;
-}
-
-export interface ResendCodeRequest {
-  identifier: string;
-}
-
-export interface ForgotPasswordRequest {
-  identifier: string;
-}
-
-export interface ResetPasswordRequest {
-  identifier?: string;
-  code?: string;
-  password: string;
-  confirmPassword?: string;
-}
-
-export interface AuthResponse {
-  data: User;
-  access_token: string;
-  refresh_token: string;
-}
-
-export const authApi = baseApi.injectEndpoints({
-  endpoints: (builder) => ({
-    login: builder.mutation<AuthResponse, LoginRequest>({
-      query: (credentials) => ({
-        url: "/auth/login",
-        method: "POST",
-        body: credentials,
-      }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          const primaryRole =
-            normalizeRole(data.data.role) ??
-            normalizeRole(data.data.roles?.at(-1)) ??
-            "consumer";
-          const normalizedRoles =
-            data.data.roles && data.data.roles.length > 0
-              ? data.data.roles.map((r) => normalizeRole(r) ?? primaryRole)
-              : [primaryRole];
-
-          const normalizedUser: User = {
-            ...data.data,
-            role: primaryRole,
-            roles: normalizedRoles,
-          };
-
-          dispatch(
-            setCredentials({
-              user: normalizedUser,
-              tokens: {
-                accessToken: data.access_token,
-                refreshToken: data.refresh_token,
-              },
-            })
-          );
-          dispatch(setActivePerspective(primaryRole));
-          setAuthCookies(data.access_token, data.refresh_token, primaryRole);
-        } catch {
-          // Handled by caller
-        }
-      },
-    }),
-
-    register: builder.mutation<{ message?: string; data?: User }, RegisterRequest>({
-      query: (body) => ({
-        url: "/auth/register",
-        method: "POST",
-        body,
-      }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          dispatch(
-            setPendingVerification({
-              identifier: arg.identifier,
-              role: arg.role,
-              fullName: arg.fullName,
-              category: arg.category ?? null,
-              flow: "register",
-            })
-          );
-          dispatch(setActivePerspective(arg.role));
-        } catch {
-          // Handled by caller
-        }
-      },
-    }),
-
-    verifyAccount: builder.mutation<Partial<AuthResponse>, VerifyAccountRequest>({
-      query: (body) => ({
-        url: "/auth/verify",
-        method: "POST",
-        body,
-      }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          if (data.data && data.access_token && data.refresh_token) {
-            const primaryRole =
-              normalizeRole(data.data.role) ??
-              normalizeRole(data.data.roles?.at(-1)) ??
-              "consumer";
-            const normalizedUser: User = {
-              ...data.data,
-              role: primaryRole,
-              roles: [primaryRole],
-              verified: true,
-            };
-            dispatch(
-              setCredentials({
-                user: normalizedUser,
-                tokens: {
-                  accessToken: data.access_token,
-                  refreshToken: data.refresh_token,
-                },
-              })
-            );
-            dispatch(setActivePerspective(primaryRole));
-            setAuthCookies(data.access_token, data.refresh_token, primaryRole);
-          } else {
-            dispatch(clearPendingVerification());
-          }
-        } catch {
-          // Handled by caller
-        }
-      },
-    }),
-
-    resendVerificationCode: builder.mutation<void, ResendCodeRequest>({
-      query: (body) => ({
-        url: "/auth/resend-code",
-        method: "POST",
-        body,
-      }),
-    }),
-
-    forgotPassword: builder.mutation<void, ForgotPasswordRequest>({
-      query: (body) => ({
-        url: "/auth/forgot-password",
-        method: "POST",
-        body,
-      }),
-      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          dispatch(
-            setPendingVerification({
-              identifier: arg.identifier,
-              role: "consumer",
-              flow: "reset-password",
-            })
-          );
-        } catch {
-          // Handled by caller
-        }
-      },
-    }),
-
-    resetPassword: builder.mutation<void, ResetPasswordRequest>({
-      query: (body) => ({
-        url: "/auth/reset-password",
-        method: "POST",
-        body,
-      }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-          dispatch(clearPendingVerification());
-        } catch {
-          // Handled by caller
-        }
-      },
-    }),
-
-    logout: builder.mutation<void, void>({
-      query: () => ({
-        url: "/auth/logout",
-        method: "POST",
-      }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          await queryFulfilled;
-        } finally {
-          dispatch(logout());
-          clearAuthCookies();
-          dispatch(baseApi.util.resetApiState());
-        }
-      },
-    }),
-
-    getMe: builder.query<User, void>({
-      query: () => "/auth/me",
-      providesTags: ["User"],
-    }),
-
-    refreshToken: builder.mutation<RefreshResponse, { refreshToken: string }>({
-      query: (body) => ({
-        url: "/auth/refresh",
-        method: "POST",
-        body,
-      }),
-      async onQueryStarted(_, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled;
-          dispatch(
-            updateTokens({
-              refreshToken: data.refresh_token,
-              accessToken: data.access_token,
-            })
-          );
-        } catch {
-          dispatch(logout());
-          clearAuthCookies();
-        }
-      },
-    }),
-  }),
-});
-
-export const {
+export {
   useLoginMutation,
   useRegisterMutation,
   useVerifyAccountMutation,
@@ -259,5 +67,275 @@ export const {
   useLogoutMutation,
   useGetMeQuery,
   useRefreshTokenMutation,
-} = authApi;
+};
 
+export type {
+  LoginRequest,
+  RegisterRequest,
+  VerifyAccountRequest,
+  ResendCodeRequest,
+  ForgotPasswordRequest,
+  ResetPasswordRequest,
+  AuthResponse,
+};
+
+export function useAuthService() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector(selectCurrentUser);
+  const pendingVerification = useAppSelector(selectPendingVerification);
+  const storedRegistrationRole = useAppSelector(selectRegistrationRole);
+
+  const [loginMutation] = useLoginMutation();
+  const [registerMutation] = useRegisterMutation();
+  const [verifyAccountMutation] = useVerifyAccountMutation();
+  const [resendCodeMutation] = useResendVerificationCodeMutation();
+  const [forgotPasswordMutation] = useForgotPasswordMutation();
+  const [resetPasswordMutation] = useResetPasswordMutation();
+  const [logoutMutation] = useLogoutMutation();
+
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = useCallback(
+    async (payload: LoginRequest) => {
+      setLoading(true);
+      try {
+        await loginMutation(payload).unwrap();
+        const role = inferRoleFromIdentifier(payload.identifier);
+        const redirectPath =
+          getRedirectAfterLogin() ?? getDefaultDashboard(role);
+        router.push(redirectPath);
+        return { ok: true as const };
+      } catch {
+        const res = await mockLogin(payload);
+        if (res.ok) {
+          const inferredRole = inferRoleFromIdentifier(payload.identifier);
+          const mockAccessToken = `mk_access_${Date.now()}`;
+          const mockRefreshToken = `mk_refresh_${Date.now()}`;
+          const user = buildMockAuthenticatedUser({
+            identifier: payload.identifier,
+            role: inferredRole,
+          });
+
+          dispatch(
+            setCredentials({
+              user,
+              tokens: {
+                accessToken: mockAccessToken,
+                refreshToken: mockRefreshToken,
+              },
+            })
+          );
+          dispatch(setActivePerspective(inferredRole));
+          setAuthCookies(mockAccessToken, mockRefreshToken, inferredRole);
+
+          const redirectPath =
+            getRedirectAfterLogin() ?? getDefaultDashboard(inferredRole);
+          router.push(redirectPath);
+        }
+        return res;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch, loginMutation, router]
+  );
+
+  const handleRegister = useCallback(
+    async (payload: RegisterDetails & { role: Role; category: string | null }) => {
+      setLoading(true);
+      try {
+        await registerMutation({
+          fullName: payload.fullName,
+          identifier: payload.identifier,
+          password: payload.password,
+          role: payload.role,
+          category: payload.category,
+        }).unwrap();
+        dispatch(clearRegistrationRole());
+        router.push("/verify-account");
+        return { ok: true as const };
+      } catch {
+        const res = await mockRegister(payload);
+        if (res.ok) {
+          dispatch(
+            setPendingVerification({
+              identifier: payload.identifier,
+              role: payload.role,
+              fullName: payload.fullName,
+              category: payload.category,
+              flow: "register",
+            })
+          );
+          dispatch(clearRegistrationRole());
+          dispatch(setActivePerspective(payload.role));
+          router.push("/verify-account");
+        }
+        return res;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch, registerMutation, router]
+  );
+
+  const handleSelectRegistrationRole = useCallback(
+    (nextRole: Role) => {
+      dispatch(setRegistrationRole(nextRole));
+      dispatch(setActivePerspective(nextRole));
+    },
+    [dispatch]
+  );
+
+  const handleClearRegistrationRole = useCallback(() => {
+    dispatch(clearRegistrationRole());
+  }, [dispatch]);
+
+  const handleVerifyCode = useCallback(
+    async (code: string) => {
+      const detectedRole =
+        pendingVerification?.role ?? currentUser?.role ?? "consumer";
+      setLoading(true);
+      try {
+        await verifyAccountMutation({
+          identifier:
+            pendingVerification?.identifier ??
+            currentUser?.identifier ??
+            "user@mykostoma.com",
+          code,
+        }).unwrap();
+        return { ok: true as const };
+      } catch {
+        const res = await mockVerifyCode(code);
+        if (res.ok) {
+          const mockAccessToken = `mk_access_${Date.now()}`;
+          const mockRefreshToken = `mk_refresh_${Date.now()}`;
+          const verifiedUser = buildMockAuthenticatedUser({
+            id: currentUser?.id ? String(currentUser.id) : undefined,
+            fullName:
+              pendingVerification?.fullName ??
+              currentUser?.fullName ??
+              "MyKostoma User",
+            identifier:
+              pendingVerification?.identifier ??
+              currentUser?.identifier ??
+              "user@mykostoma.com",
+            role: detectedRole,
+            category:
+              pendingVerification?.category ?? currentUser?.category ?? null,
+          });
+          dispatch(
+            setCredentials({
+              user: verifiedUser,
+              tokens: {
+                accessToken: mockAccessToken,
+                refreshToken: mockRefreshToken,
+              },
+            })
+          );
+          dispatch(setActivePerspective(detectedRole));
+          setAuthCookies(mockAccessToken, mockRefreshToken, detectedRole);
+        }
+        return res;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [currentUser, dispatch, pendingVerification, verifyAccountMutation]
+  );
+
+  const handleResendCode = useCallback(async () => {
+    try {
+      await resendCodeMutation({
+        identifier:
+          pendingVerification?.identifier ??
+          currentUser?.identifier ??
+          "user@mykostoma.com",
+      }).unwrap();
+      return { ok: true as const };
+    } catch {
+      return mockResendCode();
+    }
+  }, [currentUser, pendingVerification, resendCodeMutation]);
+
+  const handleForgotPassword = useCallback(
+    async (identifier: string) => {
+      setLoading(true);
+      try {
+        await forgotPasswordMutation({ identifier }).unwrap();
+        router.push("/reset-password");
+        return { ok: true as const };
+      } catch {
+        const res = await mockSendResetCode(identifier);
+        if (res.ok) {
+          dispatch(
+            setPendingVerification({
+              identifier,
+              role: "consumer",
+              flow: "reset-password",
+            })
+          );
+          router.push("/reset-password");
+        }
+        return res;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch, forgotPasswordMutation, router]
+  );
+
+  const handleResetPassword = useCallback(
+    async (password: string) => {
+      setLoading(true);
+      try {
+        await resetPasswordMutation({ password }).unwrap();
+        router.push("/login");
+        return { ok: true as const };
+      } catch {
+        const res = await mockResetPassword(password);
+        if (res.ok) {
+          dispatch(clearPendingVerification());
+          router.push("/login");
+        }
+        return res;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [dispatch, resetPasswordMutation, router]
+  );
+
+  const handleLogout = useCallback(async () => {
+    try {
+      await logoutMutation().unwrap();
+    } catch {
+      dispatch(logout());
+      clearAuthCookies();
+      dispatch(baseApi.util.resetApiState());
+    }
+    router.push("/login");
+  }, [dispatch, logoutMutation, router]);
+
+  const detectedRole =
+    pendingVerification?.role ?? currentUser?.role ?? "consumer";
+  const destinationMeta = getRoleDestination(detectedRole);
+
+  return {
+    loading,
+    currentUser,
+    pendingVerification,
+    storedRegistrationRole,
+    detectedRole,
+    destinationMeta,
+    handleLogin,
+    handleRegister,
+    handleSelectRegistrationRole,
+    handleClearRegistrationRole,
+    handleVerifyCode,
+    handleResendCode,
+    handleForgotPassword,
+    handleResetPassword,
+    handleLogout,
+  };
+}

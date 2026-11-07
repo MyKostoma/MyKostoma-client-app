@@ -3,7 +3,7 @@
 import type { HTMLAttributes } from "react";
 import { Briefcase, PieChart, Sparkles, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SectionHeader } from "@/components/consumer-home";
+import { SectionHeader } from "@/components/consumer-home/section-header";
 import { cn } from "@/lib/utils";
 import type { ProfileServiceItem, ServiceIconVariant } from "./types";
 

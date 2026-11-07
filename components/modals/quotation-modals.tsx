@@ -10,13 +10,15 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/form-fields";
+import type {
+  AcceptQuotationModalProps,
+  RejectQuotationModalProps,
+} from "./types";
 
-export interface RejectQuotationModalProps {
-  isOpen: boolean;
-  providerName: string;
-  onClose: () => void;
-  onConfirmReject: (reason: string) => void;
-}
+export type {
+  AcceptQuotationModalProps,
+  RejectQuotationModalProps,
+} from "./types";
 
 export function RejectQuotationModal({
   isOpen,
@@ -117,17 +119,6 @@ export function RejectQuotationModal({
       </div>
     </div>
   );
-}
-
-export interface AcceptQuotationModalProps {
-  isOpen: boolean;
-  quoteCode: string;
-  requestTitle: string;
-  providerName: string;
-  estimatedDuration: string;
-  totalAmount: string;
-  onClose: () => void;
-  onConfirmAccept: () => void;
 }
 
 export function AcceptQuotationModal({

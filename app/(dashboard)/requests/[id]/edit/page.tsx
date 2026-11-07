@@ -1,4 +1,4 @@
-import { EditRequestView } from "@/features/requests";
+import { EditRequestView } from "@/features/requests/edit-request-view";
 
 export default async function EditRequestPage({
   params,

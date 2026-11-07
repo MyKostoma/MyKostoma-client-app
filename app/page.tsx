@@ -16,15 +16,10 @@ import {
 } from "lucide-react";
 import { threeWomen } from "@/lib";
 import Header from "@/components/layouts/headers/headers";
-import {
-  HeroSection,
-  CategoriesSection,
-  FeaturesSection,
-  CtaCardsSection,
-  type CategoryItem,
-  type FeatureItem,
-  type CtaCardItem,
-} from "@/components/landing";
+import { HeroSection } from "@/components/landing/hero-section";
+import { CategoriesSection, type CategoryItem } from "@/components/landing/categories-section";
+import { FeaturesSection, type FeatureItem } from "@/components/landing/features-section";
+import { CtaCardsSection, type CtaCardItem } from "@/components/landing/cta-cards-section";
 import { PublicFooter } from "@/components/layouts/footers/footers";
 import { useAppDispatch } from "@/store/hooks";
 import {

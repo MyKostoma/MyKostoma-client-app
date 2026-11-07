@@ -2,7 +2,7 @@
 
 import type { HTMLAttributes } from "react";
 import { Star } from "lucide-react";
-import { SectionHeader } from "@/components/consumer-home";
+import { SectionHeader } from "@/components/consumer-home/section-header";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
 import type { ProfileRatingBarItem, ProfileReviewItem } from "./types";

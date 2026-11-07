@@ -1,4 +1,4 @@
-import { configureStore, combineReducers } from "@reduxjs/toolkit";
+import { combineReducers, configureStore } from "@reduxjs/toolkit"
 import {
   persistStore,
   persistReducer,
@@ -8,51 +8,73 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from "redux-persist";
-import storage from "redux-persist/lib/storage/session";
+  type WebStorage,
+} from "redux-persist"
+import createWebStorage from "redux-persist/lib/storage/createWebStorage"
 
-// Slices
-import authReducer from "./slices/authSlice";
-import uiReducer from "./slices/uiSlice";
+import { baseApi } from "./api/baseApi"
+import authReducer from "./slices/authSlice"
+import uiReducer from "./slices/uiSlice"
+import discoverReducer from "./slices/discoverSlice"
+import requestsReducer from "./slices/requestsSlice"
+import quotationsReducer from "./slices/quotationsSlice"
 
-// API
-import { baseApi } from "./api/baseApi";
+const createNoopStorage = (): WebStorage => ({
+  getItem() {
+    return Promise.resolve(null)
+  },
+  setItem(_key: string, _value: string) {
+    return Promise.resolve()
+  },
+  removeItem() {
+    return Promise.resolve()
+  },
+})
 
-// Persist config
-const persistConfig = {
-  key: "mykostoma-root",
+const storage: WebStorage =
+  typeof window !== "undefined"
+    ? createWebStorage("local")
+    : createNoopStorage()
+
+const authPersistConfig = {
+  key: "mykostoma:auth",
   version: 1,
   storage,
-  whitelist: ["auth"], // Persist auth state (including pendingVerification across auth steps)
-  blacklist: [baseApi.reducerPath], // Do not persist RTK Query cache
-};
+  whitelist: ["user", "tokens", "isAuthenticated", "pendingVerification"],
+}
 
-// Combine reducers
+const uiPersistConfig = {
+  key: "mykostoma:ui",
+  version: 1,
+  storage,
+  whitelist: ["theme", "sidebarCollapsed", "activePerspective"],
+}
+
 const rootReducer = combineReducers({
-  auth: authReducer,
-  ui: uiReducer,
   [baseApi.reducerPath]: baseApi.reducer,
-});
+  auth: persistReducer(authPersistConfig, authReducer),
+  ui: persistReducer(uiPersistConfig, uiReducer),
+  discover: discoverReducer,
+  requests: requestsReducer,
+  quotations: quotationsReducer,
+})
 
-// Create persisted reducer
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+export const makeStore = () =>
+  configureStore({
+    reducer: rootReducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        serializableCheck: {
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+          ignoredPaths: ["discover.featuredProfessionals", "discover.spotlightProviders"],
+        },
+      }).concat(baseApi.middleware),
+    devTools: process.env.NODE_ENV !== "production",
+  })
 
-// Configure store
-export const store = configureStore({
-  reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
-      },
-    }).concat(baseApi.middleware),
-  devTools: process.env.NODE_ENV !== "production",
-});
+export const store = makeStore()
+export const persistor = persistStore(store)
 
-// Create persistor
-export const persistor = persistStore(store);
-
-// Types
-export type RootState = ReturnType<typeof store.getState>;
-export type AppDispatch = typeof store.dispatch;
-
+export type AppStore = ReturnType<typeof makeStore>
+export type RootState = ReturnType<typeof rootReducer>
+export type AppDispatch = typeof store.dispatch

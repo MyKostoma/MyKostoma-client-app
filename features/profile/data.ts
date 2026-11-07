@@ -1,4 +1,4 @@
-import type { ProfessionalProfileData, ProfileServiceItem, ProfilePortfolioItem, ProfileReviewItem } from "@/components/profile";
+import type { ProfessionalProfileData, ProfileServiceItem, ProfilePortfolioItem, ProfileReviewItem } from "@/components/profile/types";
 import { SEARCH_PROFESSIONALS_DATA } from "@/features/consumer/search/data";
 import { DEFAULT_FEATURED_PROFESSIONALS } from "@/features/consumer/home/data";
 

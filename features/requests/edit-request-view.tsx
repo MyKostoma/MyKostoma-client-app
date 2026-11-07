@@ -1,40 +1,25 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import {
-  RequestForm,
-  type RequestFormValues,
-} from "@/components/requests";
-import {
-  DashboardTopBarSlot,
-  RequestFormTopBar,
-} from "@/components/layouts/top-bars";
+import { RequestForm } from "@/components/requests/request-form";
+import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
+import { RequestFormTopBar } from "@/components/layouts/top-bars/requests/request-form-top-bar";
 import { Button } from "@/components/ui/button";
 import { DEFAULT_EDIT_REQUEST_VALUES } from "./data";
+import { useEditRequestService } from "./services/requestsApi";
+import type { EditRequestViewProps } from "./types";
 
-export interface EditRequestViewProps {
-  requestId?: string;
-  initialValues?: RequestFormValues;
-}
+export type { EditRequestViewProps } from "./types";
 
 export function EditRequestView({
   requestId = "REQ-2026-0842",
   initialValues = DEFAULT_EDIT_REQUEST_VALUES,
 }: EditRequestViewProps) {
-  const router = useRouter();
-  const [formValues, setFormValues] =
-    useState<RequestFormValues>(initialValues);
-
-  const handleBackToDetail = () => {
-    router.push(`/requests/${encodeURIComponent(requestId)}`);
-  };
-
-  const handleSaveChanges = () => {
-    toast.success("Request changes saved successfully.");
-    router.push(`/requests/${encodeURIComponent(requestId)}`);
-  };
+  const {
+    formValues,
+    setFormValues,
+    handleBackToDetail,
+    handleSaveChanges,
+  } = useEditRequestService(requestId, initialValues);
 
   return (
     <>
@@ -82,4 +67,5 @@ export function EditRequestView({
     </>
   );
 }
+
 export default EditRequestView;

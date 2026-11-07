@@ -2,10 +2,8 @@
 
 import { ArrowLeft, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  QuotationStatusBadge,
-  type QuotationStatus,
-} from "@/components/quotations";
+import { QuotationStatusBadge } from "@/components/quotations/quotation-status-badge";
+import type { QuotationStatus } from "@/components/quotations/types";
 import { cn } from "@/lib/utils";
 import { useDashboardMobileMenu } from "@/providers/dashboard-top-bar-context";
 

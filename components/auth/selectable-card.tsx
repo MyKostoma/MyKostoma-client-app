@@ -1,19 +1,8 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { SelectableCardProps } from "./types";
 
-export interface SelectableCardProps {
-  icon: LucideIcon;
-  title: string;
-  description?: string;
-  selected?: boolean;
-  /** "row": icon + text side by side. "stack": centered icon above the label. */
-  layout?: "row" | "stack";
-  onSelect?: () => void;
-}
-
-/** Selectable tile used by the role picker and the category picker. */
 export function SelectableCard({
   icon: Icon,
   title,
@@ -50,14 +39,18 @@ export function SelectableCard({
         <span
           className={cn(
             "block text-sm",
-            selected ? "font-bold text-foreground" : "font-semibold text-muted-foreground",
+            selected
+              ? "font-bold text-foreground"
+              : "font-semibold text-muted-foreground",
             layout === "row" && "text-base text-foreground"
           )}
         >
           {title}
         </span>
         {description && (
-          <span className="mt-1 block text-xs sm:text-sm text-muted-foreground">{description}</span>
+          <span className="mt-1 block text-xs sm:text-sm text-muted-foreground">
+            {description}
+          </span>
         )}
       </span>
     </button>

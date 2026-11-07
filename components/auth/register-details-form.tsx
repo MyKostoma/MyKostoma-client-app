@@ -1,18 +1,17 @@
 "use client";
 
-import * as React from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { Briefcase, ChevronLeft, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField, Input, PasswordInput } from "@/components/ui/form-fields";
 import { AuthAltAction, AuthCard } from "./auth-card";
+import type {
+  RegisterDetails,
+  RegisterDetailsFormProps,
+  Role,
+} from "./types";
 
-export type Role = "consumer" | "professional";
-
-export interface RegisterDetails {
-  fullName: string;
-  identifier: string;
-  password: string;
-}
+export type { RegisterDetails, Role };
 
 export const ROLE_META: Record<
   Role,
@@ -43,17 +42,8 @@ export const ROLE_META: Record<
   },
 };
 
-export interface RegisterDetailsFormProps {
-  role: Role;
-  values: RegisterDetails;
-  onChange: (values: RegisterDetails) => void;
-  onSubmit: () => void;
-  /** Optional: shows a "Back to Role Selection" link when provided. */
-  onBack?: () => void;
-  loading?: boolean;
-}
-
-const labelStyle = "[&_label]:uppercase [&_label]:text-muted-foreground [&_label]:tracking-wide";
+const labelStyle =
+  "[&_label]:uppercase [&_label]:text-muted-foreground [&_label]:tracking-wide";
 
 export function RegisterDetailsForm({
   role,
@@ -65,12 +55,14 @@ export function RegisterDetailsForm({
 }: RegisterDetailsFormProps) {
   const meta = ROLE_META[role];
   const RoleIcon = meta.icon;
-  const set = (key: keyof RegisterDetails) => (e: React.ChangeEvent<HTMLInputElement>) =>
-    onChange({ ...values, [key]: e.target.value });
+  const set =
+    (key: keyof RegisterDetails) => (e: ChangeEvent<HTMLInputElement>) =>
+      onChange({ ...values, [key]: e.target.value });
 
-  const passwordError = values.password.length > 0 && values.password.length < 8;
+  const passwordError =
+    values.password.length > 0 && values.password.length < 8;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (values.password.length < 8) return;
     onSubmit();
@@ -97,7 +89,11 @@ export function RegisterDetailsForm({
           />
         </FormField>
 
-        <FormField id="register-identifier" label="Email or Phone" className={labelStyle}>
+        <FormField
+          id="register-identifier"
+          label="Email or Phone"
+          className={labelStyle}
+        >
           <Input
             id="register-identifier"
             placeholder={meta.identifierPlaceholder}
@@ -147,16 +143,26 @@ export function RegisterDetailsForm({
         </div>
       )}
 
-      <AuthAltAction text="Already have an account?" linkText="Log In" href="/login" />
+      <AuthAltAction
+        text="Already have an account?"
+        linkText="Log In"
+        href="/login"
+      />
 
       {role === "professional" && (
         <p className="mt-4 text-center text-xs text-muted-foreground">
           By registering, you agree to our{" "}
-          <a href="#" className="underline underline-offset-2 hover:text-foreground">
+          <a
+            href="#"
+            className="underline underline-offset-2 hover:text-foreground"
+          >
             Terms of Service
           </a>{" "}
           and{" "}
-          <a href="#" className="underline underline-offset-2 hover:text-foreground">
+          <a
+            href="#"
+            className="underline underline-offset-2 hover:text-foreground"
+          >
             Privacy Policy
           </a>{" "}
           regarding professional services.

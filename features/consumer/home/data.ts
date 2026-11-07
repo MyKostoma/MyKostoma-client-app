@@ -28,7 +28,7 @@ import type {
   ConsumerCategoryItem,
   FeaturedProItem,
   SpotlightProviderItem,
-} from "@/components/consumer-home";
+} from "@/components/consumer-home/types";
 
 export const DEFAULT_CONSUMER_CATEGORIES: ConsumerCategoryItem[] = [
   {

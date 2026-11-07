@@ -1,4 +1,4 @@
-import type { ConsumerRequestItem, RequestFormValues } from "@/components/requests";
+import type { ConsumerRequestItem, RequestFormValues } from "@/components/requests/types";
 
 export const DEFAULT_CONSUMER_REQUESTS: ConsumerRequestItem[] = [
   {

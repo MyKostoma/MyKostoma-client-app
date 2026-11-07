@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
@@ -8,38 +7,21 @@ import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/form-fields";
 import { AuthCard } from "./auth-card";
 import { AuthSuccess } from "./auth-success";
-import { mockResendCode, mockVerifyCode } from "./mock-handlers";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  selectCurrentUser,
-  selectPendingVerification,
-  setCredentials,
-} from "@/store/slices/authSlice";
-import { setActivePerspective } from "@/store/slices/uiSlice";
-import { setAuthCookies } from "@/lib/cookies";
-import { getRoleDestination } from "@/lib/role-utils";
+import { useAuthService } from "@/features/auth/services/authApi";
+import { formatCountdownTime } from "@/features/auth/services/authHelpers";
 
 const CODE_LENGTH = 6;
 const RESEND_SECONDS = 60;
 
-const formatTime = (s: number) => `00:${String(s).padStart(2, "0")}`;
-
 export function VerifyAccountForm() {
-  const dispatch = useAppDispatch();
-  const pendingVerification = useAppSelector(selectPendingVerification);
-  const currentUser = useAppSelector(selectCurrentUser);
+  const { loading, destinationMeta, handleVerifyCode, handleResendCode } =
+    useAuthService();
 
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
   const [verified, setVerified] = useState(false);
   const [seconds, setSeconds] = useState(RESEND_SECONDS);
-  // Bumped to remount the OTP input when the user wants to retry with empty boxes.
   const [otpKey, setOtpKey] = useState(0);
-
-  const detectedRole =
-    pendingVerification?.role ?? currentUser?.role ?? "consumer";
-  const destinationMeta = getRoleDestination(detectedRole);
 
   useEffect(() => {
     if (seconds <= 0) return;
@@ -48,7 +30,6 @@ export function VerifyAccountForm() {
   }, [seconds]);
 
   const handleVerify = async () => {
-    // "Try Again" state: clear and let the user re-enter the code.
     if (error) {
       setError(null);
       setCode("");
@@ -56,39 +37,8 @@ export function VerifyAccountForm() {
       return;
     }
     if (code.length < CODE_LENGTH) return;
-    setLoading(true);
-    const res = await mockVerifyCode(code);
-    setLoading(false);
+    const res = await handleVerifyCode(code);
     if (res.ok) {
-      const mockAccessToken = `mk_access_${Date.now()}`;
-      const mockRefreshToken = `mk_refresh_${Date.now()}`;
-      const verifiedUser = {
-        id: currentUser?.id ?? `usr_${Date.now()}`,
-        fullName:
-          pendingVerification?.fullName ??
-          currentUser?.fullName ??
-          "MyKostoma User",
-        identifier:
-          pendingVerification?.identifier ??
-          currentUser?.identifier ??
-          "user@mykostoma.com",
-        role: detectedRole,
-        roles: [detectedRole],
-        category: pendingVerification?.category ?? currentUser?.category ?? null,
-        verified: true,
-        active: true,
-      };
-      dispatch(
-        setCredentials({
-          user: verifiedUser,
-          tokens: {
-            accessToken: mockAccessToken,
-            refreshToken: mockRefreshToken,
-          },
-        })
-      );
-      dispatch(setActivePerspective(detectedRole));
-      setAuthCookies(mockAccessToken, mockRefreshToken, detectedRole);
       setVerified(true);
     } else {
       setError(res.message);
@@ -96,7 +46,7 @@ export function VerifyAccountForm() {
   };
 
   const handleResend = async () => {
-    await mockResendCode();
+    await handleResendCode();
     setSeconds(RESEND_SECONDS);
     setError(null);
   };
@@ -114,7 +64,10 @@ export function VerifyAccountForm() {
   const canResend = seconds === 0;
 
   return (
-    <AuthCard title="Verify your account" subtitle="Enter the 6-digit code sent to your email/phone.">
+    <AuthCard
+      title="Verify your account"
+      subtitle="Enter the 6-digit code sent to your email/phone."
+    >
       <div className="flex justify-center">
         <OtpInput
           key={otpKey}
@@ -142,7 +95,10 @@ export function VerifyAccountForm() {
       <div className="mt-4 flex flex-col items-center gap-1">
         {!error && (
           <p className="text-xs text-muted-foreground">
-            Resend code in <span className="font-bold text-foreground">{formatTime(seconds)}</span>
+            Resend code in{" "}
+            <span className="font-bold text-foreground">
+              {formatCountdownTime(seconds)}
+            </span>
           </p>
         )}
         <Button

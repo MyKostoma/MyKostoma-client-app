@@ -1,4 +1,4 @@
-import { RequestRevisionView } from "@/features/quotations";
+import { RequestRevisionView } from "@/features/quotations/request-revision-view";
 
 export default async function QuotationRevisionPage({
   params,

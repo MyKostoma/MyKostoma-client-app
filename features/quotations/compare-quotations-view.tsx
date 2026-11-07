@@ -1,77 +1,34 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { QuotationsComparisonTable } from "@/components/quotations/quotations-comparison-table";
 import {
   AcceptQuotationModal,
-  QuotationsComparisonTable,
   RejectQuotationModal,
-  type QuotationItem,
-} from "@/components/quotations";
-import {
-  CompareQuotationsTopBar,
-  DashboardTopBarSlot,
-} from "@/components/layouts/top-bars";
-import { DEFAULT_QUOTATIONS } from "./data";
+} from "@/components/modals/quotation-modals";
+import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
+import { CompareQuotationsTopBar } from "@/components/layouts/top-bars/quotations/compare-quotations-top-bar";
+import { useCompareQuotationsService } from "./services/quotationsApi";
+import type { CompareQuotationsViewProps } from "./types";
 
-export interface CompareQuotationsViewProps {
-  selectedIds?: string[];
-}
+export type { CompareQuotationsViewProps } from "./types";
 
 export function CompareQuotationsView({
   selectedIds,
 }: CompareQuotationsViewProps) {
-  const router = useRouter();
-
-  const initialQuotes = useMemo(() => {
-    if (selectedIds && selectedIds.length > 0) {
-      const matched = DEFAULT_QUOTATIONS.filter((q) =>
-        selectedIds.includes(q.id)
-      );
-      if (matched.length > 0) return matched;
-    }
-    return DEFAULT_QUOTATIONS.filter(
-      (q) => q.status === "pending" || q.status === "updated"
-    ).slice(0, 3);
-  }, [selectedIds]);
-
-  const [comparedQuotes, setComparedQuotes] =
-    useState<QuotationItem[]>(initialQuotes);
-  const [acceptingQuote, setAcceptingQuote] = useState<QuotationItem | null>(
-    null
-  );
-  const [rejectingQuote, setRejectingQuote] = useState<QuotationItem | null>(
-    null
-  );
-
-  const primaryQuote = comparedQuotes[0] ?? DEFAULT_QUOTATIONS[0];
-
-  const handleDownloadComparison = () => {
-    toast.success("Downloading PDF comparison summary...");
-  };
-
-  const handleConfirmAccept = () => {
-    if (!acceptingQuote) return;
-    toast.success(
-      `Quote from ${acceptingQuote.providerName} accepted! Redirecting...`
-    );
-    const targetId = acceptingQuote.id;
-    setAcceptingQuote(null);
-    router.push(`/quotations/${encodeURIComponent(targetId)}`);
-  };
-
-  const handleConfirmReject = () => {
-    if (!rejectingQuote) return;
-    setComparedQuotes((prev) =>
-      prev.filter((q) => q.id !== rejectingQuote.id)
-    );
-    toast.success(
-      `Quote from ${rejectingQuote.providerName} rejected and removed from comparison.`
-    );
-    setRejectingQuote(null);
-  };
+  const {
+    comparedQuotes,
+    primaryQuote,
+    acceptingQuote,
+    setAcceptingQuote,
+    rejectingQuote,
+    setRejectingQuote,
+    handleBackToQuotes,
+    handleDownloadComparison,
+    handleViewDetail,
+    handleConfirmAccept,
+    handleConfirmReject,
+  } = useCompareQuotationsService(selectedIds);
 
   return (
     <>
@@ -80,7 +37,7 @@ export function CompareQuotationsView({
           requestTitle={primaryQuote.requestTitle}
           requestCode={primaryQuote.requestCode}
           selectedCount={comparedQuotes.length}
-          onBack={() => router.push("/quotations")}
+          onBack={handleBackToQuotes}
           onDownloadComparison={handleDownloadComparison}
         />
       </DashboardTopBarSlot>
@@ -112,7 +69,7 @@ export function CompareQuotationsView({
               type="button"
               variant="outline"
               size="sm"
-              onClick={() => router.push("/quotations")}
+              onClick={handleBackToQuotes}
               className="h-9 px-4 rounded-lg text-xs font-semibold"
             >
               Back to Quotes
@@ -122,9 +79,7 @@ export function CompareQuotationsView({
           <QuotationsComparisonTable
             quotations={comparedQuotes}
             onAcceptQuote={setAcceptingQuote}
-            onViewDetail={(quote) =>
-              router.push(`/quotations/${encodeURIComponent(quote.id)}`)
-            }
+            onViewDetail={handleViewDetail}
             onRejectQuote={setRejectingQuote}
           />
         )}
@@ -152,4 +107,3 @@ export function CompareQuotationsView({
 }
 
 export default CompareQuotationsView;
-

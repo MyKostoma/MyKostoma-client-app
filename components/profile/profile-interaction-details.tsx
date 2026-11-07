@@ -2,7 +2,7 @@
 
 import type { HTMLAttributes } from "react";
 import { MessageSquare } from "lucide-react";
-import { SectionHeader } from "@/components/consumer-home";
+import { SectionHeader } from "@/components/consumer-home/section-header";
 import { cn } from "@/lib/utils";
 import { FollowButton } from "./follow-button";
 

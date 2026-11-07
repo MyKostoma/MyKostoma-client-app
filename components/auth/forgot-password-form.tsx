@@ -1,37 +1,20 @@
 "use client";
 
-import * as React from "react";
+import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField, Input } from "@/components/ui/form-fields";
 import { AuthCard } from "./auth-card";
-import { mockSendResetCode } from "./mock-handlers";
-import { useAppDispatch } from "@/store/hooks";
-import { setPendingVerification } from "@/store/slices/authSlice";
+import { useAuthService } from "@/features/auth/services/authApi";
 
 export function ForgotPasswordForm() {
-  const router = useRouter();
-  const dispatch = useAppDispatch();
-  const [identifier, setIdentifier] = React.useState("");
-  const [loading, setLoading] = React.useState(false);
+  const { loading, handleForgotPassword } = useAuthService();
+  const [identifier, setIdentifier] = useState("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    const res = await mockSendResetCode(identifier);
-    setLoading(false);
-    if (res.ok) {
-      dispatch(
-        setPendingVerification({
-          identifier,
-          role: "consumer",
-          flow: "reset-password",
-        })
-      );
-      router.push("/reset-password");
-    }
+    await handleForgotPassword(identifier);
   };
 
   return (
@@ -51,7 +34,12 @@ export function ForgotPasswordForm() {
           />
         </FormField>
 
-        <Button type="submit" className="w-full" loading={loading} trailingIcon={<Send />}>
+        <Button
+          type="submit"
+          className="w-full"
+          loading={loading}
+          trailingIcon={<Send />}
+        >
           Send Reset Code
         </Button>
       </form>

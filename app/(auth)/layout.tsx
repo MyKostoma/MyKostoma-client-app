@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Header from "@/components/layouts/headers";
-import { Footer } from "@/components/layouts/footers";
+import Header from "@/components/layouts/headers/headers";
+import { Footer } from "@/components/layouts/footers/footers";
 
 export const metadata: Metadata = {
   title: "Authentication | MyKostoma",

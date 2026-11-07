@@ -1,56 +1,24 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  QuotationRevisionForm,
-  type QuotationItem,
-  type QuotationRevisionFormValues,
-} from "@/components/quotations";
-import {
-  DashboardTopBarSlot,
-  RequestFormTopBar,
-} from "@/components/layouts/top-bars";
-import { DEFAULT_QUOTATIONS } from "./data";
+import { QuotationRevisionForm } from "@/components/quotations/quotation-revision-form";
+import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
+import { RequestFormTopBar } from "@/components/layouts/top-bars/requests/request-form-top-bar";
+import { useRequestRevisionService } from "./services/quotationsApi";
+import type { RequestRevisionViewProps } from "./types";
 
-export interface RequestRevisionViewProps {
-  quotationId?: string;
-}
+export type { RequestRevisionViewProps } from "./types";
 
 export function RequestRevisionView({
   quotationId = "QT-8821-A",
 }: RequestRevisionViewProps) {
-  const router = useRouter();
-
-  const quotation = useMemo<QuotationItem>(() => {
-    return (
-      DEFAULT_QUOTATIONS.find(
-        (q) => q.id.toLowerCase() === quotationId.toLowerCase()
-      ) ?? DEFAULT_QUOTATIONS[0]
-    );
-  }, [quotationId]);
-
-  const [formValues, setFormValues] = useState<QuotationRevisionFormValues>({
-    changesDescription: "",
-    attachments: [],
-  });
-
-  const handleBackToQuote = () => {
-    router.push(`/quotations/${encodeURIComponent(quotation.id)}`);
-  };
-
-  const handleSubmit = () => {
-    if (!formValues.changesDescription.trim()) {
-      toast.error("Please describe the updates you need before submitting.");
-      return;
-    }
-    toast.success(
-      `Revision request sent to ${quotation.providerName}. You will be notified once updated.`
-    );
-    router.push(`/quotations/${encodeURIComponent(quotation.id)}`);
-  };
+  const {
+    quotation,
+    formValues,
+    setFormValues,
+    handleBackToQuote,
+    handleSubmit,
+  } = useRequestRevisionService(quotationId);
 
   return (
     <>
@@ -100,4 +68,3 @@ export function RequestRevisionView({
 }
 
 export default RequestRevisionView;
-

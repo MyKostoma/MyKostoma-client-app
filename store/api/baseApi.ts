@@ -1,12 +1,11 @@
 import {
   createApi,
   fetchBaseQuery,
-  BaseQueryFn,
-  FetchArgs,
-  FetchBaseQueryError,
+  type BaseQueryFn,
+  type FetchArgs,
+  type FetchBaseQueryError,
 } from "@reduxjs/toolkit/query/react";
 import { Mutex } from "async-mutex";
-import { logout, updateTokens } from "../slices/authSlice";
 import type { RootState } from "../index";
 import { clearAuthCookies, setAuthCookies } from "@/lib/cookies";
 import type { UserRole } from "@/types/user";
@@ -157,12 +156,13 @@ const baseQueryWithReauth: BaseQueryFn<
           }
 
           if (refreshedTokens) {
-            api.dispatch(
-              updateTokens({
+            api.dispatch({
+              type: "auth/updateTokens",
+              payload: {
                 refreshToken: refreshedTokens.refresh_token,
                 accessToken: refreshedTokens.access_token,
-              })
-            );
+              },
+            });
             setAuthCookies(
               refreshedTokens.access_token,
               refreshedTokens.refresh_token,
@@ -174,11 +174,11 @@ const baseQueryWithReauth: BaseQueryFn<
             lastRefreshError &&
             isAuthErrorStatus(lastRefreshError.status)
           ) {
-            api.dispatch(logout());
+            api.dispatch({ type: "auth/logout" });
             clearAuthCookies();
           }
         } else {
-          api.dispatch(logout());
+          api.dispatch({ type: "auth/logout" });
           clearAuthCookies();
         }
       } finally {
@@ -200,11 +200,15 @@ export const baseApi = createApi({
     "User",
     "Auth",
     "Profile",
+    "Discover",
     "Category",
     "Service",
     "Professional",
     "Booking",
     "Request",
+    "Requests",
+    "Quotation",
+    "Quotations",
     "Shop",
     "Reel",
     "SavedItem",
@@ -215,4 +219,3 @@ export const baseApi = createApi({
   ],
   endpoints: () => ({}),
 });
-

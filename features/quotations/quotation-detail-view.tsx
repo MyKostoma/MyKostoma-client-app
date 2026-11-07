@@ -1,88 +1,46 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  AcceptQuotationModal,
   QuotationAcceptedState,
   QuotationDetailWorkspace,
   QuotationRejectedState,
-  RejectQuotationModal,
-  type QuotationItem,
-  type QuotationStatus,
-} from "@/components/quotations";
+} from "@/components/quotations/quotation-detail-content";
 import {
-  DashboardTopBarSlot,
-  QuotationDetailTopBar,
-} from "@/components/layouts/top-bars";
-import { DEFAULT_QUOTATIONS } from "./data";
+  AcceptQuotationModal,
+  RejectQuotationModal,
+} from "@/components/modals/quotation-modals";
+import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
+import { QuotationDetailTopBar } from "@/components/layouts/top-bars/quotations/quotation-detail-top-bar";
+import { useQuotationDetailService } from "./services/quotationsApi";
+import type { QuotationDetailViewProps } from "./types";
 
-export interface QuotationDetailViewProps {
-  quotationId?: string;
-}
+export type { QuotationDetailViewProps } from "./types";
 
 export function QuotationDetailView({
   quotationId = "QT-8821-A",
 }: QuotationDetailViewProps) {
-  const router = useRouter();
-
-  const matchedQuote = useMemo<QuotationItem>(() => {
-    return (
-      DEFAULT_QUOTATIONS.find(
-        (q) => q.id.toLowerCase() === quotationId.toLowerCase()
-      ) ?? DEFAULT_QUOTATIONS[0]
-    );
-  }, [quotationId]);
-
-  const [statusOverride, setStatusOverride] = useState<QuotationStatus | null>(
-    null
-  );
-  const [acceptModalOpen, setAcceptModalOpen] = useState(false);
-  const [rejectModalOpen, setRejectModalOpen] = useState(false);
-
-  const effectiveStatus = statusOverride ?? matchedQuote.status;
-  const quotation: QuotationItem = useMemo(
-    () => ({
-      ...matchedQuote,
-      status: effectiveStatus,
-    }),
-    [matchedQuote, effectiveStatus]
-  );
-
-  const isUpdated = effectiveStatus === "updated";
-  const canManage =
-    effectiveStatus === "pending" || effectiveStatus === "updated";
-
-  const handleBackToQuotes = () => {
-    router.push("/quotations");
-  };
-
-  const handleCompare = () => {
-    router.push("/quotations/compare");
-  };
-
-  const handleRequestUpdate = () => {
-    router.push(`/quotations/${encodeURIComponent(quotation.id)}/revision`);
-  };
-
-  const handleConfirmAccept = () => {
-    setAcceptModalOpen(false);
-    setStatusOverride("accepted");
-    toast.success("Quote accepted and converted into an active order!");
-  };
-
-  const handleConfirmReject = () => {
-    setRejectModalOpen(false);
-    setStatusOverride("rejected");
-    toast.success("Quote has been rejected.");
-  };
-
-  const handleRestoreQuote = () => {
-    setStatusOverride("pending");
-    toast.success("Quote restored to pending review.");
-  };
+  const {
+    quotation,
+    isUpdated,
+    canManage,
+    acceptModalOpen,
+    setAcceptModalOpen,
+    rejectModalOpen,
+    setRejectModalOpen,
+    handleBackToQuotes,
+    handleCompare,
+    handleRequestUpdate,
+    handleConfirmAccept,
+    handleConfirmReject,
+    handleRestoreQuote,
+    handleGoToOrder,
+    handleViewReceipt,
+    handleMessageArtisan,
+    handleViewOriginalRequest,
+    handleViewProfile,
+    handleSelectRevision,
+  } = useQuotationDetailService(quotationId);
 
   return (
     <>
@@ -139,29 +97,23 @@ export function QuotationDetailView({
         {quotation.status === "accepted" ? (
           <QuotationAcceptedState
             quotation={quotation}
-            onGoToOrder={() => router.push("/orders")}
-            onViewReceipt={() => toast.info("Downloading order receipt...")}
+            onGoToOrder={handleGoToOrder}
+            onViewReceipt={handleViewReceipt}
           />
         ) : quotation.status === "rejected" ? (
           <QuotationRejectedState
             quotation={quotation}
             onBackToQuotes={handleBackToQuotes}
             onRestoreQuote={handleRestoreQuote}
-            onMessageArtisan={() => router.push("/messages")}
+            onMessageArtisan={handleMessageArtisan}
           />
         ) : (
           <QuotationDetailWorkspace
             quotation={quotation}
-            onViewOriginalRequest={() =>
-              router.push(`/requests/${encodeURIComponent(quotation.requestId)}`)
-            }
+            onViewOriginalRequest={handleViewOriginalRequest}
             onRejectQuote={() => setRejectModalOpen(true)}
-            onViewProfile={() =>
-              toast.info(`Viewing profile for ${quotation.providerName}`)
-            }
-            onSelectRevision={(rev) =>
-              toast.info(`Viewing ${rev.versionLabel} (${rev.amount})`)
-            }
+            onViewProfile={handleViewProfile}
+            onSelectRevision={handleSelectRevision}
           />
         )}
       </div>
@@ -188,4 +140,3 @@ export function QuotationDetailView({
 }
 
 export default QuotationDetailView;
-

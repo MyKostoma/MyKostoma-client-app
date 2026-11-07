@@ -1,4 +1,4 @@
-import { ProfileView } from "@/features/profile";
+import { ProfileView } from "@/features/profile/profile-view";
 import {
   getProfessionalProfileById,
   DEFAULT_PROFESSIONAL_PROFILE,

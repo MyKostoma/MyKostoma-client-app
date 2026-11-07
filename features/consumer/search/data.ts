@@ -2,7 +2,7 @@ import type { SelectOption } from "@/components/ui/form-fields";
 import type {
   SearchFilterCategoryOption,
   SearchProfessionalItem,
-} from "@/components/consumer-search";
+} from "@/components/consumer-search/types";
 
 export const SEARCH_CATEGORY_OPTIONS: SearchFilterCategoryOption[] = [
   { id: "plumbing", label: "Plumbing Services" },

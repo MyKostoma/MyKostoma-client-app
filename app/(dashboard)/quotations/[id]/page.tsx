@@ -1,4 +1,4 @@
-import { QuotationDetailView } from "@/features/quotations";
+import { QuotationDetailView } from "@/features/quotations/quotation-detail-view";
 
 export default async function QuotationDetailPage({
   params,

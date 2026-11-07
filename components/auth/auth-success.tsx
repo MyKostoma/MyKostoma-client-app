@@ -1,21 +1,12 @@
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { AuthCard } from "./auth-card";
-import { useEffect, useState } from "react";
-
-export interface AuthSuccessProps {
-  /** Where the user is being sent, e.g. "Consumer Product Entry". */
-  destinationLabel: string;
-  roleLabel: string;
-  href?: string;
-  /** Seconds before the automatic redirect. */
-  redirectAfter?: number;
-  className?: string;
-}
+import type { AuthSuccessProps } from "./types";
 
 export function AuthSuccess({
   destinationLabel,
@@ -48,7 +39,9 @@ export function AuthSuccess({
           <dt>Role detected</dt>
         </div>
         <div className="mt-1.5 flex items-center justify-between">
-          <dd className="text-sm font-medium text-muted-foreground">{destinationLabel}</dd>
+          <dd className="text-sm font-medium text-muted-foreground">
+            {destinationLabel}
+          </dd>
           <dd
             className={cn(
               "rounded-sm border border-border bg-card px-2 py-0.5",
@@ -69,8 +62,8 @@ export function AuthSuccess({
       </Button>
 
       <p className="mt-4 text-center text-xs text-muted-foreground">
-        If you are not redirected automatically within {redirectAfter} seconds, click the button
-        above.
+        If you are not redirected automatically within {redirectAfter} seconds,
+        click the button above.
       </p>
     </AuthCard>
   );
