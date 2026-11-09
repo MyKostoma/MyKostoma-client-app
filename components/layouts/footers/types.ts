@@ -46,6 +46,7 @@ export interface AppFooterProps extends React.HTMLAttributes<HTMLElement> {
   logoSrc?: string;
   logoDarkSrc?: string;
   columns?: FooterColumnItem[];
+  socials?: FooterSocialItem[];
   bottomLinks?: FooterLinkItem[];
   copyrightYear?: number | string;
   companyName?: string;

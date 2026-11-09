@@ -1,26 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { Cloud, Send, User } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { AppFooterProps } from "./types";
-import { DEFAULT_APP_BOTTOM_LINKS, DEFAULT_APP_FOOTER_COLUMNS } from "./data";
+import type { PublicFooterProps } from "./types";
+import { DEFAULT_PUBLIC_FOOTER_COLUMNS, DEFAULT_PUBLIC_SOCIALS } from "./data";
 
 export function AppFooter({
-  tagline = "Connecting homeowners with elite local professionals. Standardizing trust and quality for home services worldwide.",
+  tagline = "Connecting Nigeria's finest talent with those who need it most.",
   logoHref = "/",
   logoSrc = "/mykostoma_full_logo.png",
   logoDarkSrc = "/mykostoma_full_logo_white.png",
-  columns = DEFAULT_APP_FOOTER_COLUMNS,
-  bottomLinks = DEFAULT_APP_BOTTOM_LINKS,
-  copyrightYear = 2024,
-  companyName = "MYKOSTOMA",
-  onCloudClick,
-  onSendClick,
-  onUserClick,
+  columns = DEFAULT_PUBLIC_FOOTER_COLUMNS,
+  socials = DEFAULT_PUBLIC_SOCIALS,
+  copyrightYear = 2026,
+  location = "Lagos, Nigeria",
+  version = "v1.0.0",
   className,
   ...props
-}: AppFooterProps) {
+}: PublicFooterProps) {
   return (
     <footer
       className={cn(
@@ -49,41 +46,29 @@ export function AppFooter({
               />
             </Link>
 
-            <p className="text-sm text-muted-foreground leading-relaxed max-w-sm pt-1">
+            <p className="text-sm text-muted-foreground leading-relaxed max-w-xs sm:max-w-sm pt-1">
               {tagline}
             </p>
 
-            <div className="flex items-center gap-3 pt-3">
-              <button
-                type="button"
-                onClick={onCloudClick}
-                aria-label="Cloud Services"
-                title="Cloud Services"
-                className="size-10 rounded-xl bg-secondary hover:bg-secondary-hover text-slate-600 dark:text-muted-foreground hover:text-foreground flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:shadow-xs active:scale-95"
-              >
-                <Cloud className="size-4.5" />
-              </button>
-
-              <button
-                type="button"
-                onClick={onSendClick}
-                aria-label="Direct Messages"
-                title="Direct Messages"
-                className="size-10 rounded-xl bg-secondary hover:bg-secondary-hover text-slate-600 dark:text-muted-foreground hover:text-foreground flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:shadow-xs active:scale-95"
-              >
-                <Send className="size-4.5 -rotate-12 translate-x-px" />
-              </button>
-
-              <button
-                type="button"
-                onClick={onUserClick}
-                aria-label="Account Settings"
-                title="Account Settings"
-                className="size-10 rounded-xl bg-secondary hover:bg-secondary-hover text-slate-600 dark:text-muted-foreground hover:text-foreground flex items-center justify-center transition-all cursor-pointer shadow-2xs hover:shadow-xs active:scale-95"
-              >
-                <User className="size-4.5" />
-              </button>
-            </div>
+            {socials && socials.length > 0 && (
+              <div className="flex items-center gap-4 pt-2">
+                {socials.map((social) => {
+                  const Icon = social.icon;
+                  return (
+                    <a
+                      key={social.name}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={social.name}
+                      className="text-foreground/60 hover:text-primary transition-colors p-0.5"
+                    >
+                      <Icon className="size-4.5" />
+                    </a>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
           <div className="lg:col-span-7 grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-10">
@@ -98,7 +83,7 @@ export function AppFooter({
                       <a
                         href={link.href}
                         onClick={link.onClick}
-                        className="text-xs sm:text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
+                        className="text-xs sm:text-sm text-muted-foreground hover:text-primary transition-colors inline-block"
                       >
                         {link.label}
                       </a>
@@ -112,30 +97,19 @@ export function AppFooter({
 
         <hr className="border-t border-border/80 my-8 sm:my-10" />
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] sm:text-xs font-semibold tracking-wider text-muted-foreground uppercase">
-          <p className="text-center sm:text-left">
-            {companyName} DIGITAL © {copyrightYear} • ALL RIGHTS RESERVED
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm text-muted-foreground">
+          <p className="tracking-normal text-center sm:text-left">
+            MyKostoma Digital © {copyrightYear}. All rights reserved.
           </p>
 
-          {bottomLinks && bottomLinks.length > 0 && (
-            <div className="flex flex-wrap items-center justify-center sm:justify-end gap-6 sm:gap-8">
-              {bottomLinks.map((link) => (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  onClick={link.onClick}
-                  className="hover:text-foreground transition-colors"
-                >
-                  {link.label}
-                </a>
-              ))}
-            </div>
-          )}
+          <div className="flex items-center gap-2 tracking-normal text-muted-foreground">
+            <span>{location}</span>
+            <span className="text-muted-foreground/60 select-none">•</span>
+            <span>{version}</span>
+          </div>
         </div>
       </div>
     </footer>
   );
 }
-
-export default AppFooter;
 

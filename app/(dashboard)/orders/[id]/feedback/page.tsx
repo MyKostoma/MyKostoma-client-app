@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PAGE_METADATA } from "@/config/metadata";
 import { OrderFeedbackView } from "@/features/orders/order-feedback-view";
+import { OrderFeedbackPageSkeleton } from "@/skeletons/(dashboard)/orders/[id]/feedback/page-skeleton";
 
 export const metadata: Metadata = PAGE_METADATA.orderFeedbackDefault;
 
@@ -11,5 +13,9 @@ export default async function OrderFeedbackPage({
 }) {
   const { id } = await params;
 
-  return <OrderFeedbackView orderId={decodeURIComponent(id)} />;
+  return (
+    <Suspense fallback={<OrderFeedbackPageSkeleton />}>
+      <OrderFeedbackView orderId={decodeURIComponent(id)} />
+    </Suspense>
+  );
 }

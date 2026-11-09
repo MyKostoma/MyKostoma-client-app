@@ -11,9 +11,6 @@ import type { FooterProps } from "./types";
 const FOOTER_VARIANTS: Record<string, React.ComponentType<any>> = {
   public: PublicFooter,
   "logged-out": PublicFooter,
-  public2: PublicFooter2,
-  publicFooter2: PublicFooter2,
-  "public-footer-2": PublicFooter2,
   app: AppFooter,
   "logged-in": AppFooter,
 };
@@ -38,7 +35,7 @@ export function Footer({
     return <AppFooter className={className} {...props} />;
   }
 
-  return <PublicFooter className={className} {...props} />;
+  return <PublicFooter2 className={className} {...props} />;
 }
 
 export const Footers = Footer;
@@ -48,7 +45,6 @@ export const publicFooter2 = PublicFooter2;
 
 export * from "./types";
 export * from "./public-footer";
-export * from "./public-footer-2";
 export * from "./app-footer";
 export * from "./icons";
 

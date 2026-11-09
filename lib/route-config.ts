@@ -108,6 +108,11 @@ export const protectedRoutes: RouteConfig[] = [
     roles: ["consumer", "professional"],
     redirectTo: "/login",
   },
+  {
+    path: "/shop*",
+    roles: ["consumer", "professional"],
+    redirectTo: "/login",
+  },
 ];
 
 /**
@@ -187,11 +192,6 @@ export const dashboardRoutes: DashboardRouteConfig[] = [
     path: "/saved-items*",
     title: "Saved Items",
     roles: ["consumer"],
-  },
-  {
-    path: "/shop*",
-    title: "My Shop",
-    roles: ["professional"],
   },
   {
     path: "/my-shop*",

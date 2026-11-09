@@ -1,6 +1,8 @@
 import type { ProfessionalProfileData, ProfileServiceItem, ProfilePortfolioItem, ProfileReviewItem } from "@/components/profile/types";
 import { SEARCH_PROFESSIONALS_DATA } from "@/features/consumer/search/data";
 import { DEFAULT_FEATURED_PROFESSIONALS } from "@/features/consumer/home/data";
+import { DEFAULT_SHOP_SERVICES } from "@/features/shop/data";
+import { formatDelivery, findShopCategoryById } from "@/features/shop/services/shopHelpers";
 
 export const MOCK_PROFESSIONAL_PROFILES: Record<string, ProfessionalProfileData> = {
   "elena-rodriguez": {
@@ -727,6 +729,75 @@ export function getProfessionalProfileById(id: string): ProfessionalProfileData 
         "Is this service still available?",
         "Can we schedule a consultation?",
         "Send project details",
+      ],
+    };
+  }
+
+  // Look up in Shop services registry
+  const shopService = DEFAULT_SHOP_SERVICES.find((s) => s.provider.id === id);
+  if (shopService) {
+    const provider = shopService.provider;
+    const providerServices = DEFAULT_SHOP_SERVICES.filter(
+      (s) => s.provider.id === id
+    );
+    const isCompany = shopService.badgeVariant === "corporate";
+
+    return {
+      id: provider.id,
+      name: provider.name,
+      roleTitle: provider.role,
+      verificationLabel: isCompany ? "CORPORATE PARTNER" : "VERIFIED EXPERT",
+      verificationType: isCompany ? "company" : "individual",
+      location: provider.location,
+      rating: provider.rating,
+      reviewCount: provider.reviewsCount,
+      experienceLabel: `Since ${provider.memberSince}`,
+      avatarUrl:
+        provider.avatarUrl ??
+        "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80",
+      bio: `${provider.name} (${provider.role}) offers fixed-price packages with verified quality, clear deliverables, and full escrow protection on MyKostoma.`,
+      responseTimeText: provider.responseTime,
+      services: providerServices.map((svc) => ({
+        id: svc.id,
+        title: svc.title,
+        description: svc.summary[0] ?? svc.title,
+        tags: [formatDelivery(svc.deliveryDays), `${svc.revisions} Revisions`],
+        priceLabel: "FIXED PACKAGE",
+        priceValue: `₦${svc.price.toLocaleString()}`,
+        ctaLabel: "VIEW DETAILS",
+        ctaVariant: "outline",
+        iconName: "sparkles",
+        iconVariant: "info",
+      })),
+      portfolio: providerServices.map((svc) => ({
+        id: `${svc.id}-portfolio`,
+        title: svc.title,
+        category: findShopCategoryById(svc.categoryId).name,
+        imageUrl: svc.imageUrl,
+      })),
+      ratingBreakdown: [
+        { stars: 5, percentage: 88 },
+        { stars: 4, percentage: 10 },
+        { stars: 3, percentage: 2 },
+      ],
+      reviews: [
+        {
+          id: `${provider.id}-review-1`,
+          authorName: "Sarah Johnson",
+          authorRole: "Homeowner",
+          timeAgo: "2 weeks ago",
+          avatarUrl:
+            "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
+          rating: 5,
+          comment: `${provider.name} delivered our package ahead of schedule with outstanding attention to detail. Highly recommended!`,
+          professionalResponse:
+            "Thank you so much Sarah! It was an absolute pleasure working with you to bring your vision to life.",
+        },
+      ],
+      quickActions: [
+        "Can I order a custom package?",
+        "What is your earliest delivery window?",
+        "Can we discuss project specifics?",
       ],
     };
   }

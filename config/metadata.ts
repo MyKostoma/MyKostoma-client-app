@@ -141,6 +141,12 @@ export const PAGE_METADATA = {
     description: "Track active order progress and milestones on MyKostoma.",
   },
 
+  // Consumer Shop Module (/shop*)
+  shopHome: {
+    title: "Shop Fixed-Price Services",
+    description: "Browse and order fixed-price services from top-rated verified professionals on MyKostoma.",
+  },
+
   // Not Found
   notFound: {
     title: "404 - Page Not Found",
@@ -164,6 +170,50 @@ export const PAGE_METADATA_GENERATORS = {
     return {
       title: `${formatted} Professionals`,
       description: `Discover and hire top-rated ${formatted.toLowerCase()} artisans and verified professionals on MyKostoma.`,
+    };
+  },
+
+  // Shop Category: /shop/category/[id]
+  shopCategory(title: string, description?: string): Metadata {
+    return {
+      title: `${title} | Shop`,
+      description:
+        description ||
+        `Browse fixed-price ${title.toLowerCase()} packages from vetted professionals on MyKostoma.`,
+    };
+  },
+
+  // Shop Service Detail: /shop/service/[id]
+  shopServiceDetail(title?: string, providerName?: string, summary?: string): Metadata {
+    if (!title) {
+      return {
+        title: "Service Package | Shop",
+        description: "Inspect fixed-price service deliverables, turnaround time, and escrow protection on MyKostoma.",
+      };
+    }
+    return {
+      title: providerName ? `${title} by ${providerName}` : title,
+      description:
+        summary?.slice(0, 160) ||
+        `Order ${title} with full MyKostoma escrow protection and verified quality guarantee.`,
+    };
+  },
+
+  // Shop Direct Order Checkout: /shop/checkout/[id]
+  shopCheckout(title?: string): Metadata {
+    return {
+      title: title ? `Direct Order Checkout - ${title}` : "Direct Order Confirmation",
+      description:
+        "Review your fixed-price service package, payment summary, and escrow terms before placing your direct order.",
+    };
+  },
+
+  // Shop Direct Order Success: /shop/success/[orderCode]
+  shopOrderSuccess(orderCode?: string): Metadata {
+    return {
+      title: orderCode ? `Order Created (#${orderCode})` : "Order Created Successfully",
+      description:
+        "Your direct shop order has been placed and funds are secured in MyKostoma Escrow.",
     };
   },
 

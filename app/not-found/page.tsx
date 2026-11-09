@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Compass, Search, Grid, LayoutDashboard, UserCheck } from "lucide-react";
 import Header from "@/components/layouts/headers/headers";
 import { Footer } from "@/components/layouts/footers/footers";
 import { PAGE_METADATA } from "@/config/metadata";
+import { NotFoundPageSkeleton } from "@/skeletons/not-found/page-skeleton";
 import { NotFoundActions } from "./not-found-actions";
 
 export const metadata: Metadata = PAGE_METADATA.notFound;
@@ -37,7 +39,8 @@ export default function NotFoundPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground font-inter selection:bg-primary/20 selection:text-primary">
+    <Suspense fallback={<NotFoundPageSkeleton />}>
+      <div className="min-h-screen flex flex-col bg-background text-foreground font-inter selection:bg-primary/20 selection:text-primary">
       {/* Navigation Header */}
       <div className="w-full bg-card/90 backdrop-blur-xs border-b border-border/70 sticky top-0 z-40">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -116,5 +119,6 @@ export default function NotFoundPage() {
       {/* Global Footer */}
       <Footer variant="public" />
     </div>
+    </Suspense>
   );
 }

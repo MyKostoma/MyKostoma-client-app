@@ -134,6 +134,12 @@ const ordersSlice = createSlice({
     setOrdersSearchQuery: (state, action: PayloadAction<string>) => {
       state.searchQuery = action.payload;
     },
+    addOrderLocal: (state, action: PayloadAction<ConsumerOrderItem>) => {
+      state.items = [
+        action.payload,
+        ...state.items.filter((o) => o.code !== action.payload.code),
+      ];
+    },
     depositOrderFundsLocal: (state, action: PayloadAction<string>) => {
       const item = state.items.find(
         (o) =>
@@ -213,6 +219,7 @@ const ordersSlice = createSlice({
 export const {
   setOrdersActiveTab,
   setOrdersSearchQuery,
+  addOrderLocal,
   depositOrderFundsLocal,
   confirmOrderCompletionLocal,
   cancelOrderLocal,

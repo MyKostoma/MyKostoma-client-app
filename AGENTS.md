@@ -13,7 +13,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 ## 1. Design Interpretation & "Build with Reason"
 - **Build with reason, do not blindly copy-paste**: Analyze the UI, observe the user flow, identify existing components, recognize designer inconsistencies or mistakes in Figma, and decide what to reuse, update, or ignore.
 - **Maintain Brand & Layout Shell**: Always reuse our existing logo and layout shells (`components/layouts/sidebars/`, `components/layouts/headers/`, `components/layouts/footers/`, `components/layouts/dashboard/dashboard-layout.tsx`, `components/layouts/mobile-drawer.tsx`). Never swap the logo or reinvent the shell because of a Figma mockup placeholder (e.g. "K"). Only add new nav items/routes to existing sidebars when required.
-- **Strict Color Tokens**: Do not invent arbitrary colors. Use existing CSS variables defined in `app/globals.css` (`bg-background`, `bg-card`, `bg-secondary`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`, and semantic status tokens `success`, `warning`, `error`, `info`).
+- **Strict Color Tokens**: Do not invent arbitrary colors, and **never use `dark:` utility classes to set dark-mode colors** (except when toggling separate light/dark image assets like `dark:hidden` / `hidden dark:block`). Light and dark mode color configurations are already handled automatically by the CSS variables in `app/globals.css` (`bg-background`, `bg-card`, `bg-secondary`, `text-foreground`, `text-muted-foreground`, `border-border`, `bg-primary`, and semantic status tokens `success`/`success-bg`, `warning`/`warning-bg`, `error`/`error-bg`, `info`/`info-bg`). Always use these semantic color variables directly.
 - **Icons**: Never create custom inline SVG icons when an equivalent or near-identical icon exists in `lucide-react`.
 
 ## 2. Component Reuse, Modularity & DRY
@@ -52,8 +52,13 @@ For every feature module in `features/<module>/`:
 - **Named React Imports**: Always import directly from `"react"` (e.g. `import { useState, useMemo, type ReactNode } from "react"`). Never use `import * as React from "react"` or `React.useState`.
 - **Minimal, Meaningful Comments**: Do not clutter code with obvious or boilerplate comments; preserve only comments that explain non-trivial logic.
 
-## 6. Page Metadata & Next.js Route Standards
-- **Mandatory Metadata on Every Page**: Every route page (`app/**/page.tsx`) must export either a static `metadata: Metadata` object or a `generateMetadata` function (for dynamic segments like `[id]`).
+## 6. Page Metadata, Skeletons & Next.js Route Standards
+- **Centralized Metadata on Every Page**: Every route page (`app/**/page.tsx`) must export either a static `metadata: Metadata` object from `PAGE_METADATA` or a `generateMetadata` function using `PAGE_METADATA_GENERATORS` defined in `config/metadata.ts`. Whenever you create a new page, add its metadata entry/generator to `config/metadata.ts`.
 - **Title Template Convention**: The root layout (`app/layout.tsx`) defines `title: { default: "MyKostoma", template: "%s | MyKostoma" }`. Child pages should define `title: "<Page Name>"` so Next.js automatically outputs `"<Page Name> | MyKostoma"`.
 - **Server Component Page Wrapper**: Always keep `app/**/page.tsx` as a Server Component (never add `"use client"` directly to `page.tsx`). Client interactivity, hooks, and state belong in feature views (`features/<module>/`) or presentational components (`components/<module>/`).
+- **Page-Only Skeleton Loading (`skeletons/`)**:
+  - For every route page in `app/**/page.tsx`, create a corresponding page skeleton file in `skeletons/**/page-skeleton.tsx` that mirrors the `app/` directory structure.
+  - Wrap the feature view inside `app/**/page.tsx` with `<Suspense fallback={<...PageSkeleton />}>`.
+  - **Build skeletons for pages only, NOT for individual components** (`components/<module>/`).
+
 

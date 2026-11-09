@@ -19,6 +19,7 @@ import discoverReducer from "./slices/discoverSlice"
 import requestsReducer from "./slices/requestsSlice"
 import quotationsReducer from "./slices/quotationsSlice"
 import ordersReducer from "./slices/ordersSlice"
+import shopReducer from "./slices/shopSlice"
 
 const createNoopStorage = (): WebStorage => ({
   getItem() {
@@ -59,6 +60,7 @@ const rootReducer = combineReducers({
   requests: requestsReducer,
   quotations: quotationsReducer,
   orders: ordersReducer,
+  shop: shopReducer,
 })
 
 export const makeStore = () =>
