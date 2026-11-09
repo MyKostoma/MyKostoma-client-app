@@ -64,6 +64,8 @@ export const Sidebars = Sidebar;
 
 export * from "./types";
 export * from "./sidebar-user-card";
+export * from "./sidebar-theme-toggle";
+export * from "./sidebar-brand-logo";
 export * from "./consumer-sidebar";
 export * from "./professional-sidebar";
 export * from "./premium-vendor-sidebar";

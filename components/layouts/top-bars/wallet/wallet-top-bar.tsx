@@ -1,11 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Bell, ChevronDown, Menu, MessageSquare } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectCurrentUser } from "@/store/slices/authSlice";
-import { selectUnreadNotificationsCount } from "@/store/slices/uiSlice";
+import {
+  selectNotifications,
+  selectUnreadNotificationsCount,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  removeNotification,
+  clearNotifications,
+  resetMockNotifications,
+} from "@/store/slices/uiSlice";
+import { NotificationModal } from "@/components/modals/notification-modal";
 import { useDashboardMobileMenu } from "@/providers/dashboard-top-bar-context";
 import type { WalletTopBarProps } from "../types";
 
@@ -21,8 +31,11 @@ export function WalletTopBar({
 }: WalletTopBarProps) {
   const contextMenuClick = useDashboardMobileMenu();
   const effectiveMenuClick = onMenuClick ?? contextMenuClick;
+  const dispatch = useAppDispatch();
   const user = useAppSelector(selectCurrentUser);
+  const notifications = useAppSelector(selectNotifications);
   const unreadNotifs = useAppSelector(selectUnreadNotificationsCount);
+  const [notificationModalOpen, setNotificationModalOpen] = useState(false);
 
   const displayName =
     user?.fullName ||
@@ -109,16 +122,29 @@ export function WalletTopBar({
           <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-primary" />
         </Link>
 
-        <Link
-          href="/notifications"
+        <button
+          type="button"
+          onClick={() => setNotificationModalOpen(true)}
           aria-label="Notifications"
-          className="relative size-9 rounded-xl border border-border bg-card hover:bg-secondary/60 text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors"
+          aria-expanded={notificationModalOpen}
+          className="relative size-9 rounded-xl border border-border bg-card hover:bg-secondary/60 text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
         >
           <Bell className="size-4" />
           <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
             {unreadNotifs > 0 ? unreadNotifs : 3}
           </span>
-        </Link>
+        </button>
+
+        <NotificationModal
+          isOpen={notificationModalOpen}
+          onClose={() => setNotificationModalOpen(false)}
+          notifications={notifications}
+          onMarkAsRead={(id) => dispatch(markNotificationAsRead(id))}
+          onMarkAllAsRead={() => dispatch(markAllNotificationsAsRead())}
+          onRemoveNotification={(id) => dispatch(removeNotification(id))}
+          onClearAll={() => dispatch(clearNotifications())}
+          onRestoreMock={() => dispatch(resetMockNotifications())}
+        />
 
         <div className="hidden sm:block h-6 w-px bg-border mx-0.5" />
 

@@ -2,15 +2,22 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Menu, Search, Bell, Sun, Moon, ChevronRight } from "lucide-react";
+import { Menu, Bell, Sun, Moon, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectCurrentUser } from "@/store/slices/authSlice";
 import {
   selectTheme,
   setTheme,
+  selectNotifications,
   selectUnreadNotificationsCount,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  removeNotification,
+  clearNotifications,
+  resetMockNotifications,
 } from "@/store/slices/uiSlice";
+import { NotificationModal } from "@/components/modals/notification-modal";
 import type { TopBarProps } from "./types";
 
 export function DashboardTopBar({
@@ -19,11 +26,6 @@ export function DashboardTopBar({
   breadcrumbs,
   onMenuClick,
   actions,
-  searchPlaceholder = "Search...",
-  searchValue,
-  onSearchChange,
-  onSearchClick,
-  showSearch = true,
   showNotifications = true,
   showThemeToggle = true,
   showUserMenu = true,
@@ -33,9 +35,11 @@ export function DashboardTopBar({
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectCurrentUser);
   const currentTheme = useAppSelector(selectTheme);
+  const notifications = useAppSelector(selectNotifications);
   const unreadNotifs = useAppSelector(selectUnreadNotificationsCount);
 
   const [isDark, setIsDark] = React.useState(false);
+  const [notificationModalOpen, setNotificationModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"));
@@ -46,11 +50,15 @@ export function DashboardTopBar({
     setIsDark(nextDark);
     if (nextDark) {
       document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
+      try {
+        localStorage.setItem("theme", "dark");
+      } catch {}
       dispatch(setTheme("dark"));
     } else {
       document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
+      try {
+        localStorage.setItem("theme", "light");
+      } catch {}
       dispatch(setTheme("light"));
     }
   };
@@ -127,74 +135,46 @@ export function DashboardTopBar({
         </div>
       </div>
 
-      {/* Right: Actions, Search, Notifications, Theme, User */}
+      {/* Right: Actions, Notifications, Theme, User */}
       <div className="flex items-center gap-2 md:gap-3">
         {/* Custom Actions Slot */}
         {actions && <div className="flex items-center gap-2">{actions}</div>}
 
-        {/* Search Trigger */}
-        {showSearch && (
+        {/* Notifications */}
+        {showNotifications && (
           <>
             <button
               type="button"
-              onClick={onSearchClick}
-              aria-label="Search"
-              className="hidden md:flex items-center gap-2.5 rounded-xl border border-border bg-secondary/50 px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:border-primary/40 hover:bg-secondary transition-colors cursor-pointer"
+              onClick={() => setNotificationModalOpen(true)}
+              aria-label="Notifications"
+              aria-expanded={notificationModalOpen}
+              className="relative p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors cursor-pointer"
             >
-              <Search className="h-3.5 w-3.5" />
-              <span>{searchPlaceholder}</span>
-              <kbd className="ml-2 rounded-md bg-card border border-border px-1.5 py-0.5 text-[10px] font-semibold text-muted-foreground shadow-2xs">
-                ⌘K
-              </kbd>
+              <Bell className="h-4.5 w-4.5" />
+              {unreadNotifs > 0 && (
+                <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
+                </span>
+              )}
             </button>
 
-            <button
-              type="button"
-              onClick={onSearchClick}
-              aria-label="Open search"
-              className="md:hidden p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors cursor-pointer"
-            >
-              <Search className="h-4 w-4" />
-            </button>
+            <NotificationModal
+              isOpen={notificationModalOpen}
+              onClose={() => setNotificationModalOpen(false)}
+              notifications={notifications}
+              onMarkAsRead={(id) => dispatch(markNotificationAsRead(id))}
+              onMarkAllAsRead={() => dispatch(markAllNotificationsAsRead())}
+              onRemoveNotification={(id) => dispatch(removeNotification(id))}
+              onClearAll={() => dispatch(clearNotifications())}
+              onRestoreMock={() => dispatch(resetMockNotifications())}
+            />
           </>
         )}
-
-        {/* Notifications */}
-        {showNotifications && (
-          <Link
-            href="/notifications"
-            aria-label="Notifications"
-            className="relative p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors cursor-pointer"
-          >
-            <Bell className="h-4.5 w-4.5" />
-            {unreadNotifs > 0 && (
-              <span className="absolute top-1.5 right-1.5 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
-              </span>
-            )}
-          </Link>
-        )}
-
-        {/* Theme Toggle */}
-        {showThemeToggle && (
-          <button
-            type="button"
-            onClick={toggleTheme}
-            aria-label="Toggle theme"
-            className="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors cursor-pointer"
-          >
-            {isDark ? (
-              <Sun className="h-4.5 w-4.5 text-amber-400" />
-            ) : (
-              <Moon className="h-4.5 w-4.5" />
-            )}
-          </button>
-        )}
-
         {children}
       </div>
     </header>
   );
 }
 
+export default DashboardTopBar;

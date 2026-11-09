@@ -9,8 +9,15 @@ import { selectCurrentUser } from "@/store/slices/authSlice";
 import {
   selectTheme,
   setTheme,
+  selectNotifications,
   selectUnreadNotificationsCount,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  removeNotification,
+  clearNotifications,
+  resetMockNotifications,
 } from "@/store/slices/uiSlice";
+import { NotificationModal } from "@/components/modals/notification-modal";
 
 export interface TopBarUtilitiesProps {
   showNotifications?: boolean;
@@ -28,9 +35,11 @@ export function TopBarUtilities({
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectCurrentUser);
   const currentTheme = useAppSelector(selectTheme);
+  const notifications = useAppSelector(selectNotifications);
   const unreadNotifs = useAppSelector(selectUnreadNotificationsCount);
 
   const [isDark, setIsDark] = React.useState(false);
+  const [notificationModalOpen, setNotificationModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"));

@@ -30,6 +30,8 @@ import {
 import { clearAuthCookies } from "@/lib/cookies";
 import { baseApi } from "@/store/api/baseApi";
 import { SidebarTooltip, SidebarTooltipProvider } from "./sidebar-tooltip";
+import { SidebarThemeToggle } from "./sidebar-theme-toggle";
+import { SidebarBrandLogo } from "./sidebar-brand-logo";
 import type { SidebarNavItem, SidebarProps } from "./types";
 
 export const DEFAULT_PROFESSIONAL_NAV_ITEMS: SidebarNavItem[] = [
@@ -151,6 +153,9 @@ export function ProfessionalSidebar({
               </div>
             )
           )}
+
+          {/* MyKostoma Brand Logo: Full logo when open, icon logo when collapsed */}
+          <SidebarBrandLogo isOpen={isOpen} logoHref={logoHref} />
 
           {header || (
             isOpen ? (
@@ -333,6 +338,9 @@ export function ProfessionalSidebar({
                 {isOpen && <span className="truncate">Settings</span>}
               </Link>
             </SidebarTooltip>
+
+            {/* Theme Toggle */}
+            <SidebarThemeToggle isOpen={isOpen} />
 
             {/* Log Out */}
             <SidebarTooltip content="Log Out" enabled={!isOpen}>

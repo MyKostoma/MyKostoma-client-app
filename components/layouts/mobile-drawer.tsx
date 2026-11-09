@@ -31,6 +31,7 @@ import {
 import {
   DEFAULT_PREMIUM_VENDOR_NAV_ITEMS,
 } from "./sidebars/premium-vendor-sidebar";
+import { SidebarThemeToggle } from "./sidebars/sidebar-theme-toggle";
 import type {
   SidebarNavItem,
   SidebarVariant,
@@ -61,7 +62,7 @@ export function MobileDrawer({
   items: itemsProp,
   title,
   user: userProp,
-  logoHref = "/dashboard",
+  logoHref = "/",
   onLogout,
   className,
   children,
@@ -420,6 +421,9 @@ export function MobileDrawer({
             <Settings className="h-5 w-5 shrink-0" />
             <span className="truncate">Settings</span>
           </Link>
+
+          {/* Theme Toggle */}
+          <SidebarThemeToggle isOpen={true} />
 
           {/* Log Out */}
           <button
