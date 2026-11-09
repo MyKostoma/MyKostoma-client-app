@@ -6,11 +6,11 @@ import {
   Home,
   Search,
   FileText,
+  ShoppingBag,
   Wallet,
   Store,
   Clapperboard,
   MessageSquare,
-  Cog,
   Bell,
   User as UserIcon,
   Settings,
@@ -33,11 +33,11 @@ export const DEFAULT_CONSUMER_NAV_ITEMS: SidebarNavItem[] = [
   { id: "browse", label: "Browse", href: "/dashboard", icon: Home },
   { id: "requests", label: "Requests", href: "/requests", icon: Search },
   { id: "quotations", label: "Quotations", href: "/quotations", icon: FileText },
-  { id: "orders", label: "Orders", href: "/orders", icon: Wallet },
+  { id: "orders", label: "Orders", href: "/orders", icon: ShoppingBag },
   { id: "shop", label: "Shop", href: "/shop", icon: Store },
   { id: "reels", label: "Reels", href: "/reels", icon: Clapperboard },
   { id: "messages", label: "Messages", href: "/messages", icon: MessageSquare },
-  { id: "wallet", label: "Wallet", href: "/wallet", icon: Cog },
+  { id: "wallet", label: "Wallet", href: "/wallet", icon: Wallet },
 ];
 
 export function ConsumerSidebar({

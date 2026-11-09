@@ -56,3 +56,15 @@ export interface OrderDetailTopBarProps {
   onMenuClick?: () => void;
   className?: string;
 }
+
+export interface WalletTopBarProps {
+  title: string;
+  subtitle?: string;
+  breadcrumbParentLabel?: string;
+  breadcrumbCurrentLabel?: string;
+  onBreadcrumbParentClick?: () => void;
+  onBack?: () => void;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
