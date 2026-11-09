@@ -147,6 +147,24 @@ export const PAGE_METADATA = {
     description: "Browse and order fixed-price services from top-rated verified professionals on MyKostoma.",
   },
 
+  // Consumer Wallet Module (/wallet*)
+  walletOverview: {
+    title: "Wallet",
+    description: "Manage your available balance, escrow funds, and transaction history on MyKostoma.",
+  },
+  walletFund: {
+    title: "Fund Your Wallet",
+    description: "Top up your MyKostoma wallet instantly via Nigerian Bank Transfer or Debit/Credit Card.",
+  },
+  walletFundingStatus: {
+    title: "Funding Status",
+    description: "Check the verification and credit status of your MyKostoma wallet deposit.",
+  },
+  walletTransactions: {
+    title: "Transaction History",
+    description: "Detailed record of all your deposits, escrow holds, payments, and refunds on MyKostoma.",
+  },
+
   // Not Found
   notFound: {
     title: "404 - Page Not Found",
@@ -308,6 +326,16 @@ export const PAGE_METADATA_GENERATORS = {
       title: code ? `Feedback & Dispute | ${code}` : "Feedback & Dispute",
       description:
         "Leave a rating and review for the artisan or open an escrow dispute resolution ticket.",
+    };
+  },
+
+  // Wallet Transaction Detail: /wallet/transactions/[id]
+  walletTransactionDetail(reference?: string, description?: string): Metadata {
+    return {
+      title: reference ? `Transaction ${reference}` : "Transaction Detail",
+      description:
+        description ||
+        "Inspect full transaction details, payment method, and downloadable receipt on MyKostoma.",
     };
   },
 };

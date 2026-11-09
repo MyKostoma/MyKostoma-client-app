@@ -46,3 +46,4 @@ export interface WalletTransactionsViewProps {
 export interface WalletTransactionDetailViewProps {
   transactionId: string;
 }
+

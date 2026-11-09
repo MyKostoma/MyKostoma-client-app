@@ -55,11 +55,17 @@ export interface AppFooterProps extends React.HTMLAttributes<HTMLElement> {
   onUserClick?: () => void;
 }
 
+export interface DashboardFooterProps extends React.HTMLAttributes<HTMLElement> {
+  copyrightText?: string;
+  links?: FooterLinkItem[];
+}
+
 export type FooterVariant =
   | "public"
   | "public2"
   | "publicFooter2"
   | "app"
+  | "dashboard"
   | "logged-out"
   | "logged-in"
   | (string & {});

@@ -160,3 +160,4 @@ export interface WalletTransactionDetailCardsProps {
 export interface WalletTrustFooterProps {
   className?: string;
 }
+

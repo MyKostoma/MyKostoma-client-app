@@ -18,8 +18,10 @@ import {
   useDashboardTopBar,
 } from "@/providers/dashboard-top-bar-context";
 import { MobileDrawer } from "../mobile-drawer";
+import { Footer } from "../footers/footers";
 import type { SidebarVariant } from "../sidebars/types";
 import type { TopBarVariant, BreadcrumbItemConfig } from "../top-bars/types";
+import type { FooterVariant } from "../footers/types";
 import type { UserRole } from "@/types/user";
 
 export interface DashboardLayoutProps {
@@ -33,6 +35,9 @@ export interface DashboardLayoutProps {
   actions?: ReactNode;
   showSidebar?: boolean;
   showTopBar?: boolean;
+  showFooter?: boolean;
+  footerVariant?: FooterVariant;
+  footerClassName?: string;
   searchPlaceholder?: string;
   onSearchClick?: () => void;
   className?: string;
@@ -93,6 +98,9 @@ function DashboardLayoutContent({
   actions,
   showSidebar = true,
   showTopBar = true,
+  showFooter,
+  footerVariant = "dashboard",
+  footerClassName,
   searchPlaceholder,
   onSearchClick,
   className,
@@ -109,6 +117,14 @@ function DashboardLayoutContent({
   const sidebarOpen = useAppSelector(selectSidebarOpen);
 
   const { hasCustomTopBar, setPortalTarget } = useDashboardTopBar();
+
+  const isWalletRoute =
+    pathname === "/wallet" || pathname.startsWith("/wallet/");
+  const routeConfig = getDashboardRouteConfig(pathname);
+  const effectiveShowFooter =
+    showFooter !== undefined
+      ? showFooter
+      : (routeConfig?.showFooter ?? isWalletRoute);
 
   const effectiveRole = roleProp || storeUserRole || activePerspective || "consumer";
   const effectiveSidebarVariant: SidebarVariant =
@@ -183,6 +199,14 @@ function DashboardLayoutContent({
         >
           {children}
         </main>
+
+        {/* Optional Sticky Dashboard Footer */}
+        {effectiveShowFooter && (
+          <Footer
+            variant={footerVariant}
+            className={cn("shrink-0", footerClassName)}
+          />
+        )}
       </div>
 
       {/* Mobile Slide-in Drawer */}

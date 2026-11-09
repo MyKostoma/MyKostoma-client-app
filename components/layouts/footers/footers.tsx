@@ -6,6 +6,7 @@ import { selectIsAuthenticated } from "@/store/slices/authSlice";
 import { PublicFooter } from "./public-footer";
 import { PublicFooter2 } from "./public-footer-2";
 import { AppFooter } from "./app-footer";
+import { DashboardFooter } from "./dashboard-footer";
 import type { FooterProps } from "./types";
 
 const FOOTER_VARIANTS: Record<string, React.ComponentType<any>> = {
@@ -13,6 +14,7 @@ const FOOTER_VARIANTS: Record<string, React.ComponentType<any>> = {
   "logged-out": PublicFooter,
   app: AppFooter,
   "logged-in": AppFooter,
+  dashboard: DashboardFooter,
 };
 
 export function Footer({
@@ -42,10 +44,12 @@ export const Footers = Footer;
 export const LoggedOutFooter = PublicFooter;
 export const LoggedInFooter = AppFooter;
 export const publicFooter2 = PublicFooter2;
+export const dashboardFooter = DashboardFooter;
 
 export * from "./types";
 export * from "./public-footer";
 export * from "./app-footer";
+export * from "./dashboard-footer";
 export * from "./icons";
 
 export default Footer;

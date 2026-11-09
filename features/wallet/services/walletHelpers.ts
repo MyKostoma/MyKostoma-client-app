@@ -222,3 +222,4 @@ export function exportTransactionsToCsv(
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+

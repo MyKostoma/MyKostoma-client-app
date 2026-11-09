@@ -184,3 +184,4 @@ export const WALLET_TRANSACTION_STATUS_OPTIONS: SelectOption[] = [
   { value: "pending", label: "Pending / Held" },
   { value: "failed", label: "Failed" },
 ];
+

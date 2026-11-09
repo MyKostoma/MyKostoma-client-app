@@ -192,28 +192,6 @@ export function DashboardTopBar({
           </button>
         )}
 
-        {/* User Summary / Profile Link */}
-        {showUserMenu && (
-          <Link
-            href="/profile"
-            aria-label="Go to profile"
-            className="flex items-center gap-2 pl-1 group cursor-pointer"
-          >
-            {user?.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={user.avatarUrl}
-                alt={displayName}
-                className="h-8 w-8 rounded-lg object-cover border border-border group-hover:border-primary/50 transition-colors"
-              />
-            ) : (
-              <div className="h-8 w-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center font-bold text-xs border border-primary/20 group-hover:bg-primary/20 transition-colors">
-                {userInitial}
-              </div>
-            )}
-          </Link>
-        )}
-
         {children}
       </div>
     </header>

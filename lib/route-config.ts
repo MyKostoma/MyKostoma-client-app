@@ -155,6 +155,8 @@ export interface DashboardRouteConfig {
   title: string;
   /** Allowed roles for reference / route guard alignment */
   roles?: UserRole[];
+  /** Optional flag to enable the sticky dashboard footer on this route */
+  showFooter?: boolean;
 }
 
 export const dashboardRoutes: DashboardRouteConfig[] = [
@@ -182,6 +184,7 @@ export const dashboardRoutes: DashboardRouteConfig[] = [
     path: "/wallet*",
     title: "Wallet",
     roles: ["consumer", "professional"],
+    showFooter: true,
   },
   {
     path: "/bookings*",
