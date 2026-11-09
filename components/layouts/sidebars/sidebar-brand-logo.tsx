@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { SidebarTooltip } from "./sidebar-tooltip";
@@ -13,7 +12,7 @@ export interface SidebarBrandLogoProps {
 
 export function SidebarBrandLogo({
   isOpen = true,
-  logoHref = "/dashboard",
+  logoHref = "/",
   className,
 }: SidebarBrandLogoProps) {
   if (!isOpen) {

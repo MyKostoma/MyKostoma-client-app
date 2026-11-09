@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import type { ComponentType, HTMLAttributes, ReactNode } from "react";
 import type { User, UserRole } from "@/types/user";
 
 export type SidebarVariant =
@@ -21,7 +21,7 @@ export interface SidebarNavChild {
 export interface SidebarNavItem {
   id: string;
   label: string;
-  icon?: React.ComponentType<{ className?: string }>;
+  icon?: ComponentType<{ className?: string }>;
   href?: string;
   badge?: string | number;
   badgeVariant?: "primary" | "secondary";
@@ -31,15 +31,15 @@ export interface SidebarNavItem {
   onClick?: (item: SidebarNavItem) => void;
 }
 
-export interface SidebarProps extends React.HTMLAttributes<HTMLElement> {
+export interface SidebarProps extends HTMLAttributes<HTMLElement> {
   variant?: SidebarVariant;
   isOpen?: boolean;
   onToggle?: () => void;
   activeItemId?: string;
   onItemSelect?: (id: string, item?: SidebarNavItem) => void;
   items?: SidebarNavItem[];
-  header?: React.ReactNode;
-  footer?: React.ReactNode;
+  header?: ReactNode;
+  footer?: ReactNode;
   user?: User | null;
   onLogout?: () => void | Promise<void>;
   collapsible?: boolean;

@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState, useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -18,9 +18,9 @@ export function SidebarThemeToggle({
 }: SidebarThemeToggleProps) {
   const dispatch = useAppDispatch();
   const currentTheme = useAppSelector(selectTheme);
-  const [isDark, setIsDark] = React.useState(false);
+  const [isDark, setIsDark] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"));
   }, [currentTheme]);
 

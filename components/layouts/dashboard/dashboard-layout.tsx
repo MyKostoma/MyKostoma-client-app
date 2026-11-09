@@ -6,11 +6,7 @@ import { cn } from "@/lib/utils";
 import { getDashboardPageTitle, getDashboardRouteConfig } from "@/lib/route-config";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectCurrentUser, selectUserRole } from "@/store/slices/authSlice";
-import {
-  toggleSidebar,
-  selectSidebarOpen,
-  selectActivePerspective,
-} from "@/store/slices/uiSlice";
+import { selectActivePerspective } from "@/store/slices/uiSlice";
 import { Sidebar } from "../sidebars/sidebars";
 import { TopBar } from "../top-bars/top-bars";
 import {
@@ -114,7 +110,6 @@ function DashboardLayoutContent({
   const user = useAppSelector(selectCurrentUser);
   const storeUserRole = useAppSelector(selectUserRole);
   const activePerspective = useAppSelector(selectActivePerspective);
-  const sidebarOpen = useAppSelector(selectSidebarOpen);
 
   const { hasCustomTopBar, setPortalTarget } = useDashboardTopBar();
 
@@ -143,10 +138,6 @@ function DashboardLayoutContent({
         ? `Welcome back, ${user.firstName || user.fullName || "there"}.`
         : undefined;
 
-  const handleToggleSidebar = useCallback(() => {
-    dispatch(toggleSidebar());
-  }, [dispatch]);
-
   return (
     <div
       className={cn(
@@ -158,8 +149,6 @@ function DashboardLayoutContent({
       {showSidebar && (
         <Sidebar
           variant={effectiveSidebarVariant}
-          isOpen={sidebarOpen}
-          onToggle={handleToggleSidebar}
         />
       )}
 

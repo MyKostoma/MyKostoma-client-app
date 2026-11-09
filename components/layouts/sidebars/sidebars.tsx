@@ -1,11 +1,16 @@
 "use client";
 
-import * as React from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+  useSyncExternalStore,
+  type ComponentType,
+} from "react";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectUserRole } from "@/store/slices/authSlice";
 import {
   toggleSidebar as toggleSidebarAction,
-  selectSidebarOpen,
   selectActivePerspective,
 } from "@/store/slices/uiSlice";
 import { ConsumerSidebar } from "./consumer-sidebar";
@@ -15,13 +20,37 @@ import type { SidebarProps } from "./types";
 
 export const SIDEBAR_VARIANTS: Record<
   string,
-  React.ComponentType<SidebarProps>
+  ComponentType<SidebarProps>
 > = {
   consumer: ConsumerSidebar,
   professional: ProfessionalSidebar,
   "premium-vendor": PremiumVendorSidebar,
   vendor: PremiumVendorSidebar,
 };
+
+const XL_BREAKPOINT_QUERY = "(min-width: 1280px)";
+
+function subscribeXlBreakpoint(callback: () => void): () => void {
+  if (typeof window === "undefined" || !window.matchMedia) {
+    return () => {};
+  }
+  const mediaQuery = window.matchMedia(XL_BREAKPOINT_QUERY);
+  mediaQuery.addEventListener("change", callback);
+  return () => {
+    mediaQuery.removeEventListener("change", callback);
+  };
+}
+
+function getXlSnapshot(): boolean {
+  if (typeof window === "undefined" || !window.matchMedia) {
+    return false;
+  }
+  return window.matchMedia(XL_BREAKPOINT_QUERY).matches;
+}
+
+function getServerXlSnapshot(): boolean {
+  return true;
+}
 
 export function Sidebar({
   variant,
@@ -32,18 +61,41 @@ export function Sidebar({
   const dispatch = useAppDispatch();
   const storeUserRole = useAppSelector(selectUserRole);
   const activePerspective = useAppSelector(selectActivePerspective);
-  const storeSidebarOpen = useAppSelector(selectSidebarOpen);
+
+  // Responsive default: expanded on xl (>= 1280px), collapsed on lg (1024px <= width < 1280px)
+  const isXl = useSyncExternalStore(
+    subscribeXlBreakpoint,
+    getXlSnapshot,
+    getServerXlSnapshot
+  );
+
+  // Explicit user manual override
+  const [userToggledOpen, setUserToggledOpen] = useState<boolean | null>(null);
+
+  // Reset explicit toggle state when screen crosses between lg and xl breakpoints
+  useEffect(() => {
+    setUserToggledOpen(null);
+  }, [isXl]);
 
   const effectiveIsOpen =
-    isOpenProp !== undefined ? isOpenProp : storeSidebarOpen;
+    isOpenProp !== undefined
+      ? isOpenProp
+      : userToggledOpen !== null
+        ? userToggledOpen
+        : isXl;
 
-  const handleToggle = React.useCallback(() => {
+  const handleToggle = useCallback(() => {
+    setUserToggledOpen((prev) => {
+      const current = prev !== null ? prev : isXl;
+      return !current;
+    });
+
     if (onToggleProp) {
       onToggleProp();
     } else {
       dispatch(toggleSidebarAction());
     }
-  }, [onToggleProp, dispatch]);
+  }, [onToggleProp, isXl, dispatch]);
 
   const effectiveVariant =
     variant || storeUserRole || activePerspective || "consumer";

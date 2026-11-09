@@ -1,12 +1,12 @@
 "use client";
 
-import * as React from "react";
+import type { ReactNode, ReactElement } from "react";
 import { Tooltip } from "radix-ui";
 import { cn } from "@/lib/utils";
 
 export interface SidebarTooltipProps {
-  content: React.ReactNode;
-  children: React.ReactElement;
+  content: ReactNode;
+  children: ReactElement;
   side?: "right" | "top" | "bottom" | "left";
   sideOffset?: number;
   enabled?: boolean;

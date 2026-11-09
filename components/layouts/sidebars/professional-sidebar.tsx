@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -58,7 +57,7 @@ export function ProfessionalSidebar({
   user: userProp,
   onLogout,
   collapsible = true,
-  logoHref = "/dashboard",
+  logoHref = "/",
   className,
 }: SidebarProps) {
   const pathname = usePathname();
@@ -254,7 +253,7 @@ export function ProfessionalSidebar({
                     className={cn(
                       "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors cursor-pointer outline-none",
                       item.disabled &&
-                        "opacity-50 cursor-not-allowed pointer-events-none",
+                      "opacity-50 cursor-not-allowed pointer-events-none",
                       active
                         ? "bg-primary/10 text-primary font-semibold shadow-2xs"
                         : "text-muted-foreground hover:text-foreground hover:bg-secondary/60",
