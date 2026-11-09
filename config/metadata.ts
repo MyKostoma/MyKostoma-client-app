@@ -103,6 +103,13 @@ export const PAGE_METADATA = {
       "Track active service jobs, inspect milestones, release escrow funds, and view receipts on MyKostoma.",
   },
 
+  // Notifications Module
+  notifications: {
+    title: "Notifications",
+    description:
+      "Stay updated with your home service requests and activity.",
+  },
+
   // Parameterized Route Fallback Defaults
   categorySearchDefault: {
     title: "Category Search",

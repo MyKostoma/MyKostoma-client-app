@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Bell, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -38,10 +38,10 @@ export function TopBarUtilities({
   const notifications = useAppSelector(selectNotifications);
   const unreadNotifs = useAppSelector(selectUnreadNotificationsCount);
 
-  const [isDark, setIsDark] = React.useState(false);
-  const [notificationModalOpen, setNotificationModalOpen] = React.useState(false);
+  const [isDark, setIsDark] = useState(false);
+  const [notificationModalOpen, setNotificationModalOpen] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"));
   }, [currentTheme]);
 

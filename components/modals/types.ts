@@ -8,8 +8,8 @@ export interface NotificationModalProps {
   onMarkSelectedAsRead?: (ids: string[]) => void;
   onMarkAllAsRead: () => void;
   onRemoveNotification: (id: string) => void;
-  onClearAll: () => void;
-  onRestoreMock: () => void;
+  onClearAll?: () => void;
+  onRestoreMock?: () => void;
   className?: string;
 }
 

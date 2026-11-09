@@ -122,29 +122,32 @@ export function WalletTopBar({
           <span className="absolute top-1.5 right-1.5 size-1.5 rounded-full bg-primary" />
         </Link>
 
-        <button
-          type="button"
-          onClick={() => setNotificationModalOpen(true)}
-          aria-label="Notifications"
-          aria-expanded={notificationModalOpen}
-          className="relative size-9 rounded-xl border border-border bg-card hover:bg-secondary/60 text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
-        >
-          <Bell className="size-4" />
-          <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
-            {unreadNotifs > 0 ? unreadNotifs : 3}
-          </span>
-        </button>
+        <div className="relative">
+          <button
+            type="button"
+            data-notification-trigger="true"
+            onClick={() => setNotificationModalOpen((prev) => !prev)}
+            aria-label="Notifications"
+            aria-expanded={notificationModalOpen}
+            className="relative size-9 rounded-xl border border-border bg-card hover:bg-secondary/60 text-muted-foreground hover:text-foreground flex items-center justify-center transition-colors cursor-pointer"
+          >
+            <Bell className="size-4" />
+            <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 rounded-full bg-primary text-primary-foreground text-[9px] font-bold flex items-center justify-center">
+              {unreadNotifs > 0 ? unreadNotifs : 3}
+            </span>
+          </button>
 
-        <NotificationModal
-          isOpen={notificationModalOpen}
-          onClose={() => setNotificationModalOpen(false)}
-          notifications={notifications}
-          onMarkAsRead={(id) => dispatch(markNotificationAsRead(id))}
-          onMarkAllAsRead={() => dispatch(markAllNotificationsAsRead())}
-          onRemoveNotification={(id) => dispatch(removeNotification(id))}
-          onClearAll={() => dispatch(clearNotifications())}
-          onRestoreMock={() => dispatch(resetMockNotifications())}
-        />
+          <NotificationModal
+            isOpen={notificationModalOpen}
+            onClose={() => setNotificationModalOpen(false)}
+            notifications={notifications}
+            onMarkAsRead={(id) => dispatch(markNotificationAsRead(id))}
+            onMarkAllAsRead={() => dispatch(markAllNotificationsAsRead())}
+            onRemoveNotification={(id) => dispatch(removeNotification(id))}
+            onClearAll={() => dispatch(clearNotifications())}
+            onRestoreMock={() => dispatch(resetMockNotifications())}
+          />
+        </div>
 
         <div className="hidden sm:block h-6 w-px bg-border mx-0.5" />
 

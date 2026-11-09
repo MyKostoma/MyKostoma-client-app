@@ -1,8 +1,8 @@
 "use client";
 
-import * as React from "react";
+import { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
-import { Menu, Bell, Sun, Moon, ChevronRight } from "lucide-react";
+import { Menu, Bell, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectCurrentUser } from "@/store/slices/authSlice";
@@ -27,8 +27,6 @@ export function DashboardTopBar({
   onMenuClick,
   actions,
   showNotifications = true,
-  showThemeToggle = true,
-  showUserMenu = true,
   className,
   children,
 }: TopBarProps) {
@@ -38,30 +36,7 @@ export function DashboardTopBar({
   const notifications = useAppSelector(selectNotifications);
   const unreadNotifs = useAppSelector(selectUnreadNotificationsCount);
 
-  const [isDark, setIsDark] = React.useState(false);
-  const [notificationModalOpen, setNotificationModalOpen] = React.useState(false);
-
-  React.useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
-  }, [currentTheme]);
-
-  const toggleTheme = () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    if (nextDark) {
-      document.documentElement.classList.add("dark");
-      try {
-        localStorage.setItem("theme", "dark");
-      } catch {}
-      dispatch(setTheme("dark"));
-    } else {
-      document.documentElement.classList.remove("dark");
-      try {
-        localStorage.setItem("theme", "light");
-      } catch {}
-      dispatch(setTheme("light"));
-    }
-  };
+  const [notificationModalOpen, setNotificationModalOpen] = useState(false);
 
   const displayName =
     user?.fullName ||
@@ -101,7 +76,7 @@ export function DashboardTopBar({
               className="flex items-center gap-1.5 text-xs text-muted-foreground"
             >
               {breadcrumbs.map((crumb, idx) => (
-                <React.Fragment key={crumb.label}>
+                <Fragment key={crumb.label}>
                   {idx > 0 && <ChevronRight className="h-3 w-3 shrink-0" />}
                   {crumb.href ? (
                     <Link
@@ -115,7 +90,7 @@ export function DashboardTopBar({
                       {crumb.label}
                     </span>
                   )}
-                </React.Fragment>
+                </Fragment>
               ))}
             </nav>
           ) : (
@@ -142,10 +117,11 @@ export function DashboardTopBar({
 
         {/* Notifications */}
         {showNotifications && (
-          <>
+          <div className="relative">
             <button
               type="button"
-              onClick={() => setNotificationModalOpen(true)}
+              data-notification-trigger="true"
+              onClick={() => setNotificationModalOpen((prev) => !prev)}
               aria-label="Notifications"
               aria-expanded={notificationModalOpen}
               className="relative p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-secondary/70 transition-colors cursor-pointer"
@@ -169,7 +145,7 @@ export function DashboardTopBar({
               onClearAll={() => dispatch(clearNotifications())}
               onRestoreMock={() => dispatch(resetMockNotifications())}
             />
-          </>
+          </div>
         )}
         {children}
       </div>

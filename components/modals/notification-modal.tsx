@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import Link from "next/link";
 import {
   CheckCircle2,
   AlertTriangle,
@@ -8,8 +9,8 @@ import {
   Bell,
   CheckCheck,
   X,
-  Trash2,
   BellOff,
+  ArrowRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -25,17 +26,37 @@ export function NotificationModal({
   onMarkAsRead,
   onMarkAllAsRead,
   onRemoveNotification,
-  onClearAll,
   onRestoreMock,
   className,
 }: NotificationModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     if (!isOpen) return;
+
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("[data-notification-trigger]")) {
+        return;
+      }
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        onClose();
+      }
+    };
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
@@ -57,15 +78,16 @@ export function NotificationModal({
 
   return (
     <>
-      {/* Backdrop overlay for closing on outside click */}
+      {/* Backdrop overlay for closing on outside click (mobile dimming + safety net) */}
       <div
-        className="fixed inset-0 z-40 bg-black/15 md:bg-transparent"
+        className="fixed inset-0 z-40 bg-black/15 md:hidden"
         onClick={onClose}
         aria-hidden="true"
       />
 
       {/* Floating Notification Popup */}
       <div
+        ref={modalRef}
         className={cn(
           "fixed top-18 right-3 left-3 sm:left-auto sm:right-4 sm:w-[380px]",
           "md:absolute md:top-full md:right-0 md:left-auto md:mt-2.5 md:w-[400px]",
@@ -109,37 +131,35 @@ export function NotificationModal({
           </button>
         </div>
 
-        {/* Actions Toolbar - "Mark all as read" where "Select all" was, plus "Clear all" */}
-        {notifications.length > 0 && (
-          <div className="px-4 py-2 bg-secondary/40 border-b border-border/60 flex items-center justify-between gap-2 text-xs">
-            {unreadCount > 0 ? (
-              <button
-                type="button"
-                onClick={onMarkAllAsRead}
-                className="inline-flex items-center gap-1.5 font-semibold text-primary hover:text-primary-hover transition-colors cursor-pointer"
-              >
-                <CheckCheck className="size-3.5" />
-                <span>Mark all as read</span>
-              </button>
-            ) : (
-              <span className="text-[11px] font-medium text-muted-foreground">
-                All caught up
-              </span>
-            )}
-
+        {/* Actions Toolbar - "Mark all as read" & "View all" */}
+        <div className="px-4 py-2 bg-secondary/40 border-b border-border/60 flex items-center justify-between gap-2 text-xs">
+          {unreadCount > 0 ? (
             <button
               type="button"
-              onClick={onClearAll}
-              className="inline-flex items-center gap-1 text-muted-foreground hover:text-error transition-colors cursor-pointer"
+              onClick={onMarkAllAsRead}
+              className="inline-flex items-center gap-1.5 font-semibold text-primary hover:text-primary-hover transition-colors cursor-pointer"
             >
-              <Trash2 className="size-3.5" />
-              <span>Clear all</span>
+              <CheckCheck className="size-3.5" />
+              <span>Mark all as read</span>
             </button>
-          </div>
-        )}
+          ) : (
+            <span className="text-[11px] font-medium text-muted-foreground">
+              All caught up
+            </span>
+          )}
+
+          <Link
+            href="/notifications"
+            onClick={onClose}
+            className="inline-flex items-center gap-1 font-semibold text-xs text-muted-foreground hover:text-primary transition-colors cursor-pointer"
+          >
+            <span>View all</span>
+            <ArrowRight className="size-3.5" />
+          </Link>
+        </div>
 
         {/* Notifications List or Empty State */}
-        <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-border/60 no-scrollbar">
+        <div className="flex-1 overflow-y-auto no-scrollbar divide-y divide-border/60">
           {notifications.length === 0 ? (
             <div className="py-12 px-5 flex flex-col items-center text-center">
               <div className="size-16 rounded-full bg-secondary flex items-center justify-center mb-3 text-muted-foreground">
@@ -174,8 +194,6 @@ export function NotificationModal({
                       : "bg-card hover:bg-secondary/40"
                   )}
                 >
-                  {/* <div className="mt-0.5 shrink-0">{getTypeIcon(notif.type)}</div> */}
-
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <p

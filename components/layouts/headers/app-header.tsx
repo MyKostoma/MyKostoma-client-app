@@ -160,6 +160,7 @@ export function AppHeader({
           <div className="relative">
             <button
               type="button"
+              data-notification-trigger="true"
               onClick={handleBellClick}
               aria-label="Notifications"
               aria-expanded={notificationModalOpen}
