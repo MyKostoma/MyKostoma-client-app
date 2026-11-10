@@ -8,14 +8,19 @@ interface ShopOrderSuccessPageProps {
   params: Promise<{ orderCode: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: ShopOrderSuccessPageProps): Promise<Metadata> {
-  const { orderCode } = await params;
-  return PAGE_METADATA_GENERATORS.shopOrderSuccess(
-    decodeURIComponent(orderCode)
-  );
+export function generateStaticParams() {
+  return [
+    { orderCode: "ORD-98421" },
+    { orderCode: "ORD-98422" },
+    { orderCode: "ORD-DEMO" },
+  ];
 }
+
+export const metadata: Metadata = {
+  title: "Order Confirmed",
+  description:
+    "Your service booking order is confirmed. Track real-time progress and milestones.",
+};
 
 export default async function ShopOrderSuccessPage({
   params,

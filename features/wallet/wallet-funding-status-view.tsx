@@ -1,16 +1,39 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { WalletFundingStatusCard } from "@/components/wallet/wallet-funding-status-card";
 import { WalletTopBar } from "@/components/layouts/top-bars/wallet/wallet-top-bar";
 import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
 import { useWalletFundingStatusService } from "./services/walletApi";
-import type { WalletFundingStatusViewProps } from "./types";
+import type {
+  WalletFundingStatusState,
+  WalletFundingStatusViewProps,
+} from "./types";
 
 export function WalletFundingStatusView({
-  initialStatus,
-  initialReference,
-  initialAmount,
-}: WalletFundingStatusViewProps) {
+  initialStatus: propStatus,
+  initialReference: propRef,
+  initialAmount: propAmount,
+}: WalletFundingStatusViewProps = {}) {
+  const searchParams = useSearchParams();
+  const statusParam = searchParams.get("status");
+  const refParam = searchParams.get("ref");
+  const amountParam = searchParams.get("amount");
+
+  const initialStatus: WalletFundingStatusState | undefined =
+    propStatus ??
+    (statusParam === "pending" ||
+    statusParam === "success" ||
+    statusParam === "failed"
+      ? statusParam
+      : undefined);
+  const initialReference = propRef ?? (refParam || undefined);
+  const initialAmount =
+    propAmount ??
+    (amountParam && Number.isFinite(Number(amountParam))
+      ? Number(amountParam)
+      : undefined);
+
   const {
     status,
     amount,

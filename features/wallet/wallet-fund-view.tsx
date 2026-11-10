@@ -1,5 +1,6 @@
 "use client";
 
+import { useSearchParams } from "next/navigation";
 import { WalletFundAmountForm } from "@/components/wallet/wallet-fund-amount-form";
 import { WalletBankTransferCard } from "@/components/wallet/wallet-bank-transfer-card";
 import { WalletTopBar } from "@/components/layouts/top-bars/wallet/wallet-top-bar";
@@ -8,9 +9,24 @@ import { useWalletFundService } from "./services/walletApi";
 import type { WalletFundViewProps } from "./types";
 
 export function WalletFundView({
-  initialStep = "amount-method",
-  initialAmount,
-}: WalletFundViewProps) {
+  initialStep: propInitialStep,
+  initialAmount: propInitialAmount,
+}: WalletFundViewProps = {}) {
+  const searchParams = useSearchParams();
+  const stepParam = searchParams.get("step");
+  const amountParam = searchParams.get("amount");
+
+  const initialStep =
+    propInitialStep ??
+    (stepParam === "transfer" || stepParam === "transfer-instructions"
+      ? "transfer-instructions"
+      : "amount-method");
+  const initialAmount =
+    propInitialAmount ??
+    (amountParam && Number.isFinite(Number(amountParam))
+      ? Number(amountParam)
+      : undefined);
+
   const {
     step,
     amountInput,

@@ -10,13 +10,17 @@ interface ShopCheckoutPageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: ShopCheckoutPageProps): Promise<Metadata> {
-  const { id } = await params;
-  const service = findShopServiceById(DEFAULT_SHOP_SERVICES, id);
-  return PAGE_METADATA_GENERATORS.shopCheckout(service?.title);
+export function generateStaticParams() {
+  return DEFAULT_SHOP_SERVICES.map((s) => ({
+    id: s.id,
+  }));
 }
+
+export const metadata: Metadata = {
+  title: "Checkout Service",
+  description:
+    "Confirm booking specifications, scheduling preferences, and complete secure escrow payment.",
+};
 
 export default async function ShopCheckoutPage({
   params,

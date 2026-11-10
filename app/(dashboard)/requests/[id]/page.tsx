@@ -3,8 +3,15 @@ import type { Metadata } from "next";
 import { PAGE_METADATA } from "@/config/metadata";
 import { RequestDetailView } from "@/features/requests/request-detail-view";
 import { RequestDetailPageSkeleton } from "@/skeletons/(dashboard)/requests/[id]/page-skeleton";
+import { DEFAULT_CONSUMER_REQUESTS } from "@/features/requests/data";
 
 export const metadata: Metadata = PAGE_METADATA.requestDetailDefault;
+
+export function generateStaticParams() {
+  return DEFAULT_CONSUMER_REQUESTS.map((r) => ({
+    id: r.id,
+  }));
+}
 
 export default async function RequestDetailPage({
   params,

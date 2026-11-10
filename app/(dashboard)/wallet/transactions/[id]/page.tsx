@@ -10,16 +10,17 @@ interface WalletTransactionDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: WalletTransactionDetailPageProps): Promise<Metadata> {
-  const { id } = await params;
-  const matched = findWalletTransactionById(DEFAULT_WALLET_TRANSACTIONS, id);
-  return PAGE_METADATA_GENERATORS.walletTransactionDetail(
-    matched?.reference ?? decodeURIComponent(id),
-    matched?.note
-  );
+export function generateStaticParams() {
+  return DEFAULT_WALLET_TRANSACTIONS.map((tx) => ({
+    id: tx.id,
+  }));
 }
+
+export const metadata: Metadata = {
+  title: "Transaction Details",
+  description:
+    "Review complete payment audit details, escrow references, and transaction receipts on MyKostoma.",
+};
 
 export default async function WalletTransactionDetailPage({
   params,

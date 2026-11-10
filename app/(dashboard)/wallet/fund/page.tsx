@@ -7,30 +7,10 @@ import { WalletFundPageSkeleton } from "@/skeletons/(dashboard)/wallet/fund/page
 
 export const metadata: Metadata = PAGE_METADATA.walletFund;
 
-interface WalletFundPageProps {
-  searchParams: Promise<{ step?: string; amount?: string }>;
-}
-
-export default async function WalletFundPage({
-  searchParams,
-}: WalletFundPageProps) {
-  const { step, amount } = await searchParams;
-  const initialStep: WalletFundingStep =
-    step === "transfer" || step === "transfer-instructions"
-      ? "transfer-instructions"
-      : "amount-method";
-  const initialAmount = amount ? Number(amount) : undefined;
-
+export default function WalletFundPage() {
   return (
     <Suspense fallback={<WalletFundPageSkeleton />}>
-      <WalletFundView
-        initialStep={initialStep}
-        initialAmount={
-          initialAmount && Number.isFinite(initialAmount)
-            ? initialAmount
-            : undefined
-        }
-      />
+      <WalletFundView />
     </Suspense>
   );
 }

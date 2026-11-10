@@ -10,17 +10,17 @@ interface ShopServiceDetailPageProps {
   params: Promise<{ id: string }>;
 }
 
-export async function generateMetadata({
-  params,
-}: ShopServiceDetailPageProps): Promise<Metadata> {
-  const { id } = await params;
-  const service = findShopServiceById(DEFAULT_SHOP_SERVICES, id);
-  return PAGE_METADATA_GENERATORS.shopServiceDetail(
-    service?.title,
-    service?.provider.name,
-    service?.summary[0]
-  );
+export function generateStaticParams() {
+  return DEFAULT_SHOP_SERVICES.map((s) => ({
+    id: s.id,
+  }));
 }
+
+export const metadata: Metadata = {
+  title: "Service Details",
+  description:
+    "View service deliverables, pricing breakdown, inclusions, and verified provider details on MyKostoma.",
+};
 
 export default async function ShopServiceDetailPage({
   params,

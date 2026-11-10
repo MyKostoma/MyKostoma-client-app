@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { QuotationsComparisonTable } from "@/components/quotations/quotations-comparison-table";
 import {
@@ -14,8 +16,21 @@ import type { CompareQuotationsViewProps } from "./types";
 export type { CompareQuotationsViewProps } from "./types";
 
 export function CompareQuotationsView({
-  selectedIds,
+  selectedIds: propSelectedIds,
 }: CompareQuotationsViewProps) {
+  const searchParams = useSearchParams();
+  const urlIds = searchParams.get("ids");
+  const selectedIds = useMemo(() => {
+    if (propSelectedIds && propSelectedIds.length > 0) return propSelectedIds;
+    if (urlIds) {
+      return urlIds
+        .split(",")
+        .map((id) => id.trim())
+        .filter(Boolean);
+    }
+    return undefined;
+  }, [propSelectedIds, urlIds]);
+
   const {
     comparedQuotes,
     primaryQuote,
