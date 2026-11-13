@@ -25,7 +25,7 @@ export const protectedRoutes: RouteConfig[] = [
     redirectTo: "/login",
   },
   {
-    path: "/overview",
+    path: "/dashboard",
     roles: ["professional"],
     redirectTo: "/login",
   },
