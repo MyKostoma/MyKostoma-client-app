@@ -23,7 +23,7 @@ export function ProfessionalDashboardView({
   } = useProfessionalDashboardService(initialData);
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-8">
+    <div className="space-y-6 sm:space-y-8 pb-8 max-w-[1200px] mx-auto">
       <ProfessionalWelcomeBanner
         firstName={data.firstName}
         fullName={data.fullName}
@@ -38,12 +38,12 @@ export function ProfessionalDashboardView({
 
       <ProfessionalQuickStats stats={data.quickStats} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        <div className="lg:col-span-6">
+      <div className="grid lg:flex grid-cols-1 lg: gap-6 xl:gap-12 items-start justify-between">
+        <div className="lg:col-span-6 flex-10">
           <ActiveRequestsCard requests={data.activeRequests} />
         </div>
 
-        <div className="lg:col-span-6">
+        <div className="lg:col-span-6 flex-15">
           <EarningsSummaryCard
             currentBalance={data.currentBalance}
             weeklyEarnings={data.weeklyEarnings}

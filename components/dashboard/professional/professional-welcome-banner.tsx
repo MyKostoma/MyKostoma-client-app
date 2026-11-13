@@ -19,7 +19,7 @@ export function ProfessionalWelcomeBanner({
   return (
     <section className="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div className="flex items-center gap-4 min-w-0">
-        <div className="size-14 sm:size-16 rounded-2xl overflow-hidden border border-border bg-card shadow-2xs shrink-0">
+        <div className="size-14 sm:size-16 rounded-full overflow-hidden border border-border bg-card shadow-2xs shrink-0">
           <FallbackImage
             src={avatarUrl}
             alt={fullName}

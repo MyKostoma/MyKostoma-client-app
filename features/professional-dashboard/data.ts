@@ -53,13 +53,13 @@ export const DEFAULT_PROFESSIONAL_DASHBOARD: ProfessionalDashboardData = {
     },
   ],
   weeklyEarnings: [
-    { day: "Mon", amount: 120 },
-    { day: "Tue", amount: 440 },
-    { day: "Wed", amount: 290 },
-    { day: "Thu", amount: 670 },
-    { day: "Fri", amount: 520 },
-    { day: "Sat", amount: 890 },
-    { day: "Sun", amount: 740 },
+    { day: "Mon", amount: 150000 },
+    { day: "Tue", amount: 450000 },
+    { day: "Wed", amount: 300000 },
+    { day: "Thu", amount: 680000 },
+    { day: "Fri", amount: 520000 },
+    { day: "Sat", amount: 890000 },
+    { day: "Sun", amount: 760000 },
   ],
   recentTransactions: [
     {
