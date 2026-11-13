@@ -65,3 +65,14 @@ export interface RaiseDisputeModalProps {
   onSubmitDispute: (reason: string, description: string) => void;
 }
 
+export interface NewConversationModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onCreateConversation: (payload: {
+    participantName: string;
+    participantRole: string;
+    initialMessage: string;
+  }) => void;
+}
+
+

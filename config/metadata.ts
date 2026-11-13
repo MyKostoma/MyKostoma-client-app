@@ -110,6 +110,13 @@ export const PAGE_METADATA = {
       "Stay updated with your home service requests and activity.",
   },
 
+  // Messages Module
+  messages: {
+    title: "Messages",
+    description:
+      "Communicate securely with verified professionals and tenants, request quotes, and schedule service visits on MyKostoma.",
+  },
+
   // Parameterized Route Fallback Defaults
   categorySearchDefault: {
     title: "Category Search",
