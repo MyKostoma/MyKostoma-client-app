@@ -4,7 +4,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Briefcase, ChevronLeft, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField, Input, PasswordInput } from "@/components/ui/form-fields";
-import { AuthAltAction, AuthCard } from "./auth-card";
+import { AuthAltAction, AuthCard, AuthErrorAlert } from "./auth-card";
 import type {
   RegisterDetails,
   RegisterDetailsFormProps,
@@ -52,6 +52,7 @@ export function RegisterDetailsForm({
   onSubmit,
   onBack,
   loading,
+  error,
 }: RegisterDetailsFormProps) {
   const meta = ROLE_META[role];
   const RoleIcon = meta.icon;
@@ -122,6 +123,8 @@ export function RegisterDetailsForm({
             required
           />
         </FormField>
+
+        <AuthErrorAlert message={error} />
 
         <Button type="submit" className="w-full" loading={loading}>
           Continue

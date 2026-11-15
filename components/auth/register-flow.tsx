@@ -28,6 +28,7 @@ export function RegisterFlow() {
   );
   const [role, setRole] = useState<Role>(initialRole);
   const [category, setCategory] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [details, setDetails] = useState<RegisterDetails>({
     fullName: "",
     identifier: "",
@@ -40,7 +41,15 @@ export function RegisterFlow() {
   };
 
   const finish = async (chosenCategory: string | null) => {
-    await handleRegister({ ...details, role, category: chosenCategory });
+    setError(null);
+    const res = await handleRegister({
+      ...details,
+      role,
+      category: chosenCategory,
+    });
+    if (!res.ok) {
+      setError(res.message);
+    }
   };
 
   if (step === "role") {
@@ -64,10 +73,17 @@ export function RegisterFlow() {
     return (
       <CategoryStep
         value={category}
-        onChange={setCategory}
+        onChange={(next) => {
+          setCategory(next);
+          if (error) setError(null);
+        }}
         onSubmit={() => finish(category)}
-        onBack={() => setStep("details")}
+        onBack={() => {
+          setError(null);
+          setStep("details");
+        }}
         loading={loading}
+        error={error}
       />
     );
   }
@@ -76,15 +92,25 @@ export function RegisterFlow() {
     <RegisterDetailsForm
       role={role}
       values={details}
-      onChange={setDetails}
+      onChange={(next) => {
+        setDetails(next);
+        if (error) setError(null);
+      }}
       loading={loading}
+      error={error}
       onBack={() => {
+        setError(null);
         handleClearRegistrationRole();
         setStep("role");
       }}
-      onSubmit={() =>
-        role === "professional" ? setStep("category") : finish(null)
-      }
+      onSubmit={() => {
+        setError(null);
+        if (role === "professional") {
+          setStep("category");
+        } else {
+          void finish(null);
+        }
+      }}
     />
   );
 }

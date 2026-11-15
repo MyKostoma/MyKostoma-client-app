@@ -5,13 +5,14 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField, PasswordInput } from "@/components/ui/form-fields";
-import { AuthCard } from "./auth-card";
+import { AuthCard, AuthErrorAlert } from "./auth-card";
 import { useAuthService } from "@/features/auth/services/authApi";
 
 export function ResetPasswordForm() {
   const { loading, handleResetPassword } = useAuthService();
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const tooShort = password.length > 0 && password.length < 8;
   const mismatch = confirm.length > 0 && confirm !== password;
@@ -19,7 +20,11 @@ export function ResetPasswordForm() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (tooShort || mismatch || !password) return;
-    await handleResetPassword(password);
+    setError(null);
+    const res = await handleResetPassword(password);
+    if (!res.ok) {
+      setError(res.message);
+    }
   };
 
   return (
@@ -63,6 +68,7 @@ export function ResetPasswordForm() {
             />
           </FormField>
         </div>
+        <AuthErrorAlert message={error} />
         <Button
           type="submit"
           className="w-full"

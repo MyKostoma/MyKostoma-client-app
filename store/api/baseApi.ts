@@ -58,18 +58,18 @@ function parseRefreshPayload(data: unknown): RefreshResponse | null {
 
 const resolveApiUrl = () => {
   if (process.env.NEXT_PUBLIC_ENV === "test") {
-    return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001/api";
+    return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api";
   }
 
   if (process.env.NODE_ENV === "production") {
     return (
       process.env.NEXT_PUBLIC_PRODUCTION_API ??
       process.env.NEXT_PUBLIC_API_BASE_URL ??
-      "http://localhost:3001/api"
+      "http://localhost:3000/api"
     );
   }
 
-  return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3001/api";
+  return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api";
 };
 
 const baseQuery = fetchBaseQuery({
@@ -100,60 +100,23 @@ const baseQueryWithReauth: BaseQueryFn<
       try {
         const currentState = api.getState() as RootState;
         const refreshToken = currentState.auth.tokens?.refreshToken;
-        const accessToken = currentState.auth.tokens?.accessToken;
-        const role: UserRole =
-          currentState.auth.user?.role ??
-          currentState.auth.user?.roles?.at(-1) ??
-          "consumer";
+        const role: UserRole | undefined =
+          currentState.auth.user?.role ?? currentState.auth.user?.roles?.at(-1);
 
-        if (refreshToken || accessToken) {
-          const refreshRequests: FetchArgs[] = [];
-
-          if (refreshToken) {
-            refreshRequests.push({
+        if (refreshToken) {
+          const refreshResult = await baseQuery(
+            {
               url: "/auth/refresh",
               method: "POST",
               body: { refreshToken },
-            });
-            refreshRequests.push({
-              url: "/users/refresh/token",
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${refreshToken}`,
-              },
-            });
-          }
+            },
+            api,
+            extraOptions
+          );
 
-          if (accessToken) {
-            refreshRequests.push({
-              url: "/users/refresh/token",
-              method: "GET",
-              headers: {
-                Authorization: `Bearer ${accessToken}`,
-              },
-            });
-          }
-
-          let refreshedTokens: RefreshResponse | null = null;
-          let lastRefreshError: FetchBaseQueryError | undefined;
-
-          for (const refreshRequest of refreshRequests) {
-            const refreshResult = await baseQuery(
-              refreshRequest,
-              api,
-              extraOptions
-            );
-            if (refreshResult.data) {
-              const parsed = parseRefreshPayload(refreshResult.data);
-              if (parsed) {
-                refreshedTokens = parsed;
-                break;
-              }
-            }
-            if (refreshResult.error) {
-              lastRefreshError = refreshResult.error;
-            }
-          }
+          const refreshedTokens = refreshResult.data
+            ? parseRefreshPayload(refreshResult.data)
+            : null;
 
           if (refreshedTokens) {
             api.dispatch({
@@ -163,16 +126,18 @@ const baseQueryWithReauth: BaseQueryFn<
                 accessToken: refreshedTokens.access_token,
               },
             });
-            setAuthCookies(
-              refreshedTokens.access_token,
-              refreshedTokens.refresh_token,
-              role
-            );
+            if (role) {
+              setAuthCookies(
+                refreshedTokens.access_token,
+                refreshedTokens.refresh_token,
+                role
+              );
+            }
 
             result = await baseQuery(args, api, extraOptions);
           } else if (
-            lastRefreshError &&
-            isAuthErrorStatus(lastRefreshError.status)
+            refreshResult.error &&
+            isAuthErrorStatus(refreshResult.error.status)
           ) {
             api.dispatch({ type: "auth/logout" });
             clearAuthCookies();

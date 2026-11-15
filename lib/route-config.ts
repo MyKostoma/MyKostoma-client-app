@@ -25,7 +25,7 @@ export const protectedRoutes: RouteConfig[] = [
     redirectTo: "/login",
   },
   {
-    path: "/dashboard",
+    path: "/dashboard*",
     roles: ["professional"],
     redirectTo: "/login",
   },
@@ -68,11 +68,6 @@ export const protectedRoutes: RouteConfig[] = [
   },
 
   // Shared authenticated routes (both consumer & professional)
-  {
-    path: "/dashboard*",
-    roles: ["consumer", "professional"],
-    redirectTo: "/login",
-  },
   {
     path: "/requests*",
     roles: ["consumer", "professional"],

@@ -117,6 +117,23 @@ export const {
   logout,
 } = authSlice.actions;
 
+function resolveNormalizedUser(user: User): User | null {
+  const primaryRole =
+    normalizeRole(user.role) ?? normalizeRole(user.roles?.at(-1));
+  if (!primaryRole) return null;
+
+  const normalizedRoles =
+    user.roles && user.roles.length > 0
+      ? user.roles.map((r) => normalizeRole(r) ?? primaryRole)
+      : [primaryRole];
+
+  return {
+    ...user,
+    role: primaryRole,
+    roles: normalizedRoles,
+  };
+}
+
 export const authEndpoints = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
@@ -128,20 +145,8 @@ export const authEndpoints = baseApi.injectEndpoints({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          const primaryRole =
-            normalizeRole(data.data.role) ??
-            normalizeRole(data.data.roles?.at(-1)) ??
-            "consumer";
-          const normalizedRoles =
-            data.data.roles && data.data.roles.length > 0
-              ? data.data.roles.map((r) => normalizeRole(r) ?? primaryRole)
-              : [primaryRole];
-
-          const normalizedUser: User = {
-            ...data.data,
-            role: primaryRole,
-            roles: normalizedRoles,
-          };
+          const normalizedUser = resolveNormalizedUser(data.data);
+          if (!normalizedUser) return;
 
           dispatch(
             setCredentials({
@@ -152,8 +157,12 @@ export const authEndpoints = baseApi.injectEndpoints({
               },
             })
           );
-          dispatch(setActivePerspective(primaryRole));
-          setAuthCookies(data.access_token, data.refresh_token, primaryRole);
+          dispatch(setActivePerspective(normalizedUser.role));
+          setAuthCookies(
+            data.access_token,
+            data.refresh_token,
+            normalizedUser.role
+          );
         } catch {
           // Handled by caller
         }
@@ -201,16 +210,12 @@ export const authEndpoints = baseApi.injectEndpoints({
         try {
           const { data } = await queryFulfilled;
           if (data.data && data.access_token && data.refresh_token) {
-            const primaryRole =
-              normalizeRole(data.data.role) ??
-              normalizeRole(data.data.roles?.at(-1)) ??
-              "consumer";
-            const normalizedUser: User = {
+            const normalizedUser = resolveNormalizedUser({
               ...data.data,
-              role: primaryRole,
-              roles: [primaryRole],
               verified: true,
-            };
+            });
+            if (!normalizedUser) return;
+
             dispatch(
               setCredentials({
                 user: normalizedUser,
@@ -220,8 +225,12 @@ export const authEndpoints = baseApi.injectEndpoints({
                 },
               })
             );
-            dispatch(setActivePerspective(primaryRole));
-            setAuthCookies(data.access_token, data.refresh_token, primaryRole);
+            dispatch(setActivePerspective(normalizedUser.role));
+            setAuthCookies(
+              data.access_token,
+              data.refresh_token,
+              normalizedUser.role
+            );
           } else {
             dispatch(clearPendingVerification());
           }
@@ -251,7 +260,6 @@ export const authEndpoints = baseApi.injectEndpoints({
           dispatch(
             setPendingVerification({
               identifier: arg.identifier,
-              role: "consumer",
               flow: "reset-password",
             })
           );
@@ -339,7 +347,7 @@ export const selectRawUser = (state: { auth: AuthState }) => state.auth.user;
 
 export const selectCurrentUser = createSelector([selectRawUser], (user) => {
   if (!user) return null;
-  const primaryRole = normalizeRole(user.role) ?? "consumer";
+  const primaryRole = normalizeRole(user.role) ?? user.role;
   const normalizedRoles =
     user.roles && user.roles.length > 0
       ? user.roles.map((r) => normalizeRole(r) ?? primaryRole)

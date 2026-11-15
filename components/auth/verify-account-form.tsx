@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
+import { ArrowRight, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { OtpInput } from "@/components/ui/form-fields";
-import { AuthCard } from "./auth-card";
+import { AuthCard, AuthErrorAlert } from "./auth-card";
 import { AuthSuccess } from "./auth-success";
 import { useAuthService } from "@/features/auth/services/authApi";
 import { formatCountdownTime } from "@/features/auth/services/authHelpers";
@@ -82,15 +82,7 @@ export function VerifyAccountForm() {
         />
       </div>
 
-      {error && (
-        <div
-          role="alert"
-          className="mt-4 flex items-start gap-2 rounded-md border border-border bg-muted/40 p-3 text-left text-xs text-destructive"
-        >
-          <AlertCircle className="mt-0.5 size-3.5 shrink-0" aria-hidden />
-          <span>{error}</span>
-        </div>
-      )}
+      <AuthErrorAlert message={error} className="mt-4" />
 
       <div className="mt-4 flex flex-col items-center gap-1">
         {!error && (

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/form-fields";
-import { AuthCard } from "./auth-card";
+import { AuthCard, AuthErrorAlert } from "./auth-card";
 import { SelectableCard } from "./selectable-card";
 import type { CategoryStepProps } from "./types";
 
@@ -34,6 +34,7 @@ export function CategoryStep({
   backLabel = "Back to Role Selection",
   stepLabel = "Step 3 of 4",
   loading,
+  error,
 }: CategoryStepProps) {
   const [query, setQuery] = useState("");
   const filtered = SERVICE_CATEGORIES.filter((c) =>
@@ -75,7 +76,8 @@ export function CategoryStep({
         )}
       </div>
 
-      <div className="mt-6 border-t border-border pt-5">
+      <div className="mt-6 border-t border-border pt-5 space-y-4">
+        <AuthErrorAlert message={error} />
         <Button
           className="w-full"
           disabled={!value}

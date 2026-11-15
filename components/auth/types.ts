@@ -35,6 +35,7 @@ export interface CategoryStepProps {
   backLabel?: string;
   stepLabel?: string;
   loading?: boolean;
+  error?: string | null;
 }
 
 export interface RegisterDetailsFormProps {
@@ -44,6 +45,7 @@ export interface RegisterDetailsFormProps {
   onSubmit: () => void;
   onBack?: () => void;
   loading?: boolean;
+  error?: string | null;
 }
 
 export interface RoleSelectStepProps {

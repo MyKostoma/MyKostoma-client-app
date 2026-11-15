@@ -10,17 +10,33 @@ import {
   Label,
   PasswordInput,
 } from "@/components/ui/form-fields";
-import { AuthAltAction, AuthCard } from "./auth-card";
+import { AuthAltAction, AuthCard, AuthErrorAlert } from "./auth-card";
 import { useAuthService } from "@/features/auth/services/authApi";
+import {
+  isMockAuthEnabled,
+  MOCK_ACCOUNTS,
+} from "@/features/auth/services/authHelpers";
 
 export function LoginForm() {
   const { loading, handleLogin } = useAuthService();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const showMockAccounts = isMockAuthEnabled();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await handleLogin({ identifier, password });
+    setError(null);
+    const res = await handleLogin({ identifier, password });
+    if (!res.ok) {
+      setError(res.message);
+    }
+  };
+
+  const fillMockAccount = (accountIdentifier: string, accountPassword: string) => {
+    setError(null);
+    setIdentifier(accountIdentifier);
+    setPassword(accountPassword);
   };
 
   return (
@@ -36,7 +52,10 @@ export function LoginForm() {
               placeholder="Enter email or phone"
               autoComplete="username"
               value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              onChange={(e) => {
+                setIdentifier(e.target.value);
+                if (error) setError(null);
+              }}
               required
             />
           </FormField>
@@ -56,11 +75,42 @@ export function LoginForm() {
               placeholder="••••••••"
               autoComplete="current-password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                if (error) setError(null);
+              }}
               required
             />
           </div>
         </div>
+
+        <AuthErrorAlert message={error} />
+
+        {showMockAccounts && (
+          <div className="rounded-md border border-border bg-muted/40 p-3">
+            <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+              Demo Accounts (Local Mock Mode)
+            </p>
+            <div className="mt-2 grid grid-cols-2 gap-2">
+              {MOCK_ACCOUNTS.map((account) => (
+                <Button
+                  key={account.user.id}
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    fillMockAccount(account.user.identifier, account.password)
+                  }
+                >
+                  {account.user.role === "professional"
+                    ? "Use Pro Account"
+                    : "Use Consumer Account"}
+                </Button>
+              ))}
+            </div>
+          </div>
+        )}
+
         <Button
           type="submit"
           className="w-full"

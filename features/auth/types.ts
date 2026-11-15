@@ -17,7 +17,7 @@ export interface Tokens {
 
 export interface PendingVerification {
   identifier: string;
-  role: UserRole;
+  role?: UserRole;
   fullName?: string;
   category?: ServiceCategoryId | string | null;
   flow: "register" | "reset-password";

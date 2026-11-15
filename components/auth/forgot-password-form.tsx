@@ -5,16 +5,21 @@ import Link from "next/link";
 import { Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FormField, Input } from "@/components/ui/form-fields";
-import { AuthCard } from "./auth-card";
+import { AuthCard, AuthErrorAlert } from "./auth-card";
 import { useAuthService } from "@/features/auth/services/authApi";
 
 export function ForgotPasswordForm() {
   const { loading, handleForgotPassword } = useAuthService();
   const [identifier, setIdentifier] = useState("");
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await handleForgotPassword(identifier);
+    setError(null);
+    const res = await handleForgotPassword(identifier);
+    if (!res.ok) {
+      setError(res.message);
+    }
   };
 
   return (
@@ -29,10 +34,15 @@ export function ForgotPasswordForm() {
             placeholder="Enter email or phone"
             autoComplete="username"
             value={identifier}
-            onChange={(e) => setIdentifier(e.target.value)}
+            onChange={(e) => {
+              setIdentifier(e.target.value);
+              if (error) setError(null);
+            }}
             required
           />
         </FormField>
+
+        <AuthErrorAlert message={error} />
 
         <Button
           type="submit"

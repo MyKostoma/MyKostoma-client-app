@@ -1,5 +1,6 @@
 import type { User, UserRole } from "@/types/user";
 import { RoleDisplayNames } from "@/types/user";
+import { getDefaultDashboard } from "@/lib/default-dashboard";
 
 export function normalizeRole(
   role: string | undefined | null
@@ -51,13 +52,13 @@ export function getRoleDestination(role: UserRole | string | null | undefined): 
   const normalized = normalizeRole(role) ?? "consumer";
   if (normalized === "professional") {
     return {
-      href: "/dashboard",
+      href: getDefaultDashboard("professional"),
       destinationLabel: "Professional Workspace",
       roleLabel: RoleDisplayNames.professional,
     };
   }
   return {
-    href: "/dashboard",
+    href: getDefaultDashboard("consumer"),
     destinationLabel: "Consumer Product Entry",
     roleLabel: RoleDisplayNames.consumer,
   };

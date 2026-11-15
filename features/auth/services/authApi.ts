@@ -31,11 +31,11 @@ import {
   setAuthCookies,
 } from "@/lib/cookies";
 import { getDefaultDashboard } from "@/lib/default-dashboard";
-import { getRoleDestination } from "@/lib/role-utils";
+import { getRoleDestination, normalizeRole } from "@/lib/role-utils";
 import { baseApi } from "@/store/api/baseApi";
 import {
-  buildMockAuthenticatedUser,
-  inferRoleFromIdentifier,
+  extractApiErrorMessage,
+  isMockAuthEnabled,
   mockLogin,
   mockRegister,
   mockResendCode,
@@ -96,68 +96,100 @@ export function useAuthService() {
 
   const [loading, setLoading] = useState(false);
 
+  const applyAuthenticatedSession = useCallback(
+    (authResponse: AuthResponse) => {
+      const role =
+        normalizeRole(authResponse.data.role) ??
+        normalizeRole(authResponse.data.roles?.at(-1));
+      if (!role) return null;
+
+      dispatch(
+        setCredentials({
+          user: {
+            ...authResponse.data,
+            role,
+            roles: [role],
+          },
+          tokens: {
+            accessToken: authResponse.access_token,
+            refreshToken: authResponse.refresh_token,
+          },
+        })
+      );
+      dispatch(setActivePerspective(role));
+      setAuthCookies(
+        authResponse.access_token,
+        authResponse.refresh_token,
+        role
+      );
+      return role;
+    },
+    [dispatch]
+  );
+
   const handleLogin = useCallback(
     async (payload: LoginRequest) => {
       setLoading(true);
       try {
-        await loginMutation(payload).unwrap();
-        const role = inferRoleFromIdentifier(payload.identifier);
+        if (isMockAuthEnabled()) {
+          const res = await mockLogin(payload);
+          if (!res.ok) return res;
+
+          const role = applyAuthenticatedSession(res.response);
+          if (!role) {
+            return {
+              ok: false as const,
+              message: "Account role could not be determined.",
+            };
+          }
+
+          const redirectPath =
+            getRedirectAfterLogin() ?? getDefaultDashboard(role);
+          router.push(redirectPath);
+          return { ok: true as const };
+        }
+
+        const response = await loginMutation(payload).unwrap();
+        const role =
+          normalizeRole(response.data.role) ??
+          normalizeRole(response.data.roles?.at(-1));
+        if (!role) {
+          return {
+            ok: false as const,
+            message:
+              "Your account role could not be verified. Please contact support.",
+          };
+        }
+
         const redirectPath =
           getRedirectAfterLogin() ?? getDefaultDashboard(role);
         router.push(redirectPath);
         return { ok: true as const };
-      } catch {
-        const res = await mockLogin(payload);
-        if (res.ok) {
-          const inferredRole = inferRoleFromIdentifier(payload.identifier);
-          const mockAccessToken = `mk_access_${Date.now()}`;
-          const mockRefreshToken = `mk_refresh_${Date.now()}`;
-          const user = buildMockAuthenticatedUser({
-            identifier: payload.identifier,
-            role: inferredRole,
-          });
-
-          dispatch(
-            setCredentials({
-              user,
-              tokens: {
-                accessToken: mockAccessToken,
-                refreshToken: mockRefreshToken,
-              },
-            })
-          );
-          dispatch(setActivePerspective(inferredRole));
-          setAuthCookies(mockAccessToken, mockRefreshToken, inferredRole);
-
-          const redirectPath =
-            getRedirectAfterLogin() ?? getDefaultDashboard(inferredRole);
-          router.push(redirectPath);
-        }
-        return res;
+      } catch (err) {
+        return {
+          ok: false as const,
+          message: extractApiErrorMessage(
+            err,
+            "Unable to log in. Please check your credentials."
+          ),
+        };
       } finally {
         setLoading(false);
       }
     },
-    [dispatch, loginMutation, router]
+    [applyAuthenticatedSession, loginMutation, router]
   );
 
   const handleRegister = useCallback(
-    async (payload: RegisterDetails & { role: Role; category: string | null }) => {
+    async (
+      payload: RegisterDetails & { role: Role; category: string | null }
+    ) => {
       setLoading(true);
       try {
-        await registerMutation({
-          fullName: payload.fullName,
-          identifier: payload.identifier,
-          password: payload.password,
-          role: payload.role,
-          category: payload.category,
-        }).unwrap();
-        dispatch(clearRegistrationRole());
-        router.push("/verify-account");
-        return { ok: true as const };
-      } catch {
-        const res = await mockRegister(payload);
-        if (res.ok) {
+        if (isMockAuthEnabled()) {
+          const res = await mockRegister(payload);
+          if (!res.ok) return res;
+
           dispatch(
             setPendingVerification({
               identifier: payload.identifier,
@@ -170,8 +202,27 @@ export function useAuthService() {
           dispatch(clearRegistrationRole());
           dispatch(setActivePerspective(payload.role));
           router.push("/verify-account");
+          return { ok: true as const };
         }
-        return res;
+
+        await registerMutation({
+          fullName: payload.fullName,
+          identifier: payload.identifier,
+          password: payload.password,
+          role: payload.role,
+          category: payload.category,
+        }).unwrap();
+        dispatch(clearRegistrationRole());
+        router.push("/verify-account");
+        return { ok: true as const };
+      } catch (err) {
+        return {
+          ok: false as const,
+          message: extractApiErrorMessage(
+            err,
+            "Registration failed. Please try again."
+          ),
+        };
       } finally {
         setLoading(false);
       }
@@ -193,91 +244,110 @@ export function useAuthService() {
 
   const handleVerifyCode = useCallback(
     async (code: string) => {
-      const detectedRole =
-        pendingVerification?.role ?? currentUser?.role ?? "consumer";
+      const identifier =
+        pendingVerification?.identifier ?? currentUser?.identifier;
+      if (!identifier) {
+        return {
+          ok: false as const,
+          message:
+            "Verification session expired. Please register or log in again.",
+        };
+      }
+
       setLoading(true);
       try {
-        await verifyAccountMutation({
-          identifier:
-            pendingVerification?.identifier ??
-            currentUser?.identifier ??
-            "user@mykostoma.com",
-          code,
-        }).unwrap();
-        return { ok: true as const };
-      } catch {
-        const res = await mockVerifyCode(code);
-        if (res.ok) {
-          const mockAccessToken = `mk_access_${Date.now()}`;
-          const mockRefreshToken = `mk_refresh_${Date.now()}`;
-          const verifiedUser = buildMockAuthenticatedUser({
-            id: currentUser?.id ? String(currentUser.id) : undefined,
-            fullName:
-              pendingVerification?.fullName ??
-              currentUser?.fullName ??
-              "MyKostoma User",
-            identifier:
-              pendingVerification?.identifier ??
-              currentUser?.identifier ??
-              "user@mykostoma.com",
-            role: detectedRole,
-            category:
-              pendingVerification?.category ?? currentUser?.category ?? null,
-          });
-          dispatch(
-            setCredentials({
-              user: verifiedUser,
-              tokens: {
-                accessToken: mockAccessToken,
-                refreshToken: mockRefreshToken,
-              },
-            })
-          );
-          dispatch(setActivePerspective(detectedRole));
-          setAuthCookies(mockAccessToken, mockRefreshToken, detectedRole);
+        if (isMockAuthEnabled()) {
+          const res = await mockVerifyCode(code, pendingVerification);
+          if (!res.ok) return res;
+
+          const role = applyAuthenticatedSession(res.response);
+          if (!role) {
+            return {
+              ok: false as const,
+              message: "Account role could not be determined.",
+            };
+          }
+          return { ok: true as const };
         }
-        return res;
+
+        await verifyAccountMutation({ identifier, code }).unwrap();
+        return { ok: true as const };
+      } catch (err) {
+        return {
+          ok: false as const,
+          message: extractApiErrorMessage(
+            err,
+            "The code you entered is incorrect or has expired. Please try again."
+          ),
+        };
       } finally {
         setLoading(false);
       }
     },
-    [currentUser, dispatch, pendingVerification, verifyAccountMutation]
+    [
+      applyAuthenticatedSession,
+      currentUser?.identifier,
+      pendingVerification,
+      verifyAccountMutation,
+    ]
   );
 
   const handleResendCode = useCallback(async () => {
-    try {
-      await resendCodeMutation({
-        identifier:
-          pendingVerification?.identifier ??
-          currentUser?.identifier ??
-          "user@mykostoma.com",
-      }).unwrap();
-      return { ok: true as const };
-    } catch {
-      return mockResendCode();
+    const identifier =
+      pendingVerification?.identifier ?? currentUser?.identifier;
+    if (!identifier) {
+      return {
+        ok: false as const,
+        message: "Verification session expired. Please try again.",
+      };
     }
-  }, [currentUser, pendingVerification, resendCodeMutation]);
+
+    try {
+      if (isMockAuthEnabled()) {
+        return mockResendCode();
+      }
+      await resendCodeMutation({ identifier }).unwrap();
+      return { ok: true as const };
+    } catch (err) {
+      return {
+        ok: false as const,
+        message: extractApiErrorMessage(
+          err,
+          "Could not resend verification code."
+        ),
+      };
+    }
+  }, [currentUser?.identifier, pendingVerification?.identifier, resendCodeMutation]);
 
   const handleForgotPassword = useCallback(
     async (identifier: string) => {
       setLoading(true);
       try {
-        await forgotPasswordMutation({ identifier }).unwrap();
-        router.push("/reset-password");
-        return { ok: true as const };
-      } catch {
-        const res = await mockSendResetCode(identifier);
-        if (res.ok) {
+        if (isMockAuthEnabled()) {
+          const res = await mockSendResetCode(identifier);
+          if (!res.ok) return res;
+
           dispatch(
             setPendingVerification({
               identifier,
-              role: "consumer",
               flow: "reset-password",
             })
           );
           router.push("/reset-password");
+          return { ok: true as const };
         }
-        return res;
+
+        await forgotPasswordMutation({ identifier }).unwrap();
+        router.push("/reset-password");
+        return { ok: true as const };
+      } catch (err) {
+        return {
+          ok: false as const,
+          message: extractApiErrorMessage(
+            err,
+            "Unable to send reset code. Please try again."
+          ),
+        };
       } finally {
         setLoading(false);
       }
@@ -289,16 +359,26 @@ export function useAuthService() {
     async (password: string) => {
       setLoading(true);
       try {
+        if (isMockAuthEnabled()) {
+          const res = await mockResetPassword(password);
+          if (!res.ok) return res;
+
+          dispatch(clearPendingVerification());
+          router.push("/login");
+          return { ok: true as const };
+        }
+
         await resetPasswordMutation({ password }).unwrap();
         router.push("/login");
         return { ok: true as const };
-      } catch {
-        const res = await mockResetPassword(password);
-        if (res.ok) {
-          dispatch(clearPendingVerification());
-          router.push("/login");
-        }
-        return res;
+      } catch (err) {
+        return {
+          ok: false as const,
+          message: extractApiErrorMessage(
+            err,
+            "Unable to reset password. Please try again."
+          ),
+        };
       } finally {
         setLoading(false);
       }
@@ -308,13 +388,17 @@ export function useAuthService() {
 
   const handleLogout = useCallback(async () => {
     try {
-      await logoutMutation().unwrap();
+      if (!isMockAuthEnabled()) {
+        await logoutMutation().unwrap();
+      }
     } catch {
+      // Always clear local session even if the server logout request fails
+    } finally {
       dispatch(logout());
       clearAuthCookies();
       dispatch(baseApi.util.resetApiState());
+      router.push("/login");
     }
-    router.push("/login");
   }, [dispatch, logoutMutation, router]);
 
   const detectedRole =
