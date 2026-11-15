@@ -298,6 +298,18 @@ async function verifySession(request: NextRequest): Promise<VerifiedSession> {
   return { status: "unauthenticated", role: null };
 }
 
+function isSecureCookieEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_SECURE_COOKIES !== undefined
+    ? process.env.NEXT_PUBLIC_SECURE_COOKIES === "true"
+    : process.env.NODE_ENV === "production";
+}
+
+function normalizePathname(pathname: string): string {
+  return pathname.length > 1 && pathname.endsWith("/")
+    ? pathname.slice(0, -1)
+    : pathname;
+}
+
 function applyRefreshedCookies(
   response: NextResponse,
   tokens: RefreshedTokens | undefined,
@@ -305,10 +317,7 @@ function applyRefreshedCookies(
 ): NextResponse {
   if (!tokens) return response;
 
-  const secure =
-    process.env.NEXT_PUBLIC_SECURE_COOKIES !== undefined
-      ? process.env.NEXT_PUBLIC_SECURE_COOKIES === "true"
-      : process.env.NODE_ENV === "production";
+  const secure = isSecureCookieEnabled();
   const maxAge =
     Number(process.env.NEXT_PUBLIC_SESSION_MAX_AGE_SECONDS) || 60 * 60 * 24;
 
@@ -338,24 +347,35 @@ function applyRefreshedCookies(
 }
 
 function matchPath(pattern: string, path: string): boolean {
-  if (pattern.endsWith("*")) {
-    const prefix = pattern.slice(0, -1);
-    if (path === prefix || path.startsWith(prefix)) return true;
+  const normalizedPath = normalizePathname(path);
+  const normalizedPattern = normalizePathname(pattern);
+
+  if (normalizedPattern.endsWith("*")) {
+    const prefix = normalizePathname(normalizedPattern.slice(0, -1));
+    if (
+      normalizedPath === prefix ||
+      normalizedPath.startsWith(`${prefix}/`) ||
+      normalizedPath.startsWith(normalizedPattern.slice(0, -1))
+    ) {
+      return true;
+    }
   }
-  const regexPattern = pattern
+  const regexPattern = normalizedPattern
     .replace(/\//g, "\\/")
     .replace(/:path\*/g, ".*")
     .replace(/:\w+/g, "[^/]+");
   const regex = new RegExp(`^${regexPattern}$`);
-  return regex.test(path);
+  return regex.test(normalizedPath);
 }
 
 function isPublicRoute(pathname: string): boolean {
+  const normalizedPath = normalizePathname(pathname);
   return publicRoutes.some((route) => {
-    if (pathname === route) return true;
-    if (route.endsWith("*")) {
-      const prefix = route.slice(0, -1);
-      return pathname.startsWith(prefix);
+    const normalizedRoute = normalizePathname(route);
+    if (normalizedPath === normalizedRoute) return true;
+    if (normalizedRoute.endsWith("*")) {
+      const prefix = normalizedRoute.slice(0, -1);
+      return normalizedPath === normalizePathname(prefix) || normalizedPath.startsWith(prefix);
     }
     return false;
   });
@@ -381,10 +401,13 @@ function createUnauthorizedRedirect(
   response.cookies.delete(REFRESH_TOKEN_COOKIE);
   response.cookies.delete(USER_ROLE_COOKIE);
 
-  if (storePath && request.nextUrl.pathname !== redirectPath) {
+  if (
+    storePath &&
+    normalizePathname(request.nextUrl.pathname) !== normalizePathname(redirectPath)
+  ) {
     response.cookies.set("redirect_after_login", request.nextUrl.pathname, {
       httpOnly: false,
-      secure: process.env.NODE_ENV === "production",
+      secure: isSecureCookieEnabled(),
       sameSite: "lax",
       maxAge: 60 * 5,
     });
@@ -394,7 +417,7 @@ function createUnauthorizedRedirect(
 }
 
 export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const pathname = normalizePathname(request.nextUrl.pathname);
 
   if (
     process.env.NODE_ENV === "development" &&
@@ -420,7 +443,11 @@ export async function proxy(request: NextRequest) {
         session.role
       );
     }
-    return NextResponse.next();
+    return applyRefreshedCookies(
+      NextResponse.next(),
+      session.status === "retriable_error" ? session.refreshedTokens : undefined,
+      null
+    );
   }
 
   const createRetriableErrorResponse = () =>
@@ -469,8 +496,8 @@ export async function proxy(request: NextRequest) {
     "/my-shop",
     "/earnings",
   ];
-  const needsProtection = protectedPrefixes.some((prefix) =>
-    pathname.startsWith(prefix)
+  const needsProtection = protectedPrefixes.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
   );
 
   if (needsProtection) {
@@ -484,7 +511,7 @@ export async function proxy(request: NextRequest) {
 
   return applyRefreshedCookies(
     NextResponse.next(),
-    session.status === "authenticated" ? session.refreshedTokens : undefined,
+    session.status !== "unauthenticated" ? session.refreshedTokens : undefined,
     session.status === "authenticated" ? session.role : null
   );
 }
