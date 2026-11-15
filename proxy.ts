@@ -8,6 +8,94 @@ import type { UserRole } from "@/types/user";
 const ACCESS_TOKEN_COOKIE = "access_token";
 const USER_ROLE_COOKIE = "user_role";
 
+interface VerifiedSession {
+  authenticated: boolean;
+  role: UserRole | null;
+}
+
+function resolveApiBaseUrl(): string {
+  if (process.env.NEXT_PUBLIC_ENV === "test") {
+    return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api";
+  }
+
+  if (process.env.NODE_ENV === "production") {
+    return (
+      process.env.NEXT_PUBLIC_PRODUCTION_API ??
+      process.env.NEXT_PUBLIC_API_BASE_URL ??
+      "http://localhost:3000/api"
+    );
+  }
+
+  return process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000/api";
+}
+
+function getAccessToken(request: NextRequest): string | null {
+  const rawToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
+  if (!rawToken || rawToken === "undefined" || rawToken === "null") {
+    return null;
+  }
+  try {
+    const decoded = decodeURIComponent(rawToken);
+    return decoded && decoded !== "undefined" && decoded !== "null"
+      ? decoded
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function extractRoleFromPayload(payload: unknown): UserRole | null {
+  if (typeof payload !== "object" || payload === null) return null;
+  const record = payload as Record<string, unknown>;
+  const userObj =
+    typeof record.data === "object" && record.data !== null
+      ? (record.data as Record<string, unknown>)
+      : record;
+
+  const directRole =
+    typeof userObj.role === "string" ? normalizeRole(userObj.role) : undefined;
+  if (directRole) return directRole;
+
+  if (Array.isArray(userObj.roles) && userObj.roles.length > 0) {
+    const lastRole = userObj.roles[userObj.roles.length - 1];
+    if (typeof lastRole === "string") {
+      return normalizeRole(lastRole) ?? null;
+    }
+  }
+
+  return null;
+}
+
+async function verifySession(request: NextRequest): Promise<VerifiedSession> {
+  const token = getAccessToken(request);
+  if (!token) {
+    return { authenticated: false, role: null };
+  }
+
+  try {
+    const apiBaseUrl = resolveApiBaseUrl().replace(/\/$/, "");
+    const response = await fetch(`${apiBaseUrl}/auth/me`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      return { authenticated: false, role: null };
+    }
+
+    const payload: unknown = await response.json();
+    return {
+      authenticated: true,
+      role: extractRoleFromPayload(payload),
+    };
+  } catch {
+    return { authenticated: false, role: null };
+  }
+}
+
 function matchPath(pattern: string, path: string): boolean {
   if (pattern.endsWith("*")) {
     const prefix = pattern.slice(0, -1);
@@ -30,18 +118,6 @@ function isPublicRoute(pathname: string): boolean {
     }
     return false;
   });
-}
-
-function getUserRole(request: NextRequest): UserRole | null {
-  const role = request.cookies.get(USER_ROLE_COOKIE)?.value;
-  return normalizeRole(role) ?? null;
-}
-
-function isAuthenticated(request: NextRequest): boolean {
-  const token = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
-  return (
-    !!token && token !== "undefined" && token !== "null" && token.length > 0
-  );
 }
 
 function hasRequiredRole(
@@ -75,7 +151,7 @@ function createUnauthorizedRedirect(
   return response;
 }
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (
@@ -86,13 +162,12 @@ export function proxy(request: NextRequest) {
   }
 
   const isPublic = isPublicRoute(pathname);
-  const isAuthRoute = authRoutes.includes(pathname);
-  const authenticated = isAuthenticated(request);
-  const userRole = getUserRole(request);
-
   if (isPublic) {
     return NextResponse.next();
   }
+
+  const isAuthRoute = authRoutes.includes(pathname);
+  const { authenticated, role: userRole } = await verifySession(request);
 
   if (isAuthRoute) {
     if (authenticated) {

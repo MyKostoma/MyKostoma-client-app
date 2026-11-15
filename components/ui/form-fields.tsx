@@ -15,7 +15,7 @@ import {
     FileText,
     X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 // ============================================================================
 // 1. LABEL COMPONENT
@@ -150,7 +150,6 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
                     type="button"
                     onClick={() => !isDisabled && setShowPassword(!showPassword)}
                     disabled={isDisabled}
-                    tabIndex={-1}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     className={cn(
                         "absolute right-3 p-1 rounded-sm text-muted-foreground/70 hover:text-foreground transition-colors cursor-pointer",
@@ -210,7 +209,7 @@ export const NumberInput = React.forwardRef<HTMLInputElement, NumberInputProps>(
         {
             className,
             value,
-            defaultValue = 10,
+            defaultValue = "",
             min,
             max,
             step = 1,
@@ -656,6 +655,9 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
         },
         ref
     ) => {
+        const generatedId = useId();
+        const inputId = id ?? generatedId;
+
         const [isChecked, setIsChecked] = useState<boolean>(
             checked !== undefined ? checked : defaultChecked
         );
@@ -683,7 +685,7 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
                     ref={ref}
                     aria-checked={isChecked}
                     disabled={disabled}
-                    id={id}
+                    id={inputId}
                     name={name}
                     onClick={toggle}
                     className={cn(
@@ -701,8 +703,7 @@ export const Checkbox = React.forwardRef<HTMLButtonElement, CheckboxProps>(
                 </button>
                 {label && (
                     <label
-                        htmlFor={id}
-                        onClick={toggle}
+                        htmlFor={inputId}
                         className={cn(
                             "text-sm leading-5 font-medium cursor-pointer transition-colors",
                             disabled
@@ -812,7 +813,7 @@ export interface OtpInputProps {
 export const OtpInput: React.FC<OtpInputProps> = ({
     length = 4,
     value,
-    defaultValue = "52",
+    defaultValue = "",
     onChange,
     disabled = false,
     className,
@@ -1011,9 +1012,9 @@ export interface FileAttachmentItemProps {
 }
 
 export const FileAttachmentItem: React.FC<FileAttachmentItemProps> = ({
-    fileName = "report_v1.pdf",
-    fileSize = "2.4 MB",
-    statusText = "Uploaded",
+    fileName = "",
+    fileSize = "",
+    statusText = "",
     onRemove,
     className,
     colorVariant = "coral",
@@ -1039,9 +1040,13 @@ export const FileAttachmentItem: React.FC<FileAttachmentItemProps> = ({
                     <span className="text-sm font-medium text-foreground truncate">
                         {fileName}
                     </span>
-                    <span className="text-xs text-muted-foreground">
-                        {fileSize} • {statusText}
-                    </span>
+                    {(fileSize || statusText) && (
+                        <span className="text-xs text-muted-foreground">
+                            {fileSize && statusText
+                                ? `${fileSize} • ${statusText}`
+                                : fileSize || statusText}
+                        </span>
+                    )}
                 </div>
             </div>
 

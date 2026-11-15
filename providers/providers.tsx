@@ -23,14 +23,18 @@ function ThemeSync() {
   useEffect(() => {
     if (typeof document === "undefined") return;
     const root = document.documentElement;
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = theme === "dark" || (theme === "system" && prefersDark);
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
-    if (isDark) {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    const applyTheme = (prefersDark: boolean) => {
+      const isDark = theme === "dark" || (theme === "system" && prefersDark);
+      if (isDark) {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+    };
+
+    applyTheme(mediaQuery.matches);
 
     try {
       if (theme === "system") {
@@ -39,6 +43,17 @@ function ThemeSync() {
         localStorage.setItem("theme", theme);
       }
     } catch {}
+
+    if (theme !== "system") return;
+
+    const handleChange = (event: MediaQueryListEvent) => {
+      applyTheme(event.matches);
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => {
+      mediaQuery.removeEventListener("change", handleChange);
+    };
   }, [theme]);
 
   return null;

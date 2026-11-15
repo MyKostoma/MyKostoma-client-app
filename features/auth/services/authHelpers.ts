@@ -19,6 +19,7 @@ export const formatCountdownTime = (s: number) =>
  * base URL is configured yet. Never used as a silent catch fallback.
  */
 export function isMockAuthEnabled(): boolean {
+  if (process.env.NODE_ENV === "production") return false;
   if (process.env.NEXT_PUBLIC_USE_MOCK_AUTH === "true") return true;
   if (process.env.NEXT_PUBLIC_USE_MOCK_AUTH === "false") return false;
   return (
