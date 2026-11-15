@@ -23,7 +23,7 @@ export function ProfessionalDashboardView({
   } = useProfessionalDashboardService(initialData);
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-8 max-w-[1200px] mx-auto">
+    <div className="space-y-8 sm:space-y-10 lg:space-y-12 pb-8 max-w-[1200px] mx-auto">
       <ProfessionalWelcomeBanner
         firstName={data.firstName}
         fullName={data.fullName}

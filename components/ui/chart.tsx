@@ -87,7 +87,7 @@ export function AreaLineChart({
   formatValue = (v) => v.toLocaleString(),
   formatYAxis = (v) => v.toLocaleString(),
   yTickCount = 4,
-  height = 176,
+  height = 200,
   className,
 }: AreaLineChartProps) {
   const gradientId = useId();
@@ -152,7 +152,7 @@ export function AreaLineChart({
     <ChartContainer className={className}>
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="w-full h-44 overflow-visible"
+        className="w-full h-full overflow-visible"
         role="img"
         aria-label={`${seriesLabel} chart`}
       >
