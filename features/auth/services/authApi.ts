@@ -360,7 +360,10 @@ export function useAuthService() {
       setLoading(true);
       try {
         if (isMockAuthEnabled()) {
-          const res = await mockResetPassword(password);
+          const res = await mockResetPassword(
+            password,
+            pendingVerification?.identifier
+          );
           if (!res.ok) return res;
 
           dispatch(clearPendingVerification());
@@ -383,7 +386,7 @@ export function useAuthService() {
         setLoading(false);
       }
     },
-    [dispatch, resetPasswordMutation, router]
+    [dispatch, pendingVerification?.identifier, resetPasswordMutation, router]
   );
 
   const handleLogout = useCallback(async () => {

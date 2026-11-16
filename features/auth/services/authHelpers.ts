@@ -14,18 +14,15 @@ export const MOCK_INVALID_CODE = "529014";
 export const formatCountdownTime = (s: number) =>
   `00:${String(s).padStart(2, "0")}`;
 
+const MOCK_ACCOUNTS_STORAGE_KEY = "mk_mock_registered_accounts";
+
 /**
- * Mock auth is enabled only when explicitly toggled on, or when no backend API
- * base URL is configured yet. Never used as a silent catch fallback.
+ * Mock auth is enabled by default for preview/testing unless explicitly
+ * disabled via NEXT_PUBLIC_USE_MOCK_AUTH="false".
  */
 export function isMockAuthEnabled(): boolean {
-  if (process.env.NODE_ENV === "production") return false;
-  if (process.env.NEXT_PUBLIC_USE_MOCK_AUTH === "true") return true;
   if (process.env.NEXT_PUBLIC_USE_MOCK_AUTH === "false") return false;
-  return (
-    !process.env.NEXT_PUBLIC_API_BASE_URL &&
-    !process.env.NEXT_PUBLIC_PRODUCTION_API
-  );
+  return true;
 }
 
 export interface MockAccountRecord {
@@ -68,11 +65,49 @@ export const MOCK_ACCOUNTS: MockAccountRecord[] = [
   },
 ];
 
-// In-memory store for users registered during a local mock session.
+// Fallback in-memory store for SSR or restricted storage environments.
 const registeredMockAccounts = new Map<string, MockAccountRecord>();
+
+function readStoredMockAccounts(): Record<string, MockAccountRecord> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(MOCK_ACCOUNTS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed: unknown = JSON.parse(raw);
+    return typeof parsed === "object" && parsed !== null
+      ? (parsed as Record<string, MockAccountRecord>)
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeStoredMockAccount(
+  normalizedIdentifier: string,
+  record: MockAccountRecord
+): void {
+  registeredMockAccounts.set(normalizedIdentifier, record);
+  if (typeof window === "undefined") return;
+  try {
+    const current = readStoredMockAccounts();
+    current[normalizedIdentifier] = record;
+    window.localStorage.setItem(
+      MOCK_ACCOUNTS_STORAGE_KEY,
+      JSON.stringify(current)
+    );
+  } catch {
+    // Ignore storage quota or privacy mode errors; in-memory map still holds it
+  }
+}
 
 function findMockAccount(identifier: string): MockAccountRecord | undefined {
   const normalized = identifier.trim().toLowerCase();
+  const stored = readStoredMockAccounts()[normalized];
+  if (stored) {
+    registeredMockAccounts.set(normalized, stored);
+    return stored;
+  }
+
   return (
     registeredMockAccounts.get(normalized) ??
     MOCK_ACCOUNTS.find(
@@ -166,7 +201,7 @@ export async function mockRegister(
     };
   }
 
-  registeredMockAccounts.set(normalized, {
+  writeStoredMockAccount(normalized, {
     password: payload.password,
     user: {
       ...buildMockAuthenticatedUser({
@@ -187,7 +222,7 @@ export async function mockVerifyCode(
   pending?: PendingVerification | null
 ): Promise<MockLoginResult> {
   await delay();
-  if (code === MOCK_INVALID_CODE || code.trim().length < 6) {
+  if (code.trim().length < 6) {
     return {
       ok: false,
       message:
@@ -196,7 +231,7 @@ export async function mockVerifyCode(
   }
 
   const normalized = pending?.identifier?.trim().toLowerCase();
-  const existing = normalized ? registeredMockAccounts.get(normalized) : undefined;
+  const existing = normalized ? findMockAccount(normalized) : undefined;
   const user: User = existing
     ? { ...existing.user, verified: true }
     : buildMockAuthenticatedUser({
@@ -207,7 +242,7 @@ export async function mockVerifyCode(
       });
 
   if (existing && normalized) {
-    registeredMockAccounts.set(normalized, { ...existing, user });
+    writeStoredMockAccount(normalized, { ...existing, user });
   }
 
   return {
@@ -235,13 +270,27 @@ export async function mockSendResetCode(
   return { ok: true };
 }
 
-export async function mockResetPassword(password: string): Promise<MockResult> {
+export async function mockResetPassword(
+  password: string,
+  identifier?: string
+): Promise<MockResult> {
   await delay();
   if (password.length < 8) {
     return {
       ok: false,
       message: "Password must be at least 8 characters long.",
     };
+  }
+  if (identifier) {
+    const normalized = identifier.trim().toLowerCase();
+    const existing = findMockAccount(normalized);
+    if (existing) {
+      writeStoredMockAccount(normalized, {
+        ...existing,
+        password,
+        user: { ...existing.user, verified: true },
+      });
+    }
   }
   return { ok: true };
 }
