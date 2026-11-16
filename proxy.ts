@@ -229,11 +229,7 @@ async function verifySession(request: NextRequest): Promise<VerifiedSession> {
   const apiBaseUrl = resolveApiBaseUrl().replace(/\/$/, "");
 
   if (token) {
-    if (
-      process.env.NODE_ENV !== "production" &&
-      isMockAuthEnabled() &&
-      token.startsWith("mk_access_")
-    ) {
+    if (isMockAuthEnabled() && token.startsWith("mk_access_")) {
       const mockRole = normalizeRole(
         getDecodedCookie(request, USER_ROLE_COOKIE)
       );
