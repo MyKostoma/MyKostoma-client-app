@@ -5,6 +5,13 @@ import type {
   QuotationTabFilter,
   QuotationBreakdownItem,
   QuotationRevisionEntry,
+  ProfessionalQuotationStatus,
+  ProfessionalQuotationTabFilter,
+  ProfessionalQuotationVersionItem,
+  ProfessionalQuotationClientReview,
+  ProfessionalQuotationItem,
+  ProfessionalUpdateQuoteFormValues,
+  ProfessionalQuotationKpiMetric,
 } from "@/components/quotations/types";
 
 export type {
@@ -14,6 +21,13 @@ export type {
   QuotationTabFilter,
   QuotationBreakdownItem,
   QuotationRevisionEntry,
+  ProfessionalQuotationStatus,
+  ProfessionalQuotationTabFilter,
+  ProfessionalQuotationVersionItem,
+  ProfessionalQuotationClientReview,
+  ProfessionalQuotationItem,
+  ProfessionalUpdateQuoteFormValues,
+  ProfessionalQuotationKpiMetric,
 };
 
 export interface QuotationsListViewProps {
@@ -30,5 +44,9 @@ export interface CompareQuotationsViewProps {
 }
 
 export interface RequestRevisionViewProps {
+  quotationId?: string;
+}
+
+export interface QuotationHistoryViewProps {
   quotationId?: string;
 }

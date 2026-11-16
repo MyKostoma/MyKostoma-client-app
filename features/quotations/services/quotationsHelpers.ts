@@ -2,6 +2,9 @@ import type {
   QuotationItem,
   QuotationRevisionFormValues,
   QuotationTabFilter,
+  ProfessionalQuotationItem,
+  ProfessionalQuotationTabFilter,
+  ProfessionalUpdateQuoteFormValues,
 } from "../types";
 
 export const INITIAL_REVISION_FORM_VALUES: QuotationRevisionFormValues = {
@@ -61,3 +64,74 @@ export function resolveInitialCompareQuotes(
     .filter((q) => q.status === "pending" || q.status === "updated")
     .slice(0, 3);
 }
+
+// ============================================================================
+// PROFESSIONAL QUOTATIONS HELPERS
+// ============================================================================
+
+export function filterProfessionalQuotations(
+  quotations: ProfessionalQuotationItem[],
+  activeTab: ProfessionalQuotationTabFilter,
+  searchQuery: string
+): ProfessionalQuotationItem[] {
+  const q = searchQuery.trim().toLowerCase();
+
+  return quotations.filter((item) => {
+    if (activeTab !== "all" && item.status !== activeTab) {
+      return false;
+    }
+
+    if (q) {
+      const haystack =
+        `${item.code} ${item.title} ${item.description} ${item.consumerName} ${item.serviceRequested} ${item.price}`.toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+
+    return true;
+  });
+}
+
+export function findProfessionalQuotationById(
+  quotations: ProfessionalQuotationItem[],
+  quotationId: string
+): ProfessionalQuotationItem | undefined {
+  return quotations.find(
+    (q) =>
+      q.id.toLowerCase() === quotationId.toLowerCase() ||
+      q.code.toLowerCase() === quotationId.toLowerCase()
+  );
+}
+
+export function parseCurrencyNumber(value: string | number): number {
+  if (typeof value === "number") return value;
+  const cleaned = value.replace(/[^0-9.]/g, "");
+  return Number(cleaned) || 0;
+}
+
+export function formatNairaWithDecimals(amount: number): string {
+  return `₦${amount.toLocaleString("en-NG", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+export function formatNumberWithDecimals(amount: number): string {
+  return amount.toLocaleString("en-NG", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+export function calculateUpdatedQuoteTotal(
+  values: Pick<
+    ProfessionalUpdateQuoteFormValues,
+    "serviceFee" | "materialsCost" | "logisticsCost"
+  >
+): number {
+  return (
+    parseCurrencyNumber(values.serviceFee) +
+    parseCurrencyNumber(values.materialsCost) +
+    parseCurrencyNumber(values.logisticsCost)
+  );
+}
+

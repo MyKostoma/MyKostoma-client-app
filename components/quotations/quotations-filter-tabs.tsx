@@ -4,28 +4,32 @@ import { useRef, useCallback, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import type { QuotationTabFilter } from "./types";
 
-export interface QuotationTabOption {
-  id: QuotationTabFilter;
+export interface QuotationTabOption<T extends string = QuotationTabFilter> {
+  id: T;
   label: string;
 }
 
-export interface QuotationsFilterTabsProps {
-  activeTab: QuotationTabFilter;
-  onTabChange: (tab: QuotationTabFilter) => void;
+export interface QuotationsFilterTabsProps<
+  T extends string = QuotationTabFilter,
+> {
+  activeTab: T;
+  onTabChange: (tab: T) => void;
   comparisonCount?: number;
+  tabs?: QuotationTabOption<T>[];
   className?: string;
 }
 
-export function QuotationsFilterTabs({
+export function QuotationsFilterTabs<T extends string = QuotationTabFilter>({
   activeTab,
   onTabChange,
   comparisonCount = 0,
+  tabs: customTabs,
   className,
-}: QuotationsFilterTabsProps) {
+}: QuotationsFilterTabsProps<T>) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  const tabs = useMemo<QuotationTabOption[]>(
+  const defaultTabs = useMemo<QuotationTabOption<QuotationTabFilter>[]>(
     () => [
       { id: "all", label: "All Quotes" },
       { id: "pending", label: "Pending" },
@@ -42,8 +46,9 @@ export function QuotationsFilterTabs({
     [comparisonCount]
   );
 
-  const scrollToTab = useCallback(
-    (tabId: QuotationTabFilter, smooth = true) => {
+  const tabs = (customTabs ?? defaultTabs) as QuotationTabOption<T>[];
+
+  const scrollToTab = useCallback((tabId: T, smooth = true) => {
       const container = containerRef.current;
       const tabEl = tabRefs.current[tabId];
       if (!container || !tabEl) return;
@@ -59,7 +64,7 @@ export function QuotationsFilterTabs({
     []
   );
 
-  const handleTabClick = (tabId: QuotationTabFilter) => {
+  const handleTabClick = (tabId: T) => {
     onTabChange(tabId);
     scrollToTab(tabId, true);
   };

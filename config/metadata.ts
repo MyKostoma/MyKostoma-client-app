@@ -138,6 +138,10 @@ export const PAGE_METADATA = {
     title: "Request Quotation Revision",
     description: "Submit feedback and request revisions for received artisan quotations on MyKostoma.",
   },
+  quotationHistoryDefault: {
+    title: "Quotation History",
+    description: "View all previous versions, price adjustments, and audit records of this quotation on MyKostoma.",
+  },
   orderDetailDefault: {
     title: "Order Details",
     description: "Track active service order progress, milestones, and deliverables on MyKostoma.",

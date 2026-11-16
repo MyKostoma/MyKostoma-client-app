@@ -1,4 +1,8 @@
-import type { QuotationItem } from "@/components/quotations/types";
+import type {
+  QuotationItem,
+  ProfessionalQuotationItem,
+  ProfessionalQuotationKpiMetric,
+} from "@/components/quotations/types";
 
 export const DEFAULT_QUOTATIONS: QuotationItem[] = [
   {
@@ -258,4 +262,351 @@ export const DEFAULT_QUOTATIONS: QuotationItem[] = [
     ],
   },
 ];
+
+// ============================================================================
+// PROFESSIONAL QUOTATIONS MODULE MOCK DATA
+// ============================================================================
+
+export const PRO_QUOTATIONS_OVERVIEW_KPIS: ProfessionalQuotationKpiMetric[] = [
+  {
+    id: "kpi-active-quotes",
+    label: "TOTAL ACTIVE QUOTES",
+    value: "12",
+  },
+  {
+    id: "kpi-approval-rate",
+    label: "APPROVAL RATE",
+    value: "78%",
+  },
+  {
+    id: "kpi-total-revenue",
+    label: "TOTAL REVENUE (2026)",
+    value: "₦2.4M",
+  },
+  {
+    id: "kpi-pending-value",
+    label: "PENDING VALUE",
+    value: "₦840k",
+  },
+];
+
+export const PRO_QUOTATIONS_HISTORICAL_KPIS: ProfessionalQuotationKpiMetric[] =
+  [
+    {
+      id: "kpi-completed-quotes",
+      label: "COMPLETED QUOTES",
+      value: "124",
+    },
+    {
+      id: "kpi-average-rating",
+      label: "AVERAGE RATING",
+      value: "4.9",
+      showStar: true,
+    },
+    {
+      id: "kpi-historical-revenue",
+      label: "TOTAL REVENUE (2026)",
+      value: "₦2.4M",
+    },
+    {
+      id: "kpi-client-retention",
+      label: "CLIENT RETENTION",
+      value: "92%",
+    },
+  ];
+
+export const DEFAULT_PROFESSIONAL_QUOTATIONS: ProfessionalQuotationItem[] = [
+  {
+    id: "QT-1024",
+    code: "QT-1024",
+    title: "Deep Home Cleaning for Sarah J.",
+    description:
+      "Full 3-bedroom apartment cleaning including windows and balcony...",
+    status: "pending",
+    dateSubmitted: "Jan 12, 2026",
+    createdAtLabel: "January 12, 2026",
+    validUntilLabel: "February 12, 2026",
+    validityDateInput: "2026-02-12",
+    validityPeriodLabel: "30 Days",
+    duration: "4 hours",
+    price: "₦25,000",
+    totalAmountFormatted: "₦25,000.00",
+    serviceFee: 18000,
+    serviceFeeLabel: "Service Fee (4 hrs)",
+    materialsCost: 5500,
+    previousMaterialsCost: 5500,
+    logisticsCost: 1500,
+    serviceRequested: "Deep Home Cleaning",
+    consumerName: "Sarah Jenkins",
+    location: "15 Victoria Island, Lagos",
+    requestedDateTime: "Jan 15, 2026 at 09:00 AM",
+    originalRequestDescription:
+      "I need a thorough deep cleaning for my 3-bedroom apartment. This should include all windows, the balcony, kitchen cabinets inside-out, and sanitizing the bathrooms. I will be moving in on the 16th, so it must be done before then.",
+    professionalNote:
+      "Hello Sarah, I have reviewed your request for the 3-bedroom apartment. My team of 3 cleaners can complete this within 4 hours. We use industrial-grade, eco-friendly cleaning supplies. The price includes all equipment and materials. We look forward to making your new home sparkle!",
+    consumerFeedback:
+      "The total is a bit higher than my budget. Could you look into reducing the materials cost? I have some of the cleaning agents already at home.",
+    orderCode: "ORD-5521",
+    hiredDateLabel: "January 14, 2026",
+    referenceCode: "QT-1024-5521",
+    rejectedDateLabel: "January 14, 2026",
+    rejectionReason: "Price too high / Budget exceeded",
+    consumerRejectionNote:
+      "Thank you for the quote, but we've found a professional whose rates better align with our current budget for this specific project.",
+    nextStepsNote:
+      "This quote is now inactive. You can archive it to clean up your dashboard or look for other available requests in your area.",
+    analysisNote:
+      "Clients frequently reject quotes over ₦22k for this service type. Consider adjusting your base rate for better conversion.",
+    completedDateTimeLabel: "January 16, 2026 at 01:30 PM",
+    completionDateLabel: "Jan 15, 2026",
+    completedDurationLabel: "4.5 hours",
+    completionSummary:
+      "All requested areas were cleaned to standard. Bathrooms were sanitized, and kitchen cabinets were cleared and wiped as requested. Additional stain removal was performed on the balcony tiles at no extra cost. Client inspected and signed off on site.",
+    completionPhotos: ["BEFORE PHOTO", "AFTER PHOTO 1", "AFTER PHOTO 2"],
+    clientReview: {
+      clientName: "Sarah Jenkins",
+      verifiedLabel: "Verified Client",
+      rating: 5,
+      comment:
+        "Excellent work! The team was very professional and the house looks amazing. Thank you for the quick turnaround.",
+    },
+    versions: [
+      {
+        id: "ver-3",
+        versionNumber: "v3",
+        versionTitle: "v3 (Current)",
+        badgeLabel: "ACTIVE",
+        timestampLabel: "Updated on Feb 10, 2026 at 02:45 PM",
+        changeSummaryTitle:
+          "Materials cost reduced from ₦5,500.00 to ₦3,500.00",
+        totalLabel: "New Total: ₦23,000.00",
+        professionalNote:
+          "Removed cleaning agent costs as client provided them. Validity extended to Feb 12.",
+        isCurrent: true,
+      },
+      {
+        id: "ver-2",
+        versionNumber: "v2",
+        versionTitle: "v2 (Archived)",
+        badgeLabel: "REVISED",
+        timestampLabel: "Updated on Feb 08, 2026 at 11:20 AM",
+        changeSummaryTitle: "Logistics fee adjusted for peak hour travel.",
+        totalLabel: "Total: ₦25,000.00",
+        professionalNote:
+          "Added surge pricing for weekend afternoon logistics.",
+      },
+      {
+        id: "ver-1",
+        versionNumber: "v1",
+        versionTitle: "v1 (Original)",
+        badgeLabel: "FIRST DRAFT",
+        timestampLabel: "Created on Feb 05, 2026 at 09:00 AM",
+        changeSummaryTitle: "Initial quotation based on standard rates.",
+        totalLabel: "Total: ₦20,000.00",
+        professionalNote:
+          "Standard pricing for 4-hour house cleaning service.",
+      },
+    ],
+  },
+  {
+    id: "QT-1025",
+    code: "QT-1025",
+    title: "Graphic Design Project: Michael Chen",
+    description:
+      "Logo redesign and brand identity guidelines for tech startup...",
+    status: "approved",
+    dateSubmitted: "Jan 10, 2026",
+    createdAtLabel: "January 10, 2026",
+    validUntilLabel: "February 10, 2026",
+    validityDateInput: "2026-02-10",
+    validityPeriodLabel: "30 Days",
+    duration: "2 weeks",
+    price: "₦150,000",
+    totalAmountFormatted: "₦150,000.00",
+    serviceFee: 120000,
+    serviceFeeLabel: "Service Fee (2 weeks)",
+    materialsCost: 20000,
+    previousMaterialsCost: 25000,
+    logisticsCost: 10000,
+    serviceRequested: "Deep Home Cleaning",
+    consumerName: "Sarah Jenkins",
+    location: "15 Victoria Island, Lagos",
+    requestedDateTime: "Jan 15, 2026 at 09:00 AM",
+    originalRequestDescription:
+      "I need a thorough deep cleaning for my 3-bedroom apartment. This should include all windows, the balcony, kitchen cabinets inside-out, and sanitizing the bathrooms.",
+    professionalNote:
+      "Hello Sarah, I have reviewed your request for the 3-bedroom apartment. My team of 3 cleaners can complete this within 4 hours. We use industrial-grade, eco-friendly cleaning supplies. The price includes all equipment and materials. We look forward to making your new home sparkle!",
+    consumerFeedback:
+      "Could we include social media brand templates in the deliverables?",
+    orderCode: "ORD-5521",
+    hiredDateLabel: "January 14, 2026",
+    referenceCode: "QT-1024-5521",
+    versions: [
+      {
+        id: "ver-1025-1",
+        versionNumber: "v1",
+        versionTitle: "v1 (Current)",
+        badgeLabel: "ACTIVE",
+        timestampLabel: "Created on Jan 10, 2026 at 10:15 AM",
+        changeSummaryTitle: "Initial brand identity and logo package quote.",
+        totalLabel: "Total: ₦150,000.00",
+        professionalNote:
+          "Includes 3 logo concepts, typography system, and brand guidelines PDF.",
+        isCurrent: true,
+      },
+    ],
+  },
+  {
+    id: "QT-1026",
+    code: "QT-1026",
+    title: "Plumbing Repair for Estate Admin",
+    description: "Fixing major leak in the main supply line of block B...",
+    status: "rejected",
+    dateSubmitted: "Jan 08, 2026",
+    createdAtLabel: "January 08, 2026",
+    validUntilLabel: "February 08, 2026",
+    validityDateInput: "2026-02-08",
+    validityPeriodLabel: "30 Days",
+    duration: "3 hours",
+    price: "₦12,500",
+    totalAmountFormatted: "₦25,000.00",
+    serviceFee: 18000,
+    serviceFeeLabel: "Service Fee (4 hrs)",
+    materialsCost: 5500,
+    previousMaterialsCost: 5500,
+    logisticsCost: 1500,
+    serviceRequested: "Deep Home Cleaning",
+    consumerName: "Sarah Jenkins",
+    location: "15 Victoria Island, Lagos",
+    requestedDateTime: "Jan 15, 2026 at 09:00 AM",
+    originalRequestDescription:
+      "I need a thorough deep cleaning for my 3-bedroom apartment. This should include all windows, the balcony, kitchen cabinets inside-out, and sanitizing the bathrooms.",
+    professionalNote:
+      "Hello Sarah, I have reviewed your request for the 3-bedroom apartment. My team of 3 cleaners can complete this within 4 hours. We use industrial-grade, eco-friendly cleaning supplies. The price includes all equipment and materials.",
+    rejectedDateLabel: "January 14, 2026",
+    rejectionReason: "Price too high / Budget exceeded",
+    consumerRejectionNote:
+      "Thank you for the quote, but we've found a professional whose rates better align with our current budget for this specific project.",
+    nextStepsNote:
+      "This quote is now inactive. You can archive it to clean up your dashboard or look for other available requests in your area.",
+    analysisNote:
+      "Clients frequently reject quotes over ₦22k for this service type. Consider adjusting your base rate for better conversion.",
+    versions: [
+      {
+        id: "ver-1026-1",
+        versionNumber: "v1",
+        versionTitle: "v1 (Original)",
+        badgeLabel: "FIRST DRAFT",
+        timestampLabel: "Created on Jan 08, 2026 at 01:00 PM",
+        changeSummaryTitle: "Initial quotation based on standard rates.",
+        totalLabel: "Total: ₦25,000.00",
+        professionalNote:
+          "Emergency pipe fitting replacement and pressure testing.",
+        isCurrent: true,
+      },
+    ],
+  },
+  {
+    id: "QT-1027",
+    code: "QT-1027",
+    title: "Consultation: Anita Williams",
+    description:
+      "Legal advisory session regarding property documentation...",
+    status: "completed",
+    dateSubmitted: "Jan 05, 2026",
+    createdAtLabel: "January 05, 2026",
+    validUntilLabel: "February 05, 2026",
+    validityDateInput: "2026-02-05",
+    validityPeriodLabel: "30 Days",
+    duration: "1 hour",
+    price: "₦45,000",
+    totalAmountFormatted: "₦25,000.00",
+    serviceFee: 18000,
+    serviceFeeLabel: "Service Fee (4.5 hrs)",
+    materialsCost: 5500,
+    previousMaterialsCost: 5500,
+    logisticsCost: 1500,
+    serviceRequested: "Deep Home Cleaning",
+    consumerName: "Sarah Jenkins",
+    location: "15 Victoria Island, Lagos",
+    requestedDateTime: "Jan 15, 2026 at 09:00 AM",
+    originalRequestDescription:
+      "I need a thorough deep cleaning for my 3-bedroom apartment. This should include all windows, the balcony, kitchen cabinets inside-out, and sanitizing the bathrooms.",
+    professionalNote:
+      "Hello Sarah, I have reviewed your request for the 3-bedroom apartment. My team of 3 cleaners can complete this within 4 hours. We use industrial-grade, eco-friendly cleaning supplies.",
+    orderCode: "ORD-5521",
+    completedDateTimeLabel: "January 16, 2026 at 01:30 PM",
+    completionDateLabel: "Jan 15, 2026",
+    completedDurationLabel: "4.5 hours",
+    completionSummary:
+      "All requested areas were cleaned to standard. Bathrooms were sanitized, and kitchen cabinets were cleared and wiped as requested. Additional stain removal was performed on the balcony tiles at no extra cost. Client inspected and signed off on site.",
+    completionPhotos: ["BEFORE PHOTO", "AFTER PHOTO 1", "AFTER PHOTO 2"],
+    clientReview: {
+      clientName: "Sarah Jenkins",
+      verifiedLabel: "Verified Client",
+      rating: 5,
+      comment:
+        "Excellent work! The team was very professional and the house looks amazing. Thank you for the quick turnaround.",
+    },
+    versions: [
+      {
+        id: "ver-1027-1",
+        versionNumber: "v1",
+        versionTitle: "v1 (Current)",
+        badgeLabel: "ACTIVE",
+        timestampLabel: "Created on Jan 05, 2026 at 09:30 AM",
+        changeSummaryTitle: "Completed service quotation.",
+        totalLabel: "Total: ₦25,000.00",
+        professionalNote: "Standard consultation and execution rate.",
+        isCurrent: true,
+      },
+    ],
+  },
+  {
+    id: "QT-1028",
+    code: "QT-1028",
+    title: "Catering Services: Wedding Event",
+    description:
+      "Standard buffet for 100 guests including drinks and service...",
+    status: "pending",
+    dateSubmitted: "Jan 03, 2026",
+    createdAtLabel: "January 03, 2026",
+    validUntilLabel: "February 03, 2026",
+    validityDateInput: "2026-02-03",
+    validityPeriodLabel: "30 Days",
+    duration: "8 hours",
+    price: "₦450,000",
+    totalAmountFormatted: "₦450,000.00",
+    serviceFee: 320000,
+    serviceFeeLabel: "Service Fee (8 hrs)",
+    materialsCost: 105000,
+    previousMaterialsCost: 115000,
+    logisticsCost: 25000,
+    serviceRequested: "Catering Services",
+    consumerName: "Chidi & Ngozi Event",
+    location: "Lekki Phase 1, Lagos",
+    requestedDateTime: "Feb 14, 2026 at 12:00 PM",
+    originalRequestDescription:
+      "We need a full buffet catering service for 100 wedding guests including continental and Nigerian dishes, chilled drinks, and 6 uniformed servers.",
+    professionalNote:
+      "Congratulations on your upcoming wedding! Our catering team will provide a 3-course buffet setup, chafing dishes, drink station, and 6 professional servers for 8 hours.",
+    consumerFeedback:
+      "Can we adjust the drink package cost slightly if we supply our own wine?",
+    orderCode: "ORD-5528",
+    versions: [
+      {
+        id: "ver-1028-1",
+        versionNumber: "v1",
+        versionTitle: "v1 (Current)",
+        badgeLabel: "ACTIVE",
+        timestampLabel: "Created on Jan 03, 2026 at 04:10 PM",
+        changeSummaryTitle: "Initial wedding buffet quotation for 100 guests.",
+        totalLabel: "Total: ₦450,000.00",
+        professionalNote: "Includes full buffet setup and 6 servers.",
+        isCurrent: true,
+      },
+    ],
+  },
+];
+
 
