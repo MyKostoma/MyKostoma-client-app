@@ -89,7 +89,7 @@ export function LoginForm() {
         {showMockAccounts && (
           <div className="rounded-md border border-border bg-muted/40 p-3">
             <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-              Demo Accounts (Local Mock Mode)
+              Demo Accounts
             </p>
             <div className="mt-2 grid grid-cols-2 gap-2">
               {MOCK_ACCOUNTS.map((account) => (
