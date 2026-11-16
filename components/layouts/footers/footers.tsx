@@ -4,7 +4,6 @@ import * as React from "react";
 import { useAppSelector } from "@/store/hooks";
 import { selectIsAuthenticated } from "@/store/slices/authSlice";
 import { PublicFooter } from "./public-footer";
-import { PublicFooter2 } from "./public-footer-2";
 import { AppFooter } from "./app-footer";
 import { DashboardFooter } from "./dashboard-footer";
 import type { FooterProps } from "./types";
@@ -37,13 +36,12 @@ export function Footer({
     return <AppFooter className={className} {...props} />;
   }
 
-  return <PublicFooter2 className={className} {...props} />;
+  return <PublicFooter className={className} {...props} />;
 }
 
 export const Footers = Footer;
 export const LoggedOutFooter = PublicFooter;
 export const LoggedInFooter = AppFooter;
-export const publicFooter2 = PublicFooter2;
 export const dashboardFooter = DashboardFooter;
 
 export * from "./types";
