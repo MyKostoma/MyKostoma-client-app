@@ -6,19 +6,34 @@ import {
   RequestsTableCard,
   RequestSupportHelpCard,
 } from "@/components/requests/requests-table";
-import {
-  RequestsErrorState,
-} from "@/components/requests/requests-state-cards";
+import { RequestsErrorState } from "@/components/requests/requests-state-cards";
+import { ProRequestsFilterBar } from "@/components/requests/professional/pro-requests-filter-bar";
+import { ProRequestCard } from "@/components/requests/professional/pro-request-card";
 import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
 import { RequestsListTopBar } from "@/components/layouts/top-bars/requests/requests-list-top-bar";
+import { ProfessionalRequestsTopBar } from "@/components/layouts/top-bars/requests/professional-requests-top-bar";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/form-fields";
-import { useRequestsListService } from "./services/requestsApi";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { useAppSelector } from "@/store/hooks";
+import { selectUserRole } from "@/store/slices/authSlice";
+import { selectActivePerspective } from "@/store/slices/uiSlice";
+import {
+  useProfessionalRequestsListService,
+  useRequestsListService,
+} from "./services/requestsApi";
 import type { RequestsListViewProps } from "./types";
 
 export type { RequestsListViewProps } from "./types";
 
-export function RequestsListView({
+function ConsumerRequestsListView({
   requests,
   totalCountLabel = "12 Total",
   error = null,
@@ -94,4 +109,119 @@ export function RequestsListView({
       </div>
     </>
   );
+}
+
+export function ProfessionalRequestsListView() {
+  const {
+    draftFilters,
+    setDraftFilters,
+    filteredRequests,
+    savedIds,
+    currentPage,
+    totalPages,
+    handleApplyFilters,
+    handleResetFilters,
+    handlePageChange,
+    handleViewDetails,
+    handleToggleSave,
+    handleLearnMoreVerification,
+  } = useProfessionalRequestsListService();
+
+  return (
+    <>
+      <DashboardTopBarSlot>
+        <ProfessionalRequestsTopBar
+          breadcrumbs={[
+            { label: "Pages", href: "/dashboard" },
+            { label: "Requests" },
+          ]}
+          showVerifiedProBadge
+        />
+      </DashboardTopBarSlot>
+
+      <div className="mx-auto space-y-6">
+        <ProRequestsFilterBar
+          filters={draftFilters}
+          onChange={setDraftFilters}
+          onApply={handleApplyFilters}
+          onReset={handleResetFilters}
+          onLearnMoreVerification={handleLearnMoreVerification}
+        />
+
+        {filteredRequests.length === 0 ? (
+          <div className="rounded-2xl border border-border bg-card p-12 text-center space-y-3">
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              No open requests match your selected filters.
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleResetFilters}
+              className="rounded-lg text-xs font-semibold"
+            >
+              Reset Filters
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {filteredRequests.map((req) => (
+              <ProRequestCard
+                key={req.id}
+                request={req}
+                isSaved={savedIds.includes(req.id)}
+                onViewDetails={handleViewDetails}
+                onToggleSave={handleToggleSave}
+              />
+            ))}
+          </div>
+        )}
+
+        <div className="pt-2 flex justify-center">
+          <Pagination className="justify-center">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  disabled={currentPage <= 1}
+                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                />
+              </PaginationItem>
+              {Array.from({ length: totalPages }, (_, idx) => idx + 1).map(
+                (page) => (
+                  <PaginationItem key={page}>
+                    <PaginationLink
+                      isActive={currentPage === page}
+                      onClick={() => handlePageChange(page)}
+                    >
+                      {page}
+                    </PaginationLink>
+                  </PaginationItem>
+                )
+              )}
+              <PaginationItem>
+                <PaginationNext
+                  disabled={currentPage >= totalPages}
+                  onClick={() =>
+                    handlePageChange(Math.min(totalPages, currentPage + 1))
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      </div>
+    </>
+  );
+}
+
+export function RequestsListView(props: RequestsListViewProps) {
+  const userRole = useAppSelector(selectUserRole);
+  const activePerspective = useAppSelector(selectActivePerspective);
+  const effectiveRole = userRole || activePerspective || "consumer";
+
+  if (effectiveRole === "professional") {
+    return <ProfessionalRequestsListView />;
+  }
+
+  return <ConsumerRequestsListView {...props} />;
 }

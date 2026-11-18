@@ -6,33 +6,61 @@ import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   cancelOrderLocal,
+  completeProOrderLocal,
   confirmOrderCompletionLocal,
   depositOrderFundsLocal,
+  disputeProOrderLocal,
   selectAllOrders,
+  selectAllProOrders,
   selectOrdersActiveTab,
   selectOrdersSearchQuery,
+  selectProOrdersActiveTab,
+  selectProOrdersPage,
+  selectProOrdersSearchQuery,
   setOrdersActiveTab,
   setOrdersSearchQuery,
+  setProOrdersActiveTab,
+  setProOrdersPage,
+  setProOrdersSearchQuery,
+  startProOrderLocal,
   submitOrderReviewLocal,
   useCancelOrderMutation,
+  useCompleteProfessionalOrderMutation,
   useDepositOrderFundsMutation,
   useGetOrderByIdQuery,
   useGetOrdersQuery,
+  useGetProfessionalOrderByIdQuery,
+  useGetProfessionalOrdersQuery,
   useRaiseOrderDisputeMutation,
   useReleaseOrderMilestoneMutation,
+  useStartProfessionalOrderMutation,
   useSubmitOrderReviewMutation,
+  useSubmitProfessionalOrderDisputeMutation,
+  useSubmitProfessionalOrderReviewMutation,
 } from "@/store/slices/ordersSlice";
-import { DEFAULT_CONSUMER_ORDERS } from "../data";
+import {
+  DEFAULT_CONSUMER_ORDERS,
+  DEFAULT_PROFESSIONAL_ORDERS,
+  PRO_ORDERS_KPI_CARDS,
+} from "../data";
 import type {
   ConsumerOrderItem,
   OrderDetailViewMode,
   OrderReviewFormValues,
   OrderTabFilter,
+  ProfessionalOrderDisputeFormValues,
+  ProfessionalOrderItem,
+  ProfessionalOrderReviewFormValues,
+  ProfessionalOrderTabFilter,
 } from "../types";
 import {
   INITIAL_ORDER_REVIEW_VALUES,
+  INITIAL_PRO_ORDER_DISPUTE_VALUES,
+  INITIAL_PRO_ORDER_REVIEW_VALUES,
   filterOrdersList,
+  filterProfessionalOrders,
   findOrderById,
+  findProfessionalOrderById,
   resolveNextEscrowMilestone,
 } from "./ordersHelpers";
 
@@ -381,3 +409,353 @@ export function useOrderFeedbackService(orderId = "ORD-8821") {
     handleLearnResolutionPolicy,
   };
 }
+
+// ============================================================================
+// PROFESSIONAL ORDERS SERVICE HOOKS
+// ============================================================================
+
+export function useProfessionalOrdersListService() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+
+  const storeOrders = useAppSelector(selectAllProOrders);
+  const activeTab = useAppSelector(selectProOrdersActiveTab);
+  const searchQuery = useAppSelector(selectProOrdersSearchQuery);
+  const currentPage = useAppSelector(selectProOrdersPage);
+
+  const { data: apiOrders, isFetching } = useGetProfessionalOrdersQuery(
+    { tab: activeTab, search: searchQuery },
+    { skip: false }
+  );
+  const [startOrderMutation] = useStartProfessionalOrderMutation();
+
+  const orders = apiOrders ?? storeOrders ?? DEFAULT_PROFESSIONAL_ORDERS;
+
+  const filteredOrders = useMemo(
+    () => filterProfessionalOrders(orders, activeTab, searchQuery),
+    [orders, activeTab, searchQuery]
+  );
+
+  const totalCount = 42;
+  const totalPages = 3;
+
+  const setActiveTab = (tab: ProfessionalOrderTabFilter) => {
+    dispatch(setProOrdersActiveTab(tab));
+  };
+
+  const setSearchQuery = (query: string) => {
+    dispatch(setProOrdersSearchQuery(query));
+  };
+
+  const setCurrentPage = (page: number) => {
+    dispatch(setProOrdersPage(page));
+  };
+
+  const handleViewOrder = (order: ProfessionalOrderItem) => {
+    router.push(`/orders/${encodeURIComponent(order.id)}`);
+  };
+
+  const handleRowPrimaryAction = async (order: ProfessionalOrderItem) => {
+    if (order.status === "pending") {
+      try {
+        await startOrderMutation({ id: order.id }).unwrap();
+      } catch {
+        dispatch(startProOrderLocal(order.id));
+      }
+      toast.success(`Order #${order.code} started! Now In Progress.`);
+      router.push(`/orders/${encodeURIComponent(order.id)}`);
+      return;
+    }
+    if (order.status === "in-progress") {
+      router.push(`/orders/${encodeURIComponent(order.id)}`);
+      return;
+    }
+    if (order.status === "disputed") {
+      router.push(`/orders/${encodeURIComponent(order.id)}/dispute`);
+      return;
+    }
+    router.push(`/orders/${encodeURIComponent(order.id)}`);
+  };
+
+  const handleToggleFilters = () => {
+    toast.info("Order filter options coming soon.");
+  };
+
+  const handleExportOrders = () => {
+    toast.success("Exporting professional orders CSV...");
+  };
+
+  return {
+    activeTab,
+    setActiveTab,
+    searchQuery,
+    setSearchQuery,
+    currentPage,
+    setCurrentPage,
+    totalCount,
+    totalPages,
+    filteredOrders,
+    isFetching,
+    kpis: PRO_ORDERS_KPI_CARDS,
+    handleViewOrder,
+    handleRowPrimaryAction,
+    handleToggleFilters,
+    handleExportOrders,
+  };
+}
+
+export function useProfessionalOrderDetailService(orderId = "ORD-2026-001") {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const storeOrders = useAppSelector(selectAllProOrders);
+
+  const { data: apiOrder } = useGetProfessionalOrderByIdQuery(orderId);
+  const [startOrderMutation] = useStartProfessionalOrderMutation();
+  const [completeOrderMutation] = useCompleteProfessionalOrderMutation();
+
+  const order = useMemo<ProfessionalOrderItem>(() => {
+    return (
+      apiOrder ??
+      findProfessionalOrderById(storeOrders, orderId) ??
+      findProfessionalOrderById(DEFAULT_PROFESSIONAL_ORDERS, orderId) ??
+      DEFAULT_PROFESSIONAL_ORDERS[0]
+    );
+  }, [apiOrder, storeOrders, orderId]);
+
+  const [completionNotes, setCompletionNotes] = useState("");
+  const [uploadedDeliverableName, setUploadedDeliverableName] = useState<
+    string | null
+  >(null);
+
+  const handleBackToOrders = () => {
+    router.push("/orders");
+  };
+
+  const handleBackToOrderDetail = () => {
+    router.push(`/orders/${encodeURIComponent(order.id)}`);
+  };
+
+  const handleStartOrder = async () => {
+    try {
+      await startOrderMutation({ id: order.id }).unwrap();
+    } catch {
+      dispatch(startProOrderLocal(order.id));
+    }
+    toast.success(`Order #${order.code} is now In Progress.`);
+  };
+
+  const handleMarkCompleted = async () => {
+    try {
+      await completeOrderMutation({
+        id: order.id,
+        completionNote: completionNotes,
+        deliverableName:
+          uploadedDeliverableName ?? "Final_Brand_Package_v1.zip",
+      }).unwrap();
+    } catch {
+      dispatch(
+        completeProOrderLocal({
+          id: order.id,
+          completionNote:
+            completionNotes.trim() ||
+            order.completionNote ||
+            "Hi! I've completed the work as requested and uploaded all final deliverables. It was a pleasure working with you!",
+          deliverableName:
+            uploadedDeliverableName ?? "Final_Brand_Package_v1.zip",
+        })
+      );
+    }
+    toast.success(
+      `Order #${order.code} submitted for review! The consumer has been notified.`
+    );
+  };
+
+  const handleUploadDeliverable = (fileName: string) => {
+    setUploadedDeliverableName(fileName);
+    toast.success(`Attached "${fileName}" as final deliverable.`);
+  };
+
+  const handleMessageConsumer = () => {
+    router.push("/messages");
+  };
+
+  const handleViewConsumerProfile = () => {
+    router.push("/profile");
+  };
+
+  const handleViewEscrowDetails = () => {
+    router.push(`/orders/${encodeURIComponent(order.id)}/status`);
+  };
+
+  const handleRaiseDispute = () => {
+    router.push(`/orders/${encodeURIComponent(order.id)}/dispute`);
+  };
+
+  const handleLeaveReview = () => {
+    router.push(`/orders/${encodeURIComponent(order.id)}/feedback`);
+  };
+
+  const handleDownloadAttachment = (fileName: string) => {
+    toast.success(`Downloading ${fileName}...`);
+  };
+
+  const handleOrderGuidelines = () => {
+    toast.info("Opening MyKostoma Order Guidelines...");
+  };
+
+  const handleContactSupport = () => {
+    toast.info("Connecting you with MyKostoma 24/7 Support...");
+  };
+
+  const handleReadEscrowPolicy = () => {
+    toast.info("Opening MyKostoma Escrow Protection Policy...");
+  };
+
+  return {
+    order,
+    completionNotes,
+    setCompletionNotes,
+    uploadedDeliverableName,
+    handleBackToOrders,
+    handleBackToOrderDetail,
+    handleStartOrder,
+    handleMarkCompleted,
+    handleUploadDeliverable,
+    handleMessageConsumer,
+    handleViewConsumerProfile,
+    handleViewEscrowDetails,
+    handleRaiseDispute,
+    handleLeaveReview,
+    handleDownloadAttachment,
+    handleOrderGuidelines,
+    handleContactSupport,
+    handleReadEscrowPolicy,
+  };
+}
+
+export function useProfessionalOrderDisputeService(orderId = "ORD-2026-001") {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const storeOrders = useAppSelector(selectAllProOrders);
+  const [submitDisputeMutation] = useSubmitProfessionalOrderDisputeMutation();
+
+  const order = useMemo<ProfessionalOrderItem>(() => {
+    return (
+      findProfessionalOrderById(storeOrders, orderId) ??
+      findProfessionalOrderById(DEFAULT_PROFESSIONAL_ORDERS, orderId) ??
+      DEFAULT_PROFESSIONAL_ORDERS[0]
+    );
+  }, [storeOrders, orderId]);
+
+  const [values, setValues] = useState<ProfessionalOrderDisputeFormValues>(
+    INITIAL_PRO_ORDER_DISPUTE_VALUES
+  );
+
+  const handleBackToEscrow = () => {
+    router.push(`/orders/${encodeURIComponent(order.id)}/status`);
+  };
+
+  const handleAddEvidence = (fileName: string) => {
+    setValues((prev) => ({
+      ...prev,
+      evidenceFiles: [...prev.evidenceFiles, fileName],
+    }));
+    toast.success(`Added evidence file "${fileName}".`);
+  };
+
+  const handleRemoveEvidence = (fileName: string) => {
+    setValues((prev) => ({
+      ...prev,
+      evidenceFiles: prev.evidenceFiles.filter((f) => f !== fileName),
+    }));
+  };
+
+  const handleSubmitDispute = async () => {
+    if (!values.reason) {
+      toast.error("Please select a reason for the dispute.");
+      return;
+    }
+    try {
+      await submitDisputeMutation({ id: order.id, values }).unwrap();
+    } catch {
+      dispatch(disputeProOrderLocal(order.id));
+    }
+    toast.success(
+      `Dispute opened for Order #${order.code}. Escrow funds are frozen pending moderation.`
+    );
+    router.push(`/orders/${encodeURIComponent(order.id)}`);
+  };
+
+  const handleMessageConsumer = () => {
+    router.push("/messages");
+  };
+
+  const handleContactSupport = () => {
+    toast.info("Opening MyKostoma Arbitration Support...");
+  };
+
+  return {
+    order,
+    values,
+    setValues,
+    handleBackToEscrow,
+    handleAddEvidence,
+    handleRemoveEvidence,
+    handleSubmitDispute,
+    handleMessageConsumer,
+    handleContactSupport,
+  };
+}
+
+export function useProfessionalOrderReviewService(orderId = "ORD-2026-001") {
+  const router = useRouter();
+  const storeOrders = useAppSelector(selectAllProOrders);
+  const [submitReviewMutation] = useSubmitProfessionalOrderReviewMutation();
+
+  const order = useMemo<ProfessionalOrderItem>(() => {
+    return (
+      findProfessionalOrderById(storeOrders, orderId) ??
+      findProfessionalOrderById(DEFAULT_PROFESSIONAL_ORDERS, orderId) ??
+      DEFAULT_PROFESSIONAL_ORDERS[0]
+    );
+  }, [storeOrders, orderId]);
+
+  const [values, setValues] = useState<ProfessionalOrderReviewFormValues>(
+    INITIAL_PRO_ORDER_REVIEW_VALUES
+  );
+
+  const handleBackToDetail = () => {
+    router.push(`/orders/${encodeURIComponent(order.id)}`);
+  };
+
+  const handleSubmitReview = async () => {
+    try {
+      await submitReviewMutation({ id: order.id, values }).unwrap();
+    } catch {
+      // Fallback simulated submission
+    }
+    toast.success(
+      `Your ${values.overallRating}.0-star review for ${order.consumerName} has been submitted!`
+    );
+    router.push(`/orders/${encodeURIComponent(order.id)}`);
+  };
+
+  const handleMessageConsumer = () => {
+    router.push("/messages");
+  };
+
+  const handleContactSupport = () => {
+    toast.info("Connecting you with MyKostoma Support...");
+  };
+
+  return {
+    order,
+    values,
+    setValues,
+    handleBackToDetail,
+    handleSubmitReview,
+    handleMessageConsumer,
+    handleContactSupport,
+  };
+}
+

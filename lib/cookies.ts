@@ -54,6 +54,16 @@ export function getAuthTokensFromCookies(): {
 }
 
 /**
+ * Checks whether a valid non-empty access token cookie is currently present.
+ */
+export function hasAuthTokenCookie(): boolean {
+  const { accessToken } = getAuthTokensFromCookies();
+  return Boolean(
+    accessToken && accessToken !== "null" && accessToken !== "undefined"
+  );
+}
+
+/**
  * Clear auth cookies on logout
  */
 export function clearAuthCookies(): void {

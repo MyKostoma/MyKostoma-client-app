@@ -10,6 +10,16 @@ import type {
   OrderStatus,
   OrderTabFilter,
   OrderTimelineStep,
+  ProfessionalOrderStatus,
+  ProfessionalOrderTabFilter,
+  ProfessionalEscrowStatus,
+  ProfessionalOrderFileAttachment,
+  ProfessionalOrderTimelineStep,
+  ProfessionalEscrowTimelineStep,
+  ProfessionalOrderItem,
+  ProfessionalOrderDisputeFormValues,
+  ProfessionalOrderReviewFormValues,
+  ProfessionalOrderKpiCard,
 } from "@/components/orders/types";
 
 export type {
@@ -24,6 +34,16 @@ export type {
   OrderStatus,
   OrderTabFilter,
   OrderTimelineStep,
+  ProfessionalOrderStatus,
+  ProfessionalOrderTabFilter,
+  ProfessionalEscrowStatus,
+  ProfessionalOrderFileAttachment,
+  ProfessionalOrderTimelineStep,
+  ProfessionalEscrowTimelineStep,
+  ProfessionalOrderItem,
+  ProfessionalOrderDisputeFormValues,
+  ProfessionalOrderReviewFormValues,
+  ProfessionalOrderKpiCard,
 };
 
 export interface OrdersListViewProps {
@@ -37,5 +57,9 @@ export interface OrderDetailViewProps {
 }
 
 export interface OrderFeedbackViewProps {
+  orderId?: string;
+}
+
+export interface OrderDisputeViewProps {
   orderId?: string;
 }

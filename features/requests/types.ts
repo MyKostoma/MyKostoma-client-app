@@ -3,6 +3,14 @@ import type {
   RequestFormValues,
   RequestTabFilter,
   RequestStatus,
+  ProfessionalRequestAvailabilityState,
+  ProfessionalRequestAttachment,
+  ProfessionalRequestClientInfo,
+  ProfessionalQuoteMilestone,
+  ProfessionalSubmittedQuote,
+  ProfessionalRequestItem,
+  ProfessionalRequestsFilterState,
+  ProfessionalSubmitQuoteFormValues,
 } from "@/components/requests/types";
 
 export type {
@@ -10,6 +18,14 @@ export type {
   RequestFormValues,
   RequestTabFilter,
   RequestStatus,
+  ProfessionalRequestAvailabilityState,
+  ProfessionalRequestAttachment,
+  ProfessionalRequestClientInfo,
+  ProfessionalQuoteMilestone,
+  ProfessionalSubmittedQuote,
+  ProfessionalRequestItem,
+  ProfessionalRequestsFilterState,
+  ProfessionalSubmitQuoteFormValues,
 };
 
 export interface RequestsListViewProps {
@@ -32,4 +48,8 @@ export interface CreateRequestViewProps {
 export interface EditRequestViewProps {
   requestId?: string;
   initialValues?: RequestFormValues;
+}
+
+export interface SubmitQuoteViewProps {
+  requestId?: string;
 }

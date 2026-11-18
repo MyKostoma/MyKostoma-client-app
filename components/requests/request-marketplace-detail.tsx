@@ -50,7 +50,7 @@ export function RequestMarketplaceDetail({
     <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Standalone Top Header (Screenshots 6, 7, 8) */}
       <header className="w-full bg-card border-b border-border sticky top-0 z-30">
-        <div className="container max-w-6xl px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
+        <div className="container  px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between gap-4">
           <Link
             href="/requests"
             className="inline-flex items-center transition-opacity hover:opacity-90"
@@ -89,7 +89,7 @@ export function RequestMarketplaceDetail({
       </header>
 
       {/* Main 2-Column Content */}
-      <main className="flex-1 container max-w-6xl px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+      <main className="flex-1 container  px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
           {/* Left Column: Request Details & Quotes */}
           <div className="lg:col-span-8 space-y-6">

@@ -42,7 +42,7 @@ export function WalletFundingStatusCard({
   return (
     <div className={cn("mx-auto max-w-lg space-y-4", className)}>
       {/* Interactive State Switcher so all 3 screenshot states can be inspected seamlessly */}
-      {onStatusSwitch && (
+      {/* {onStatusSwitch && (
         <div className="flex items-center justify-center gap-1.5 rounded-full border border-border bg-card p-1 shadow-2xs w-fit mx-auto">
           {STATUS_SWITCH_TABS.map((tab) => {
             const active = status === tab.id;
@@ -63,7 +63,7 @@ export function WalletFundingStatusCard({
             );
           })}
         </div>
-      )}
+      )} */}
 
       <div className="rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-xs space-y-6 text-center">
         {/* Status Icon */}

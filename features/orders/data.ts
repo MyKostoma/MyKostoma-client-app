@@ -1,4 +1,8 @@
-import type { ConsumerOrderItem } from "@/components/orders/types";
+import type {
+  ConsumerOrderItem,
+  ProfessionalOrderItem,
+  ProfessionalOrderKpiCard,
+} from "@/components/orders/types";
 
 export const DEFAULT_CONSUMER_ORDERS: ConsumerOrderItem[] = [
   {
@@ -574,3 +578,503 @@ export const DEFAULT_CONSUMER_ORDERS: ConsumerOrderItem[] = [
     },
   },
 ];
+
+// ============================================================================
+// PROFESSIONAL ORDERS MODULE MOCK DATA
+// ============================================================================
+
+export const PRO_ORDERS_KPI_CARDS: ProfessionalOrderKpiCard[] = [
+  {
+    id: "kpi-active-value",
+    label: "TOTAL ACTIVE VALUE",
+    value: "₦8,450.00",
+    iconType: "wallet",
+  },
+  {
+    id: "kpi-pending-delivery",
+    label: "PENDING DELIVERY",
+    value: "12 Orders",
+    iconType: "clock",
+  },
+  {
+    id: "kpi-fulfillment-time",
+    label: "AVG. FULFILLMENT TIME",
+    value: "4.2 Days",
+    iconType: "zap",
+  },
+];
+
+export const PRO_DISPUTE_REASON_OPTIONS = [
+  "Consumer is unresponsive",
+  "Refusal to confirm completed work",
+  "Scope creep / Extra work requested without pay",
+  "Other",
+] as const;
+
+export const DEFAULT_PROFESSIONAL_ORDERS: ProfessionalOrderItem[] = [
+  {
+    id: "ORD-2026-001",
+    code: "ORD-2026-001",
+    consumerName: "Sarah Jenkins",
+    consumerLocation: "London, UK",
+    consumerJoined: "Jan 2024",
+    consumerOrdersCount: "2 Orders",
+    serviceTitle: "Logo Design Package",
+    serviceCategory: "Graphics & Design",
+    serviceSubtitle: "Standard Package",
+    serviceDescription:
+      "Complete brand identity package including 3 unique concepts, typography selection, and color palette. Final delivery includes source files and brand guidelines.",
+    durationLabel: "5 Days Duration",
+    revisionsLabel: "3 Revisions",
+    tableAmount: "₦450.00",
+    totalAmountFormatted: "₦225,000.00",
+    platformFeeFormatted: "-₦22,500.00",
+    netEarningsFormatted: "₦202,500.00",
+    status: "pending",
+    escrowStatus: "held",
+    escrowRef: "ESC-4492-001-X",
+    currency: "NGN (₦)",
+    paymentMethod: "Bank Transfer",
+    dateShort: "12 Oct 2026",
+    placedAtLabel: "Placed on Oct 12, 2026 • 10:45 AM",
+    startedAtLabel: "Oct 12, 2026",
+    completedAtLabel: "Completed on Oct 17, 2026 • 02:15 PM",
+    completedDateShort: "Oct 24, 2026",
+    requirementsNote:
+      "I am looking for a minimalist logo for my new coffee shop called 'Lunar Brew'. I want the logo to incorporate a crescent moon and a coffee bean somehow. Preferred colors are dark navy and gold, but I'm open to suggestions. Please avoid cliché steaming cup icons.",
+    requirementAttachments: [
+      {
+        id: "att-moodboard",
+        name: "Moodboard.pdf",
+        size: "1.2 MB",
+        type: "pdf",
+      },
+      {
+        id: "att-current-logo",
+        name: "Current_Logo.png",
+        size: "800 KB",
+        type: "image",
+      },
+    ],
+    completionNote:
+      "Hi Sarah! I've completed the logo design package as requested. Included are the three concepts, brand style guide, and all source files in AI, SVG, and high-res PNG formats. It was a pleasure working with you!",
+    finalDeliverable: {
+      id: "del-brand-zip",
+      name: "Final_Brand_Package_v1.zip",
+      size: "42.5 MB",
+      type: "archive",
+      statusLabel: "Ready for download",
+    },
+    submittedDateLabel: "Submitted Oct 17, 2026",
+    orderTimeline: [
+      {
+        id: "tl-placed",
+        title: "Order Placed",
+        subtitle: "Oct 12, 2026 • 10:45 AM",
+        state: "completed",
+      },
+      {
+        id: "tl-escrow",
+        title: "Payment Held in Escrow",
+        subtitle: "Oct 12, 2026 • 10:46 AM",
+        state: "completed",
+      },
+      {
+        id: "tl-awaiting",
+        title: "Awaiting Professional to Start",
+        subtitle: "Waiting for your action...",
+        state: "pending",
+      },
+    ],
+    escrowTimeline: [
+      {
+        id: "esc-funded",
+        title: "Payment Funded",
+        description: "Consumer deposited ₦225,000.00 into escrow.",
+        timestampLabel: "Oct 12, 2026 • 10:45 AM",
+        state: "completed",
+      },
+      {
+        id: "esc-submitted",
+        title: "Order Submitted for Review",
+        description: "Professional uploaded deliverables and requested release.",
+        timestampLabel: "Oct 17, 2026 • 02:15 PM",
+        state: "completed",
+      },
+      {
+        id: "esc-confirm",
+        title: "Consumer Confirmation",
+        description: "Sarah Jenkins is reviewing the final delivery.",
+        timestampLabel: "Pending...",
+        state: "current",
+      },
+      {
+        id: "esc-released",
+        title: "Funds Released to Wallet",
+        description: "Net earnings will be available for withdrawal.",
+        state: "upcoming",
+      },
+    ],
+  },
+  {
+    id: "ORD-2026-045",
+    code: "ORD-2026-045",
+    consumerName: "Marcus Chen",
+    consumerLocation: "Lagos, Nigeria",
+    consumerJoined: "Mar 2024",
+    consumerOrdersCount: "4 Orders",
+    serviceTitle: "Full Stack Website",
+    serviceCategory: "Software Development",
+    serviceSubtitle: "Custom Web App",
+    serviceDescription:
+      "End-to-end marketing and booking web application built with Next.js, Tailwind CSS, and PostgreSQL integration.",
+    durationLabel: "14 Days Duration",
+    revisionsLabel: "3 Revisions",
+    tableAmount: "₦2,200.00",
+    totalAmountFormatted: "₦225,000.00",
+    platformFeeFormatted: "-₦22,500.00",
+    netEarningsFormatted: "₦202,500.00",
+    status: "in-progress",
+    escrowStatus: "held",
+    escrowRef: "ESC-4492-045-X",
+    currency: "NGN (₦)",
+    paymentMethod: "Bank Transfer",
+    dateShort: "08 Oct 2026",
+    placedAtLabel: "Placed on Oct 08, 2026 • 09:30 AM",
+    startedAtLabel: "Oct 08, 2026",
+    completedAtLabel: "Completed on Oct 17, 2026 • 02:15 PM",
+    completedDateShort: "Oct 22, 2026",
+    requirementsNote:
+      "Need a fast responsive storefront with customer booking calendar and dashboard analytics.",
+    requirementAttachments: [
+      {
+        id: "att-moodboard-45",
+        name: "Moodboard.pdf",
+        size: "1.2 MB",
+        type: "pdf",
+      },
+      {
+        id: "att-logo-45",
+        name: "Current_Logo.png",
+        size: "800 KB",
+        type: "image",
+      },
+    ],
+    orderTimeline: [
+      {
+        id: "tl-placed-45",
+        title: "Order Placed",
+        subtitle: "Oct 12, 2026 • 10:45 AM",
+        state: "completed",
+      },
+      {
+        id: "tl-started-45",
+        title: "Order Started",
+        subtitle: "Oct 12, 2026 • 11:30 AM",
+        state: "completed",
+      },
+      {
+        id: "tl-in-progress-45",
+        title: "In Progress",
+        subtitle: "Work is currently being done...",
+        state: "active",
+      },
+    ],
+    escrowTimeline: [
+      {
+        id: "esc-funded-45",
+        title: "Payment Funded",
+        description: "Consumer deposited ₦225,000.00 into escrow.",
+        timestampLabel: "Oct 08, 2026 • 09:30 AM",
+        state: "completed",
+      },
+      {
+        id: "esc-submitted-45",
+        title: "Order Submitted for Review",
+        description: "Awaiting final deliverable upload.",
+        state: "current",
+      },
+      {
+        id: "esc-confirm-45",
+        title: "Consumer Confirmation",
+        description: "Marcus Chen will review the final delivery.",
+        state: "upcoming",
+      },
+      {
+        id: "esc-released-45",
+        title: "Funds Released to Wallet",
+        description: "Net earnings will be available for withdrawal.",
+        state: "upcoming",
+      },
+    ],
+  },
+  {
+    id: "ORD-2026-089",
+    code: "ORD-2026-089",
+    consumerName: "Elena Rodriguez",
+    consumerLocation: "Abuja, Nigeria",
+    consumerJoined: "Nov 2023",
+    consumerOrdersCount: "5 Orders",
+    serviceTitle: "Brand Guidelines",
+    serviceCategory: "Graphics & Design",
+    serviceSubtitle: "Standard Package",
+    serviceDescription:
+      "Complete brand identity package including 3 unique concepts, typography selection, and color palette. Final delivery includes source files and brand guidelines.",
+    durationLabel: "5 Days Duration",
+    revisionsLabel: "3 Revisions",
+    tableAmount: "₦850.00",
+    totalAmountFormatted: "₦225,000.00",
+    platformFeeFormatted: "-₦22,500.00",
+    netEarningsFormatted: "₦202,500.00",
+    status: "completed",
+    escrowStatus: "released",
+    escrowRef: "ESC-4492-089-X",
+    currency: "NGN (₦)",
+    paymentMethod: "Bank Transfer",
+    dateShort: "01 Oct 2026",
+    placedAtLabel: "Placed on Oct 01, 2026 • 10:45 AM",
+    startedAtLabel: "Oct 01, 2026",
+    completedAtLabel: "Completed on Oct 17, 2026 • 02:15 PM",
+    completedDateShort: "Oct 17, 2026",
+    requirementsNote:
+      "Comprehensive typography, color palette, and social media template brand book.",
+    requirementAttachments: [
+      {
+        id: "att-moodboard-89",
+        name: "Moodboard.pdf",
+        size: "1.2 MB",
+        type: "pdf",
+      },
+      {
+        id: "att-logo-89",
+        name: "Current_Logo.png",
+        size: "800 KB",
+        type: "image",
+      },
+    ],
+    completionNote:
+      "Hi Elena! I've completed the brand guidelines package as requested. Included are the three concepts, brand style guide, and all source files in AI, SVG, and high-res PNG formats. It was a pleasure working with you!",
+    finalDeliverable: {
+      id: "del-brand-zip-89",
+      name: "Final_Brand_Package_v1.zip",
+      size: "42.5 MB",
+      type: "archive",
+      statusLabel: "Ready for download",
+    },
+    submittedDateLabel: "Submitted Oct 17, 2026",
+    orderTimeline: [
+      {
+        id: "tl-placed-89",
+        title: "Order Placed",
+        subtitle: "Oct 12, 2026 • 10:45 AM",
+        state: "completed",
+      },
+      {
+        id: "tl-started-89",
+        title: "Order Started",
+        subtitle: "Oct 12, 2026 • 11:30 AM",
+        state: "completed",
+      },
+      {
+        id: "tl-completed-89",
+        title: "Marked Completed",
+        subtitle: "Oct 17, 2026 • 02:15 PM",
+        state: "completed",
+      },
+    ],
+    escrowTimeline: [
+      {
+        id: "esc-funded-89",
+        title: "Payment Funded",
+        description: "Consumer deposited ₦225,000.00 into escrow.",
+        timestampLabel: "Oct 12, 2026 • 10:45 AM",
+        state: "completed",
+      },
+      {
+        id: "esc-submitted-89",
+        title: "Order Submitted for Review",
+        description: "Professional uploaded deliverables and requested release.",
+        timestampLabel: "Oct 17, 2026 • 02:15 PM",
+        state: "completed",
+      },
+      {
+        id: "esc-confirm-89",
+        title: "Consumer Confirmation",
+        description: "Elena Rodriguez confirmed the final delivery.",
+        timestampLabel: "Oct 18, 2026 • 09:10 AM",
+        state: "completed",
+      },
+      {
+        id: "esc-released-89",
+        title: "Funds Released to Wallet",
+        description: "Net earnings credited to your MyKostoma wallet.",
+        timestampLabel: "Oct 18, 2026 • 09:15 AM",
+        state: "completed",
+      },
+    ],
+  },
+  {
+    id: "ORD-2026-112",
+    code: "ORD-2026-112",
+    consumerName: "Urban Loft Co.",
+    consumerLocation: "Lagos, Nigeria",
+    consumerJoined: "May 2024",
+    consumerOrdersCount: "1 Order",
+    serviceTitle: "Product Photography",
+    serviceCategory: "Photography",
+    serviceSubtitle: "Studio Shoot",
+    serviceDescription:
+      "High-resolution studio photography and retouching for 20 furniture SKU items.",
+    durationLabel: "4 Days Duration",
+    revisionsLabel: "2 Revisions",
+    tableAmount: "₦600.00",
+    totalAmountFormatted: "₦225,000.00",
+    platformFeeFormatted: "-₦22,500.00",
+    netEarningsFormatted: "₦202,500.00",
+    status: "disputed",
+    escrowStatus: "held",
+    escrowRef: "ESC-4492-112-X",
+    currency: "NGN (₦)",
+    paymentMethod: "Bank Transfer",
+    dateShort: "28 Sep 2026",
+    placedAtLabel: "Placed on Sep 28, 2026 • 01:20 PM",
+    startedAtLabel: "Sep 29, 2026",
+    requirementsNote:
+      "Clean white-background e-commerce angles plus 5 lifestyle interior shots.",
+    requirementAttachments: [
+      {
+        id: "att-shotlist-112",
+        name: "Shotlist_Brief.pdf",
+        size: "940 KB",
+        type: "pdf",
+      },
+    ],
+    orderTimeline: [
+      {
+        id: "tl-placed-112",
+        title: "Order Placed",
+        subtitle: "Sep 28, 2026 • 01:20 PM",
+        state: "completed",
+      },
+      {
+        id: "tl-started-112",
+        title: "Order Started",
+        subtitle: "Sep 29, 2026 • 09:00 AM",
+        state: "completed",
+      },
+      {
+        id: "tl-disputed-112",
+        title: "Dispute Under Review",
+        subtitle: "Moderation team reviewing evidence...",
+        state: "active",
+      },
+    ],
+    escrowTimeline: [
+      {
+        id: "esc-funded-112",
+        title: "Payment Funded",
+        description: "Consumer deposited ₦225,000.00 into escrow.",
+        timestampLabel: "Sep 28, 2026 • 01:20 PM",
+        state: "completed",
+      },
+      {
+        id: "esc-dispute-112",
+        title: "Escrow Frozen (Dispute Opened)",
+        description: "Funds frozen until arbiter resolution.",
+        timestampLabel: "Oct 02, 2026 • 04:00 PM",
+        state: "current",
+      },
+      {
+        id: "esc-released-112",
+        title: "Resolution Settlement",
+        description: "Pending arbitration decision.",
+        state: "upcoming",
+      },
+    ],
+  },
+  {
+    id: "ORD-2026-144",
+    code: "ORD-2026-144",
+    consumerName: "David Miller",
+    consumerLocation: "Port Harcourt, Nigeria",
+    consumerJoined: "Aug 2024",
+    consumerOrdersCount: "3 Orders",
+    serviceTitle: "SEO Strategy",
+    serviceCategory: "Digital Marketing",
+    serviceSubtitle: "Growth Audit",
+    serviceDescription:
+      "Full technical SEO audit, keyword gap roadmap, and 6-month content optimization plan.",
+    durationLabel: "7 Days Duration",
+    revisionsLabel: "2 Revisions",
+    tableAmount: "₦1,200.00",
+    totalAmountFormatted: "₦225,000.00",
+    platformFeeFormatted: "-₦22,500.00",
+    netEarningsFormatted: "₦202,500.00",
+    status: "in-progress",
+    escrowStatus: "held",
+    escrowRef: "ESC-4492-144-X",
+    currency: "NGN (₦)",
+    paymentMethod: "Bank Transfer",
+    dateShort: "25 Sep 2026",
+    placedAtLabel: "Placed on Sep 25, 2026 • 11:00 AM",
+    startedAtLabel: "Sep 26, 2026",
+    requirementsNote:
+      "Audit current organic rankings and build a prioritized 90-day technical fix list.",
+    requirementAttachments: [
+      {
+        id: "att-analytics-144",
+        name: "Analytics_Export.pdf",
+        size: "1.6 MB",
+        type: "pdf",
+      },
+    ],
+    orderTimeline: [
+      {
+        id: "tl-placed-144",
+        title: "Order Placed",
+        subtitle: "Sep 25, 2026 • 11:00 AM",
+        state: "completed",
+      },
+      {
+        id: "tl-started-144",
+        title: "Order Started",
+        subtitle: "Sep 26, 2026 • 10:00 AM",
+        state: "completed",
+      },
+      {
+        id: "tl-in-progress-144",
+        title: "In Progress",
+        subtitle: "Work is currently being done...",
+        state: "active",
+      },
+    ],
+    escrowTimeline: [
+      {
+        id: "esc-funded-144",
+        title: "Payment Funded",
+        description: "Consumer deposited ₦225,000.00 into escrow.",
+        timestampLabel: "Sep 25, 2026 • 11:00 AM",
+        state: "completed",
+      },
+      {
+        id: "esc-submitted-144",
+        title: "Order Submitted for Review",
+        description: "Awaiting final deliverable upload.",
+        state: "current",
+      },
+      {
+        id: "esc-confirm-144",
+        title: "Consumer Confirmation",
+        description: "David Miller will review final delivery.",
+        state: "upcoming",
+      },
+      {
+        id: "esc-released-144",
+        title: "Funds Released to Wallet",
+        description: "Net earnings will be available for withdrawal.",
+        state: "upcoming",
+      },
+    ],
+  },
+];
+

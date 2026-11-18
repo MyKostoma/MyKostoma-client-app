@@ -1,15 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, type ChangeEvent, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import {
-  logout,
-  selectCurrentUser,
-  selectIsAuthenticated,
-} from "@/store/slices/authSlice";
+import { logout } from "@/store/slices/authSlice";
 import { clearAuthCookies } from "@/lib/cookies";
 import { baseApi } from "@/store/api/baseApi";
+import { useAuthStatus } from "@/components/layouts/use-auth-status";
 import {
   selectGlobalSearchQuery,
   selectNotifications,
@@ -66,15 +63,19 @@ export function useHeaders(options: UseHeadersOptions = {}) {
 
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const storeIsAuthenticated = useAppSelector(selectIsAuthenticated);
-  const currentUser = useAppSelector(selectCurrentUser);
+  const {
+    mounted,
+    hasAuthCookie,
+    setHasAuthCookie,
+    storeIsAuthenticated,
+    currentUser,
+    isAuthenticated: isUserLoggedIn,
+  } = useAuthStatus(isAuthenticatedProp);
   const notifications = useAppSelector(selectNotifications);
   const storeUnreadMessagesCount = useAppSelector(selectUnreadMessagesCount);
   const storeSearchQuery = useAppSelector(selectGlobalSearchQuery);
 
-  const [hasAuthCookie, setHasAuthCookie] = useState(false);
   const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
   const [mobileUserDropdownOpen, setMobileUserDropdownOpen] = useState(false);
@@ -83,20 +84,8 @@ export function useHeaders(options: UseHeadersOptions = {}) {
   const desktopDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    setMounted(true);
     const hasDarkClass = document.documentElement.classList.contains("dark");
     setIsDark(hasDarkClass);
-
-    const hasToken = document.cookie
-      .split(";")
-      .some(
-        (c) =>
-          c.trim().startsWith("access_token=") &&
-          c.trim().split("=")[1]?.length > 0 &&
-          c.trim().split("=")[1] !== "null" &&
-          c.trim().split("=")[1] !== "undefined"
-      );
-    setHasAuthCookie(hasToken);
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e: MediaQueryListEvent) => {
@@ -138,14 +127,6 @@ export function useHeaders(options: UseHeadersOptions = {}) {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  const isUserLoggedIn =
-    isAuthenticatedProp !== undefined
-      ? isAuthenticatedProp
-      : mounted &&
-        (Boolean(storeIsAuthenticated) ||
-          Boolean(currentUser) ||
-          hasAuthCookie);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -216,7 +197,7 @@ export function useHeaders(options: UseHeadersOptions = {}) {
   }, [searchValue, storeSearchQuery]);
 
   const handleSearch = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
+    (e: ChangeEvent<HTMLInputElement>) => {
       const val = e.target.value;
       setInternalSearch(val);
       dispatch(setGlobalSearchQuery(val));
@@ -226,7 +207,7 @@ export function useHeaders(options: UseHeadersOptions = {}) {
   );
 
   const handleSearchSubmit = useCallback(
-    (e?: React.FormEvent) => {
+    (e?: FormEvent) => {
       e?.preventDefault();
       const currentVal =
         searchValue !== undefined ? searchValue : internalSearch;

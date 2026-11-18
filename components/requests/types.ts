@@ -70,3 +70,89 @@ export interface RequestFormValues {
   location: string;
   photos: string[];
 }
+
+// ============================================================================
+// PROFESSIONAL REQUESTS MODULE TYPES
+// ============================================================================
+
+export type ProfessionalRequestAvailabilityState =
+  | "open"
+  | "quote-submitted"
+  | "unavailable"
+  | "permission-error";
+
+export interface ProfessionalRequestAttachment {
+  id: string;
+  fileName: string;
+  fileSize: string;
+  fileType: string;
+}
+
+export interface ProfessionalRequestClientInfo {
+  name: string;
+  avatarUrl?: string;
+  rating: number;
+  reviewCount: number;
+  memberSince: string;
+  verifiedIdentity: boolean;
+  paymentMethodVerified: boolean;
+}
+
+export interface ProfessionalQuoteMilestone {
+  id: string;
+  name: string;
+  amount: string;
+}
+
+export interface ProfessionalSubmittedQuote {
+  totalPrice: number;
+  totalPriceFormatted: string;
+  estimatedDuration: string;
+  professionalNote: string;
+  milestones: { id: string; name: string; amountFormatted: string; amount: number }[];
+  submittedAtLabel: string;
+}
+
+export interface ProfessionalRequestItem {
+  id: string;
+  code: string;
+  title: string;
+  category: string;
+  categorySlug: string;
+  postedAgoLabel: string;
+  postedDateLabel: string;
+  shortDescription: string;
+  fullDescription: string[];
+  budgetLabel: string;
+  budgetRangeShort: string;
+  budgetTier: "low" | "mid" | "high";
+  location: string;
+  locationType: "remote" | "hybrid" | "onsite";
+  engagementType: string;
+  timeline: string;
+  requirements: string[];
+  attachment?: ProfessionalRequestAttachment;
+  client: ProfessionalRequestClientInfo;
+  availabilityState: ProfessionalRequestAvailabilityState;
+  restrictedCategory?: string;
+  permissionReasons?: {
+    id: string;
+    label: string;
+    isIssue: boolean;
+  }[];
+  submittedQuote?: ProfessionalSubmittedQuote;
+}
+
+export interface ProfessionalRequestsFilterState {
+  category: string;
+  budgetRange: string;
+  location: string;
+}
+
+export interface ProfessionalSubmitQuoteFormValues {
+  totalQuotePrice: string;
+  estimatedDuration: string;
+  professionalNote: string;
+  milestones: ProfessionalQuoteMilestone[];
+}
+

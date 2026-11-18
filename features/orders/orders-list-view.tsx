@@ -1,23 +1,35 @@
 "use client";
 
-import { SlidersHorizontal } from "lucide-react";
+import { Download, Filter, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/form-fields";
 import { OrderCard, OrderSupportCard } from "@/components/orders/order-card";
 import { OrdersFilterTabs } from "@/components/orders/orders-filter-tabs";
+import {
+  ProOrdersFilterTabs,
+  ProOrdersKpiRow,
+  ProOrdersTable,
+} from "@/components/orders/professional/pro-orders-table";
 import {
   CancelOrderModal,
   ReleaseMilestoneModal,
 } from "@/components/modals/order-modals";
 import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
 import { OrdersListTopBar } from "@/components/layouts/top-bars/orders/orders-list-top-bar";
-import { useOrdersListService } from "./services/ordersApi";
+import { ProfessionalOrdersListTopBar } from "@/components/layouts/top-bars/orders/professional-orders-top-bar";
+import { useAppSelector } from "@/store/hooks";
+import { selectUserRole } from "@/store/slices/authSlice";
+import { selectActivePerspective } from "@/store/slices/uiSlice";
+import {
+  useOrdersListService,
+  useProfessionalOrdersListService,
+} from "./services/ordersApi";
 import { resolveNextEscrowMilestone } from "./services/ordersHelpers";
 import type { OrdersListViewProps } from "./types";
 
 export type { OrdersListViewProps } from "./types";
 
-export function OrdersListView({
+function ConsumerOrdersListView({
   initialOrders,
   totalCountLabel = "8 Total",
 }: OrdersListViewProps) {
@@ -129,6 +141,111 @@ export function OrdersListView({
       />
     </>
   );
+}
+
+export function ProfessionalOrdersListView() {
+  const {
+    activeTab,
+    setActiveTab,
+    searchQuery,
+    setSearchQuery,
+    currentPage,
+    setCurrentPage,
+    totalCount,
+    totalPages,
+    filteredOrders,
+    kpis,
+    handleViewOrder,
+    handleRowPrimaryAction,
+    handleToggleFilters,
+    handleExportOrders,
+  } = useProfessionalOrdersListService();
+
+  return (
+    <>
+      <DashboardTopBarSlot>
+        <ProfessionalOrdersListTopBar
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+        />
+      </DashboardTopBarSlot>
+
+      <div className=" mx-auto space-y-6">
+        <div className="space-y-1">
+          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
+            Orders
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground">
+            Manage your active services and customer transactions.
+          </p>
+        </div>
+
+        <div className="sm:hidden">
+          <SearchInput
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search orders, clients, or services..."
+            className="h-9 text-xs bg-secondary/40"
+          />
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <ProOrdersFilterTabs
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+          />
+
+          <div className="flex items-center gap-2.5 shrink-0">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleToggleFilters}
+              leadingIcon={<Filter className="size-3.5" />}
+              className="h-9 px-3.5 rounded-lg text-xs font-semibold"
+            >
+              Filters
+            </Button>
+
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleExportOrders}
+              leadingIcon={<Download className="size-3.5" />}
+              className="h-9 px-3.5 rounded-lg text-xs font-semibold"
+            >
+              Export
+            </Button>
+          </div>
+        </div>
+
+        <ProOrdersTable
+          orders={filteredOrders}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          totalCount={totalCount}
+          onPageChange={setCurrentPage}
+          onSelectOrder={handleViewOrder}
+          onRowAction={handleRowPrimaryAction}
+        />
+
+        <ProOrdersKpiRow metrics={kpis} />
+      </div>
+    </>
+  );
+}
+
+export function OrdersListView(props: OrdersListViewProps) {
+  const userRole = useAppSelector(selectUserRole);
+  const activePerspective = useAppSelector(selectActivePerspective);
+  const effectiveRole = userRole || activePerspective || "consumer";
+
+  if (effectiveRole === "professional") {
+    return <ProfessionalOrdersListView />;
+  }
+
+  return <ConsumerOrdersListView {...props} />;
 }
 
 export default OrdersListView;

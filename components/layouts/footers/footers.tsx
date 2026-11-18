@@ -1,42 +1,86 @@
 "use client";
 
-import * as React from "react";
-import { useAppSelector } from "@/store/hooks";
-import { selectIsAuthenticated } from "@/store/slices/authSlice";
+import { useAuthStatus } from "@/components/layouts/use-auth-status";
 import { PublicFooter } from "./public-footer";
 import { AppFooter } from "./app-footer";
 import { DashboardFooter } from "./dashboard-footer";
-import type { FooterProps } from "./types";
+import type { FooterProps, PublicFooter2Props } from "./types";
 
-const FOOTER_VARIANTS: Record<string, React.ComponentType<any>> = {
-  public: PublicFooter,
-  "logged-out": PublicFooter,
-  app: AppFooter,
-  "logged-in": AppFooter,
-  dashboard: DashboardFooter,
-};
+const PUBLIC_FOOTER_VARIANTS = new Set([
+  "public",
+  "public2",
+  "publicFooter2",
+  "logged-out",
+]);
 
 export function Footer({
   isLoggedIn,
+  isAuthenticated,
   variant,
   className,
-  ...props
+  tagline,
+  columns,
+  bottomLinks,
+  copyrightText,
+  copyrightYear,
+  companyName,
+  logoHref,
+  logoSrc,
+  logoDarkSrc,
+  socials,
+  location,
+  version,
+  links,
+  onCloudClick,
+  onSendClick,
+  onUserClick,
+  ...rest
 }: FooterProps) {
-  const storeIsAuthenticated = useAppSelector(selectIsAuthenticated);
+  const { isAuthenticated: effectiveLoggedIn } = useAuthStatus(
+    isLoggedIn ?? isAuthenticated
+  );
 
-  if (variant && FOOTER_VARIANTS[variant]) {
-    const VariantComponent = FOOTER_VARIANTS[variant];
-    return <VariantComponent className={className} {...props} />;
+  const publicFooterProps: PublicFooter2Props = {
+    className,
+    ...(tagline !== undefined ? { tagline } : {}),
+    ...(columns !== undefined ? { columns } : {}),
+    ...(bottomLinks !== undefined ? { bottomLinks } : {}),
+    ...(copyrightText !== undefined ? { copyrightText } : {}),
+    ...(copyrightYear !== undefined ? { copyrightYear } : {}),
+    ...(companyName !== undefined ? { companyName } : {}),
+    ...rest,
+  };
+
+  if (!effectiveLoggedIn || (variant && PUBLIC_FOOTER_VARIANTS.has(variant))) {
+    return <PublicFooter {...publicFooterProps} />;
   }
 
-  const effectiveLoggedIn =
-    isLoggedIn ?? storeIsAuthenticated;
-
-  if (effectiveLoggedIn) {
-    return <AppFooter className={className} {...props} />;
+  if (variant === "dashboard") {
+    return (
+      <DashboardFooter
+        className={className}
+        {...(copyrightText !== undefined ? { copyrightText } : {})}
+        {...(links !== undefined ? { links } : {})}
+        {...rest}
+      />
+    );
   }
 
-  return <PublicFooter className={className} {...props} />;
+  return (
+    <AppFooter
+      className={className}
+      {...(tagline !== undefined ? { tagline } : {})}
+      {...(logoHref !== undefined ? { logoHref } : {})}
+      {...(logoSrc !== undefined ? { logoSrc } : {})}
+      {...(logoDarkSrc !== undefined ? { logoDarkSrc } : {})}
+      {...(columns !== undefined ? { columns } : {})}
+      {...(socials !== undefined ? { socials } : {})}
+      {...(copyrightYear !== undefined ? { copyrightYear } : {})}
+      {...(location !== undefined ? { location } : {})}
+      {...(version !== undefined ? { version } : {})}
+      {...rest}
+    />
+  );
 }
 
 export const Footers = Footer;
