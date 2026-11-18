@@ -75,4 +75,12 @@ export interface NewConversationModalProps {
   }) => void;
 }
 
+export interface DeleteServiceCardModalProps {
+  isOpen: boolean;
+  serviceTitle: string;
+  onClose: () => void;
+  onConfirmDelete: () => void;
+}
+
+
 

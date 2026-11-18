@@ -220,3 +220,70 @@ export interface ShopOrderSuccessProps {
   onBackToShop: () => void;
   className?: string;
 }
+
+// ============================================================================
+// PROFESSIONAL SHOP MODULE TYPES
+// ============================================================================
+
+export type ProShopMainTab = "services" | "products" | "reviews" | "about";
+export type ProShopServiceStatus = "active" | "inactive" | "draft";
+export type ProShopStatusFilter = "all" | "active" | "inactive" | "draft";
+
+export interface ProShopServiceInsights {
+  impressions: string;
+  orders: number;
+  avgRating: number;
+}
+
+export interface ProShopServiceReview {
+  reviewerName: string;
+  reviewerAvatarUrl?: string;
+  rating: number;
+  comment: string;
+}
+
+export interface ProShopServiceItem {
+  id: string;
+  title: string;
+  shortDescription: string;
+  fullDescription: string;
+  category: string;
+  packageLabel: string;
+  price: number;
+  priceFormatted: string;
+  priceUnitLabel: string;
+  status: ProShopServiceStatus;
+  deliveryValue: string;
+  deliveryUnit: "Days" | "Weeks" | "Hours";
+  deliveryLabel: string;
+  revisionsLabel: string;
+  coverImageUrl: string;
+  galleryImages: string[];
+  tags: string[];
+  insights: ProShopServiceInsights;
+  latestReview?: ProShopServiceReview;
+}
+
+export interface ProShopProfile {
+  shopName: string;
+  badgeLabel: string;
+  rating: number;
+  reviewsCount: number;
+  avatarUrl: string;
+  coverBannerUrl: string;
+  aboutBio: string;
+  location: string;
+  responseTime: string;
+}
+
+export interface ProShopServiceFormValues {
+  title: string;
+  category: string;
+  deliveryValue: string;
+  deliveryUnit: "Days" | "Weeks" | "Hours";
+  description: string;
+  price: string;
+  coverImageUrl: string;
+  galleryImages: string[];
+}
+
