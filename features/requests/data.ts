@@ -1,4 +1,8 @@
-import type { ConsumerRequestItem, RequestFormValues } from "@/components/requests/types";
+import type {
+  ConsumerRequestItem,
+  ProfessionalRequestItem,
+  RequestFormValues,
+} from "@/components/requests/types";
 
 export const DEFAULT_CONSUMER_REQUESTS: ConsumerRequestItem[] = [
   {
@@ -220,3 +224,233 @@ export const DEFAULT_EDIT_REQUEST_VALUES: RequestFormValues = {
   location: "12 Maplewood Avenue, Ikeja, Lagos",
   photos: ["roof-leak-1.jpg"],
 };
+
+// ============================================================================
+// PROFESSIONAL REQUESTS MODULE MOCK DATA
+// ============================================================================
+
+export const PRO_REQUEST_CATEGORY_OPTIONS = [
+  { value: "all", label: "All Categories" },
+  { value: "electrical-services", label: "Electrical Services" },
+  { value: "ui-ux-design", label: "UI/UX Design" },
+  { value: "software-dev", label: "Software Dev" },
+  { value: "digital-marketing", label: "Digital Marketing" },
+] as const;
+
+export const PRO_REQUEST_BUDGET_OPTIONS = [
+  { value: "any", label: "Any Budget" },
+  { value: "low", label: "Under ₦100,000" },
+  { value: "mid", label: "₦100,000 – ₦500,000" },
+  { value: "high", label: "₦500,000+" },
+] as const;
+
+export const PRO_REQUEST_LOCATION_OPTIONS = [
+  { value: "all", label: "All Locations" },
+  { value: "remote", label: "Remote Only" },
+  { value: "hybrid", label: "Hybrid" },
+  { value: "onsite", label: "On-site" },
+] as const;
+
+export const DEFAULT_PROFESSIONAL_REQUESTS: ProfessionalRequestItem[] = [
+  {
+    id: "RQ-2026-882",
+    code: "RQ-2026-882",
+    title: "Residential Electrical Rewiring",
+    category: "ELECTRICAL SERVICES",
+    categorySlug: "electrical-services",
+    postedAgoLabel: "Posted Oct 12, 2026",
+    postedDateLabel: "Posted Oct 12, 2026",
+    shortDescription:
+      "Need a full rewiring for a 3-bedroom bungalow. Includes panel upgrade and new outlets. Looking for a licensed electrical contractor.",
+    fullDescription: [
+      "Need a full rewiring for a 3-bedroom bungalow. Includes panel upgrade and new outlets. The current system is outdated and prone to frequent tripping.",
+      "Looking for a professional with experience in residential systems to ensure safety and compliance with current building codes.",
+    ],
+    budgetLabel: "₦450,000 - 600,000",
+    budgetRangeShort: "450k - 600k",
+    budgetTier: "high",
+    location: "Lagos, Nigeria",
+    locationType: "onsite",
+    engagementType: "Project-based",
+    timeline: "Start within 2 weeks",
+    requirements: [
+      "Licensed electrical contractor certification.",
+      "Experience with residential rewiring projects.",
+      "Ability to provide an itemized list of materials.",
+    ],
+    attachment: {
+      id: "att-house-plan",
+      fileName: "House_Plan_Draft.pdf",
+      fileSize: "2.4 MB",
+      fileType: "PDF",
+    },
+    client: {
+      name: "Oluwaseun A.",
+      rating: 4,
+      reviewCount: 12,
+      memberSince: "May 2024",
+      verifiedIdentity: true,
+      paymentMethodVerified: true,
+    },
+    availabilityState: "open",
+  },
+  {
+    id: "REQ-PRO-101",
+    code: "REQ-PRO-101",
+    title: "E-commerce Platform Redesign",
+    category: "UI/UX DESIGN",
+    categorySlug: "ui-ux-design",
+    postedAgoLabel: "Posted 2 hours ago",
+    postedDateLabel: "Posted Oct 14, 2026",
+    shortDescription:
+      "Looking for an experienced UI/UX designer to overhaul our existing B2B marketplace. Requirements include user research, wireframing, and high-fidelity mockups for 20+ screens.",
+    fullDescription: [
+      "Looking for an experienced UI/UX designer to overhaul our existing B2B marketplace. Requirements include user research, wireframing, and high-fidelity mockups for 20+ screens.",
+      "You will collaborate with our frontend engineering team to build a scalable design system in Figma.",
+    ],
+    budgetLabel: "₦3,500 - ₦5,000",
+    budgetRangeShort: "3.5k - 5k",
+    budgetTier: "low",
+    location: "Remote",
+    locationType: "remote",
+    engagementType: "Contract",
+    timeline: "Start within 1 week",
+    requirements: [
+      "Proven portfolio of B2B or e-commerce redesigns.",
+      "Strong proficiency with Figma auto-layout and component libraries.",
+      "Ability to run usability interviews with existing merchants.",
+    ],
+    attachment: {
+      id: "att-ecom-brief",
+      fileName: "Marketplace_Audit_Brief.pdf",
+      fileSize: "1.8 MB",
+      fileType: "PDF",
+    },
+    client: {
+      name: "Amina B.",
+      rating: 5,
+      reviewCount: 19,
+      memberSince: "Jan 2024",
+      verifiedIdentity: true,
+      paymentMethodVerified: true,
+    },
+    availabilityState: "open",
+  },
+  {
+    id: "REQ-PRO-102",
+    code: "REQ-PRO-102",
+    title: "Full-stack React/Node.js Developer",
+    category: "SOFTWARE DEV",
+    categorySlug: "software-dev",
+    postedAgoLabel: "Posted 5 hours ago",
+    postedDateLabel: "Posted Oct 14, 2026",
+    shortDescription:
+      "Need a developer to assist in building a dashboard for real-time data visualization. Must be proficient in Tailwind CSS and PostgreSQL.",
+    fullDescription: [
+      "Need a developer to assist in building a dashboard for real-time data visualization. Must be proficient in Tailwind CSS and PostgreSQL.",
+      "The engagement covers API architecture, real-time websocket feeds, and responsive analytics widgets.",
+    ],
+    budgetLabel: "₦60 - ₦90 / hr",
+    budgetRangeShort: "60 - 90 / hr",
+    budgetTier: "mid",
+    location: "New York, NY (Hybrid)",
+    locationType: "hybrid",
+    engagementType: "Project-based",
+    timeline: "Immediate start",
+    requirements: [
+      "3+ years with React, Next.js, and Node.js.",
+      "Experience tuning PostgreSQL queries for live analytics.",
+      "Clean TypeScript & Tailwind CSS standards.",
+    ],
+    client: {
+      name: "Michael C.",
+      rating: 4.9,
+      reviewCount: 24,
+      memberSince: "Mar 2023",
+      verifiedIdentity: true,
+      paymentMethodVerified: true,
+    },
+    availabilityState: "permission-error",
+    restrictedCategory: "Software Development",
+    permissionReasons: [
+      {
+        id: "reason-identity",
+        label: "Identity verification not completed",
+        isIssue: false,
+      },
+      {
+        id: "reason-category",
+        label: "Primary category mismatch",
+        isIssue: true,
+      },
+    ],
+  },
+  {
+    id: "REQ-PRO-103",
+    code: "REQ-PRO-103",
+    title: "SEO Strategy for SaaS Startup",
+    category: "DIGITAL MARKETING",
+    categorySlug: "digital-marketing",
+    postedAgoLabel: "Posted 1 day ago",
+    postedDateLabel: "Posted Oct 13, 2026",
+    shortDescription:
+      "Seeking an SEO expert to conduct a full site audit and develop a 6-month content strategy to increase organic traffic. Experience with early-stage startups is a plus.",
+    fullDescription: [
+      "Seeking an SEO expert to conduct a full site audit and develop a 6-month content strategy to increase organic traffic. Experience with early-stage startups is a plus.",
+      "Deliverables include technical SEO fixes, keyword clustering, and monthly KPI reporting.",
+    ],
+    budgetLabel: "₦2,000 - ₦3,000",
+    budgetRangeShort: "2k - 3k",
+    budgetTier: "low",
+    location: "Remote",
+    locationType: "remote",
+    engagementType: "Retainer",
+    timeline: "Within 10 days",
+    requirements: [
+      "Demonstrable SaaS organic growth case studies.",
+      "Technical audit experience with Ahrefs / Screaming Frog.",
+      "Content brief creation for technical writers.",
+    ],
+    client: {
+      name: "David O.",
+      rating: 4.8,
+      reviewCount: 9,
+      memberSince: "Aug 2024",
+      verifiedIdentity: true,
+      paymentMethodVerified: true,
+    },
+    availabilityState: "open",
+  },
+  {
+    id: "REQ-9921-X",
+    code: "REQ-9921-X",
+    title: "Commercial Solar Inverter Setup",
+    category: "ELECTRICAL SERVICES",
+    categorySlug: "electrical-services",
+    postedAgoLabel: "Posted 3 days ago",
+    postedDateLabel: "Posted Oct 10, 2026",
+    shortDescription:
+      "Installation of 10kVA hybrid solar inverter with lithium battery bank for a commercial office space.",
+    fullDescription: [
+      "Installation of 10kVA hybrid solar inverter with lithium battery bank for a commercial office space.",
+    ],
+    budgetLabel: "₦750,000 - ₦950,000",
+    budgetRangeShort: "750k - 950k",
+    budgetTier: "high",
+    location: "Lagos, Nigeria",
+    locationType: "onsite",
+    engagementType: "Project-based",
+    timeline: "Closed",
+    requirements: ["Certified solar technician."],
+    client: {
+      name: "Tunde K.",
+      rating: 4.7,
+      reviewCount: 7,
+      memberSince: "Feb 2024",
+      verifiedIdentity: true,
+      paymentMethodVerified: true,
+    },
+    availabilityState: "unavailable",
+  },
+];
+

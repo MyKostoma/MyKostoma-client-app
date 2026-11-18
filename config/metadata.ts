@@ -130,6 +130,10 @@ export const PAGE_METADATA = {
     title: "Edit Service Request",
     description: "Update your service request details, budget, and project schedule on MyKostoma.",
   },
+  requestQuoteDefault: {
+    title: "Submit Quote",
+    description: "Provide a detailed price breakdown, timeline, and staged payment milestones for this client request on MyKostoma.",
+  },
   quotationDetailDefault: {
     title: "Quotation Details",
     description: "Inspect detailed quotation breakdown, milestone pricing, and artisan credentials on MyKostoma.",

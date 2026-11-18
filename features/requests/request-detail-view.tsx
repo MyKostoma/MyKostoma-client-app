@@ -3,16 +3,30 @@
 import { ArrowLeft } from "lucide-react";
 import { RequestWorkspaceDetail } from "@/components/requests/request-workspace-detail";
 import { RequestsErrorState } from "@/components/requests/requests-state-cards";
+import { ProRequestDetailContent } from "@/components/requests/professional/pro-request-detail-content";
+import { ProRequestQuoteSubmittedDetail } from "@/components/requests/professional/pro-request-quote-submitted-detail";
+import {
+  ProRequestPermissionErrorState,
+  ProRequestUnavailableState,
+} from "@/components/requests/professional/pro-request-interaction-states";
 import { CloseRequestModal } from "@/components/modals/close-request-modal";
 import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
 import { RequestDetailTopBar } from "@/components/layouts/top-bars/requests/request-detail-top-bar";
+import { ProfessionalRequestsTopBar } from "@/components/layouts/top-bars/requests/professional-requests-top-bar";
 import { Button } from "@/components/ui/button";
-import { useRequestDetailService } from "./services/requestsApi";
+import { useAppSelector } from "@/store/hooks";
+import { selectUserRole } from "@/store/slices/authSlice";
+import { selectActivePerspective } from "@/store/slices/uiSlice";
+import { DEFAULT_PROFESSIONAL_REQUESTS } from "./data";
+import {
+  useProfessionalRequestDetailService,
+  useRequestDetailService,
+} from "./services/requestsApi";
 import type { RequestDetailViewProps } from "./types";
 
 export type { RequestDetailViewProps } from "./types";
 
-export function RequestDetailView({
+function ConsumerRequestDetailView({
   requestId = "REQ-2026-0842",
   error = null,
   onRetry,
@@ -103,4 +117,95 @@ export function RequestDetailView({
       </div>
     </>
   );
+}
+
+export function ProfessionalRequestDetailView({
+  requestId = "RQ-2026-882",
+}: RequestDetailViewProps) {
+  const {
+    request,
+    isSaved,
+    handleBackToRequests,
+    handleSubmitQuote,
+    handleToggleSave,
+    handleDownloadAttachment,
+    handleEditQuote,
+    handleWithdrawQuote,
+    handleCompleteVerification,
+    handleUpdateProfileCategory,
+    handleContactSupport,
+  } = useProfessionalRequestDetailService(requestId);
+
+  return (
+    <>
+      <DashboardTopBarSlot>
+        <ProfessionalRequestsTopBar
+          breadcrumbs={[
+            { label: "Pages", href: "/dashboard" },
+            { label: "Requests", href: "/requests" },
+            { label: "Detail" },
+          ]}
+          showVerifiedProBadge={
+            request.availabilityState === "open" ||
+            request.availabilityState === "quote-submitted"
+          }
+        />
+      </DashboardTopBarSlot>
+
+      {request.availabilityState === "unavailable" ? (
+        <ProRequestUnavailableState
+          referenceId={request.code}
+          onBackToRequests={handleBackToRequests}
+          onViewSimilarRequests={handleBackToRequests}
+        />
+      ) : request.availabilityState === "permission-error" ? (
+        <ProRequestPermissionErrorState
+          restrictedCategory={
+            request.restrictedCategory || request.category
+          }
+          reasons={request.permissionReasons}
+          onCompleteVerification={handleCompleteVerification}
+          onUpdateProfileCategory={handleUpdateProfileCategory}
+          onContactSupport={handleContactSupport}
+        />
+      ) : request.availabilityState === "quote-submitted" &&
+        request.submittedQuote ? (
+        <ProRequestQuoteSubmittedDetail
+          request={request}
+          submittedQuote={request.submittedQuote}
+          onBack={handleBackToRequests}
+          onEditQuote={handleEditQuote}
+          onWithdrawQuote={handleWithdrawQuote}
+        />
+      ) : (
+        <ProRequestDetailContent
+          request={request}
+          isSaved={isSaved}
+          onBack={handleBackToRequests}
+          onSubmitQuote={handleSubmitQuote}
+          onToggleSave={handleToggleSave}
+          onDownloadAttachment={handleDownloadAttachment}
+        />
+      )}
+    </>
+  );
+}
+
+export function RequestDetailView(props: RequestDetailViewProps) {
+  const userRole = useAppSelector(selectUserRole);
+  const activePerspective = useAppSelector(selectActivePerspective);
+  const effectiveRole = userRole || activePerspective || "consumer";
+
+  const requestId = props.requestId ?? "REQ-2026-0842";
+  const isProRequestId = DEFAULT_PROFESSIONAL_REQUESTS.some(
+    (r) =>
+      r.id.toLowerCase() === requestId.toLowerCase() ||
+      r.code.toLowerCase() === requestId.toLowerCase()
+  );
+
+  if (effectiveRole === "professional" || isProRequestId) {
+    return <ProfessionalRequestDetailView {...props} />;
+  }
+
+  return <ConsumerRequestDetailView {...props} />;
 }
