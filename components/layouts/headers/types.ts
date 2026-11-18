@@ -1,6 +1,6 @@
-import * as React from "react";
+import type { HTMLAttributes } from "react";
 
-export interface LandingNavbarProps extends React.HTMLAttributes<HTMLElement> {
+export interface LandingNavbarProps extends HTMLAttributes<HTMLElement> {
   logoHref?: string;
   onLogin?: () => void;
   onRegister?: () => void;
@@ -8,7 +8,7 @@ export interface LandingNavbarProps extends React.HTMLAttributes<HTMLElement> {
   isAuthenticated?: boolean;
 }
 
-export interface AppHeaderProps extends React.HTMLAttributes<HTMLElement> {
+export interface AppHeaderProps extends HTMLAttributes<HTMLElement> {
   logoHref?: string;
   userName?: string;
   userRole?: string;
@@ -26,15 +26,22 @@ export interface AppHeaderProps extends React.HTMLAttributes<HTMLElement> {
   onLogout?: () => void | Promise<void>;
 }
 
-export type HeaderVariant = "landing" | "app" | (string & {});
+export type HeaderVariant =
+  | "landing"
+  | "public"
+  | "logged-out"
+  | "app"
+  | "logged-in"
+  | (string & {});
 
-export interface HeaderProps extends React.HTMLAttributes<HTMLElement> {
+export interface HeaderProps extends HTMLAttributes<HTMLElement> {
   variant?: HeaderVariant;
   logoHref?: string;
   onLogin?: () => void;
   onRegister?: () => void;
   onLogout?: () => void | Promise<void>;
   isAuthenticated?: boolean;
+  isLoggedIn?: boolean;
   userName?: string;
   userRole?: string;
   avatarUrl?: string;

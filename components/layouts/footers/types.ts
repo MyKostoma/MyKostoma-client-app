@@ -1,10 +1,10 @@
-import * as React from "react";
+import type { ComponentType, HTMLAttributes, MouseEvent } from "react";
 
 export interface FooterLinkItem {
   label: string;
   href: string;
   isExternal?: boolean;
-  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+  onClick?: (e: MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export interface FooterColumnItem {
@@ -15,10 +15,10 @@ export interface FooterColumnItem {
 export interface FooterSocialItem {
   name: string;
   href: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: ComponentType<{ className?: string }>;
 }
 
-export interface PublicFooterProps extends React.HTMLAttributes<HTMLElement> {
+export interface PublicFooterProps extends HTMLAttributes<HTMLElement> {
   tagline?: string;
   logoHref?: string;
   logoSrc?: string;
@@ -31,7 +31,7 @@ export interface PublicFooterProps extends React.HTMLAttributes<HTMLElement> {
   version?: string;
 }
 
-export interface PublicFooter2Props extends React.HTMLAttributes<HTMLElement> {
+export interface PublicFooter2Props extends HTMLAttributes<HTMLElement> {
   tagline?: string;
   columns?: FooterColumnItem[];
   bottomLinks?: FooterLinkItem[];
@@ -40,7 +40,7 @@ export interface PublicFooter2Props extends React.HTMLAttributes<HTMLElement> {
   companyName?: string;
 }
 
-export interface AppFooterProps extends React.HTMLAttributes<HTMLElement> {
+export interface AppFooterProps extends HTMLAttributes<HTMLElement> {
   tagline?: string;
   logoHref?: string;
   logoSrc?: string;
@@ -55,7 +55,7 @@ export interface AppFooterProps extends React.HTMLAttributes<HTMLElement> {
   onUserClick?: () => void;
 }
 
-export interface DashboardFooterProps extends React.HTMLAttributes<HTMLElement> {
+export interface DashboardFooterProps extends HTMLAttributes<HTMLElement> {
   copyrightText?: string;
   links?: FooterLinkItem[];
 }
@@ -70,8 +70,9 @@ export type FooterVariant =
   | "logged-in"
   | (string & {});
 
-export interface FooterProps extends React.HTMLAttributes<HTMLElement> {
+export interface FooterProps extends HTMLAttributes<HTMLElement> {
   isLoggedIn?: boolean;
+  isAuthenticated?: boolean;
   variant?: FooterVariant;
   tagline?: string;
   logoHref?: string;

@@ -124,6 +124,9 @@ export const publicRoutes = [
   "/form-system*",
   "/navigation-system*",
   "/no-access",
+  "/reels*",
+  "/shop",
+  
 ];
 
 /**
