@@ -1,8 +1,10 @@
 import { Suspense } from "react";
 import type { Metadata } from "next";
 import { PAGE_METADATA_GENERATORS } from "@/config/metadata";
-import { DEFAULT_SHOP_SERVICES } from "@/features/shop/data";
-import { findShopServiceById } from "@/features/shop/services/shopHelpers";
+import {
+  DEFAULT_PRO_SHOP_SERVICES,
+  DEFAULT_SHOP_SERVICES,
+} from "@/features/shop/data";
 import { ShopServiceDetailView } from "@/features/shop/shop-service-detail-view";
 import { ShopServiceDetailPageSkeleton } from "@/skeletons/(internal-routes)/shop/service/[id]/page-skeleton";
 
@@ -11,7 +13,7 @@ interface ShopServiceDetailPageProps {
 }
 
 export function generateStaticParams() {
-  return DEFAULT_SHOP_SERVICES.map((s) => ({
+  return [...DEFAULT_SHOP_SERVICES, ...DEFAULT_PRO_SHOP_SERVICES].map((s) => ({
     id: s.id,
   }));
 }

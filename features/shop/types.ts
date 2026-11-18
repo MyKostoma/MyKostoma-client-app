@@ -1,5 +1,13 @@
 import type {
   CreateDirectOrderPayload,
+  ProShopMainTab,
+  ProShopProfile,
+  ProShopServiceFormValues,
+  ProShopServiceInsights,
+  ProShopServiceItem,
+  ProShopServiceReview,
+  ProShopServiceStatus,
+  ProShopStatusFilter,
   ShopBadgeVariant,
   ShopBreadcrumbItem,
   ShopCategory,
@@ -13,6 +21,14 @@ import type {
 
 export type {
   CreateDirectOrderPayload,
+  ProShopMainTab,
+  ProShopProfile,
+  ProShopServiceFormValues,
+  ProShopServiceInsights,
+  ProShopServiceItem,
+  ProShopServiceReview,
+  ProShopServiceStatus,
+  ProShopStatusFilter,
   ShopBadgeVariant,
   ShopBreadcrumbItem,
   ShopCategory,
@@ -38,5 +54,9 @@ export interface ShopCheckoutViewProps {
 
 export interface ShopOrderSuccessViewProps {
   orderCode: string;
+}
+
+export interface ProShopServiceFormViewProps {
+  serviceId?: string;
 }
 

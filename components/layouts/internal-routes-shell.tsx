@@ -7,6 +7,9 @@ import { Footer } from "@/components/layouts/footers/footers";
 import { DashboardLayout } from "@/components/layouts/dashboard/dashboard-layout";
 import { useAuthStatus } from "@/components/layouts/use-auth-status";
 import { getDashboardRouteConfig } from "@/lib/route-config";
+import { useAppSelector } from "@/store/hooks";
+import { selectUserRole } from "@/store/slices/authSlice";
+import { selectActivePerspective } from "@/store/slices/uiSlice";
 
 export interface InternalRoutesShellProps {
   children: ReactNode;
@@ -14,15 +17,23 @@ export interface InternalRoutesShellProps {
 
 /**
  * Client layout wrapper for `app/(internal-routes)/layout.tsx`.
- * Uses `DashboardLayout` for configured `dashboardRoutes` when authenticated,
+ * Uses `DashboardLayout` for configured `dashboardRoutes` when authenticated
+ * (and for `/shop` routes when the active role is `professional`),
  * and falls back to the public header and footer whenever the user is logged out.
  */
 export function InternalRoutesShell({ children }: InternalRoutesShellProps) {
   const pathname = usePathname();
   const dashboardRoute = getDashboardRouteConfig(pathname);
   const { isAuthenticated } = useAuthStatus();
+  const userRole = useAppSelector(selectUserRole);
+  const activePerspective = useAppSelector(selectActivePerspective);
+  const effectiveRole = userRole || activePerspective || "consumer";
 
-  if (dashboardRoute && isAuthenticated) {
+  const isProShopRoute =
+    effectiveRole === "professional" &&
+    (pathname === "/shop" || pathname.startsWith("/shop/"));
+
+  if ((dashboardRoute && isAuthenticated) || isProShopRoute) {
     return <DashboardLayout>{children}</DashboardLayout>;
   }
 

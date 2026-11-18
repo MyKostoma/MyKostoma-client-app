@@ -7,12 +7,24 @@ import { ShopProviderStrip } from "@/components/shop/shop-provider-strip";
 import { ShopServiceAbout } from "@/components/shop/shop-service-about";
 import { ShopServiceGallery } from "@/components/shop/shop-service-gallery";
 import { ShopTrustCards } from "@/components/shop/shop-trust-cards";
-import { SHOP_TRUST_HIGHLIGHTS } from "./data";
-import { useShopServiceDetailService } from "./services/shopApi";
+import { ProShopServiceManagementWorkspace } from "@/components/shop/professional/pro-shop-service-management";
+import { DeleteServiceCardModal } from "@/components/modals/delete-service-card-modal";
+import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
+import { ProfessionalShopTopBar } from "@/components/layouts/top-bars/shop/professional-shop-top-bar";
+import { useAppSelector } from "@/store/hooks";
+import { selectUserRole } from "@/store/slices/authSlice";
+import { selectActivePerspective } from "@/store/slices/uiSlice";
+import { DEFAULT_PRO_SHOP_SERVICES, SHOP_TRUST_HIGHLIGHTS } from "./data";
+import {
+  useProShopServiceManagement,
+  useShopServiceDetailService,
+} from "./services/shopApi";
 import { buildShopCategoryHref } from "./services/shopHelpers";
 import type { ShopServiceDetailViewProps } from "./types";
 
-export function ShopServiceDetailView({ serviceId }: ShopServiceDetailViewProps) {
+function ConsumerShopServiceDetailView({
+  serviceId,
+}: ShopServiceDetailViewProps) {
   const {
     service,
     category,
@@ -90,5 +102,77 @@ export function ShopServiceDetailView({ serviceId }: ShopServiceDetailViewProps)
       </div>
     </main>
   );
+}
+
+export function ProfessionalShopServiceDetailView({
+  serviceId,
+}: ShopServiceDetailViewProps) {
+  const {
+    service,
+    activeImageIndex,
+    setActiveImageIndex,
+    deleteModalOpen,
+    setDeleteModalOpen,
+    handleBackToShop,
+    handleEditService,
+    handleTogglePublish,
+    handleConfirmDelete,
+    handleViewAnalytics,
+  } = useProShopServiceManagement(serviceId);
+
+  const statusBadge =
+    service.status === "active"
+      ? "PUBLISHED"
+      : service.status === "draft"
+        ? "DRAFT"
+        : "UNPUBLISHED";
+
+  return (
+    <>
+      <DashboardTopBarSlot>
+        <ProfessionalShopTopBar
+          title={service.title}
+          subtitleBadge="SERVICE DETAIL"
+          statusBadge={statusBadge}
+          onBack={handleBackToShop}
+        />
+      </DashboardTopBarSlot>
+
+      <ProShopServiceManagementWorkspace
+        service={service}
+        activeImageIndex={activeImageIndex}
+        onSelectImage={setActiveImageIndex}
+        onEditService={handleEditService}
+        onTogglePublish={handleTogglePublish}
+        onRequestDelete={() => setDeleteModalOpen(true)}
+        onViewAnalytics={handleViewAnalytics}
+      />
+
+      <DeleteServiceCardModal
+        isOpen={deleteModalOpen}
+        serviceTitle={service.title}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirmDelete={handleConfirmDelete}
+      />
+    </>
+  );
+}
+
+export function ShopServiceDetailView({
+  serviceId,
+}: ShopServiceDetailViewProps) {
+  const userRole = useAppSelector(selectUserRole);
+  const activePerspective = useAppSelector(selectActivePerspective);
+  const effectiveRole = userRole || activePerspective || "consumer";
+
+  const isProServiceId = DEFAULT_PRO_SHOP_SERVICES.some(
+    (s) => s.id.toLowerCase() === serviceId.toLowerCase()
+  );
+
+  if (effectiveRole === "professional" || isProServiceId) {
+    return <ProfessionalShopServiceDetailView serviceId={serviceId} />;
+  }
+
+  return <ConsumerShopServiceDetailView serviceId={serviceId} />;
 }
 

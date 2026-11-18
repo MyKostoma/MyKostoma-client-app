@@ -172,6 +172,14 @@ export const PAGE_METADATA = {
     title: "Shop Fixed-Price Services",
     description: "Browse and order fixed-price services from top-rated verified professionals on MyKostoma.",
   },
+  proShopCreateService: {
+    title: "Create New Service Card",
+    description: "Create and publish a new fixed-price service listing for your professional shop on MyKostoma.",
+  },
+  proShopEditService: {
+    title: "Edit Service Card",
+    description: "Update your service listing pricing, delivery timeline, images, and deliverables on MyKostoma.",
+  },
 
   // Consumer Wallet Module (/wallet*)
   walletOverview: {

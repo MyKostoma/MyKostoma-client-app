@@ -14,6 +14,8 @@ import {
 import type { SelectOption } from "@/components/ui/form-fields";
 import type { SpotlightProviderItem } from "@/components/consumer-home/types";
 import type {
+  ProShopProfile,
+  ProShopServiceItem,
   ShopCategory,
   ShopDeliveryWindow,
   ShopFilterOption,
@@ -650,4 +652,220 @@ export const SHOP_TOP_RATED_PROVIDERS: SpotlightProviderItem[] = [
 ];
 
 export const SHOP_PLATFORM_FEE_RATE = 0.03;
+
+// ============================================================================
+// PROFESSIONAL SHOP MODULE MOCK DATA
+// ============================================================================
+
+export const DEFAULT_PRO_SHOP_PROFILE: ProShopProfile = {
+  shopName: "Elena Design Studio",
+  badgeLabel: "PRO SELLER",
+  rating: 4.9,
+  reviewsCount: 128,
+  avatarUrl:
+    "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=300&q=80",
+  coverBannerUrl:
+    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=80",
+  aboutBio:
+    "Award-winning residential and commercial interior design studio specializing in minimalist spatial architecture, bespoke furniture, and photorealistic 3D visualization.",
+  location: "Lekki Phase 1, Lagos",
+  responseTime: "Under 1 hour",
+};
+
+export const PRO_SHOP_CATEGORY_OPTIONS = [
+  "Interior Design",
+  "Commercial Architecture",
+  "Bespoke Furniture",
+  "3D Visualization",
+  "Home Renovation",
+  "Kitchen & Bath Design",
+] as const;
+
+export const DEFAULT_PRO_SHOP_SERVICES: ProShopServiceItem[] = [
+  {
+    id: "pro-svc-residential",
+    title: "Residential Consultation",
+    shortDescription:
+      "Complete 1-on-1 interior consultation for your home redesign.",
+    fullDescription:
+      "Transform your living space into a modern sanctuary. This comprehensive consultation covers spatial audit, color palette direction, furniture layout recommendations, and lighting planning tailored to your lifestyle.",
+    category: "Interior Design",
+    packageLabel: "Standard Package",
+    price: 150000,
+    priceFormatted: "₦150,000",
+    priceUnitLabel: "PER PROJECT",
+    status: "active",
+    deliveryValue: "5",
+    deliveryUnit: "Days",
+    deliveryLabel: "5 Business Days",
+    revisionsLabel: "2 Rounds Included",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=900&q=80",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1618219908412-a29a1bb7b86e?auto=format&fit=crop&w=1200&q=80",
+    ],
+    tags: ["#INTERIORDESIGN", "#MODERNLIVING", "#HOMEREDESIGN"],
+    insights: {
+      impressions: "4,281",
+      orders: 12,
+      avgRating: 4.9,
+    },
+    latestReview: {
+      reviewerName: "James Cooper",
+      rating: 5.0,
+      comment:
+        "Exceptional attention to detail. Elena really understood the minimalist vibe we wanted for our home.",
+    },
+  },
+  {
+    id: "pro-svc-commercial",
+    title: "Commercial Layout Planning",
+    shortDescription:
+      "Optimized office layouts for productivity and brand identity.",
+    fullDescription:
+      "End-to-end commercial spatial architecture for modern offices, studios, and retail spaces. Includes ergonomic seating plans, circulation flow mapping, acoustic zoning, and material finish schedules.",
+    category: "Commercial Architecture",
+    packageLabel: "Premium Package",
+    price: 450000,
+    priceFormatted: "₦450,000",
+    priceUnitLabel: "PER PROJECT",
+    status: "active",
+    deliveryValue: "14",
+    deliveryUnit: "Days",
+    deliveryLabel: "14 Business Days",
+    revisionsLabel: "3 Rounds Included",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1200&q=80",
+    ],
+    tags: ["#OFFICEDESIGN", "#COMMERCIALSPACE", "#ERGONOMICS"],
+    insights: {
+      impressions: "3,140",
+      orders: 9,
+      avgRating: 4.9,
+    },
+    latestReview: {
+      reviewerName: "Daniel Okoro",
+      rating: 5.0,
+      comment:
+        "Transformed our open-plan headquarters into a calm, high-output workspace. Delivered ahead of schedule.",
+    },
+  },
+  {
+    id: "pro-svc-furniture",
+    title: "Bespoke Furniture Design",
+    shortDescription:
+      "Custom-made furniture pieces tailored to your specific space.",
+    fullDescription:
+      "Custom furniture CAD drawings, joinery specifications, and wood/upholstery finish selection designed to fit awkward alcoves or anchor statement dining and living rooms.",
+    category: "Bespoke Furniture",
+    packageLabel: "Custom Package",
+    price: 280000,
+    priceFormatted: "₦280,000",
+    priceUnitLabel: "PER PROJECT",
+    status: "inactive",
+    deliveryValue: "10",
+    deliveryUnit: "Days",
+    deliveryLabel: "10 Business Days",
+    revisionsLabel: "2 Rounds Included",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&w=900&q=80",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1615873968403-89e068629265?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=1200&q=80",
+    ],
+    tags: ["#BESPOKEFURNITURE", "#WOODCRAFT", "#CUSTOMDESIGN"],
+    insights: {
+      impressions: "1,892",
+      orders: 6,
+      avgRating: 4.8,
+    },
+    latestReview: {
+      reviewerName: "Sarah Johnson",
+      rating: 5.0,
+      comment:
+        "Our walnut dining table and credenza drawings were spot on for our carpenter. Zero guesswork!",
+    },
+  },
+  {
+    id: "pro-svc-3d-viz",
+    title: "3D Visualization Pack",
+    shortDescription:
+      "High-fidelity 3D renders for your architectural projects.",
+    fullDescription:
+      "Photorealistic 4K architectural renders with realistic daylighting, material reflections, and camera walkthrough angles so clients can visualize every detail before construction begins.",
+    category: "3D Visualization",
+    packageLabel: "Visual Pack",
+    price: 85000,
+    priceFormatted: "₦85,000",
+    priceUnitLabel: "PER PROJECT",
+    status: "active",
+    deliveryValue: "5",
+    deliveryUnit: "Days",
+    deliveryLabel: "5 Business Days",
+    revisionsLabel: "3 Rounds Included",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=900&q=80",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=80",
+    ],
+    tags: ["#3DRENDERING", "#ARCHITECTURE", "#LUXURYHOME"],
+    insights: {
+      impressions: "5,104",
+      orders: 18,
+      avgRating: 5.0,
+    },
+    latestReview: {
+      reviewerName: "James Cooper",
+      rating: 5.0,
+      comment:
+        "The renders looked indistinguishable from real photography. Made investor sign-off effortless.",
+    },
+  },
+  {
+    id: "pro-svc-modern-kitchen",
+    title: "Modern Kitchen Design",
+    shortDescription:
+      "Transform your kitchen into a modern ergonomic culinary masterpiece.",
+    fullDescription:
+      "Transform your kitchen into a modern masterpiece. This comprehensive service includes 3D visualization, material selection, cabinet layout optimization, and lighting consultation. We focus on ergonomic flow and premium aesthetics to ensure your culinary space is both functional and beautiful.",
+    category: "Interior Design",
+    packageLabel: "Premium Package",
+    price: 850000,
+    priceFormatted: "₦850,000.00",
+    priceUnitLabel: "PER PROJECT",
+    status: "active",
+    deliveryValue: "14",
+    deliveryUnit: "Days",
+    deliveryLabel: "14 Business Days",
+    revisionsLabel: "3 Rounds Included",
+    coverImageUrl:
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1200&q=80",
+    galleryImages: [
+      "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=1200&q=80",
+      "https://images.unsplash.com/photo-1600585152220-90363fe7e115?auto=format&fit=crop&w=1200&q=80",
+    ],
+    tags: ["#KITCHENDESIGN", "#MODERNINTERIOR", "#LUXURYHOME"],
+    insights: {
+      impressions: "4,281",
+      orders: 12,
+      avgRating: 4.9,
+    },
+    latestReview: {
+      reviewerName: "James Cooper",
+      rating: 5.0,
+      comment:
+        "Exceptional attention to detail. Alex really understood the minimalist vibe we wanted for our home.",
+    },
+  },
+];
+
 

@@ -1,6 +1,10 @@
 import type { ConsumerCategoryItem, SpotlightProviderItem } from "@/components/consumer-home/types";
 import type { ConsumerOrderItem } from "@/components/orders/types";
 import type {
+  ProShopServiceFormValues,
+  ProShopServiceItem,
+  ProShopServiceStatus,
+  ProShopStatusFilter,
   ShopCategory,
   ShopFilterState,
   ShopOrderConfirmation,
@@ -313,4 +317,104 @@ export function buildOrderFromConfirmation(
     },
   };
 }
+
+// ============================================================================
+// PROFESSIONAL SHOP HELPERS
+// ============================================================================
+
+export const INITIAL_PRO_SERVICE_FORM_VALUES: ProShopServiceFormValues = {
+  title: "",
+  category: "",
+  deliveryValue: "5",
+  deliveryUnit: "Days",
+  description: "",
+  price: "",
+  coverImageUrl: "",
+  galleryImages: [],
+};
+
+export function filterProShopServices(
+  services: ProShopServiceItem[],
+  searchQuery: string,
+  statusFilter: ProShopStatusFilter
+): ProShopServiceItem[] {
+  const q = searchQuery.trim().toLowerCase();
+
+  return services.filter((service) => {
+    if (statusFilter !== "all" && service.status !== statusFilter) {
+      return false;
+    }
+
+    if (q) {
+      const haystack =
+        `${service.title} ${service.shortDescription} ${service.category} ${service.tags.join(" ")}`.toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+
+    return true;
+  });
+}
+
+export function findProShopServiceById(
+  services: ProShopServiceItem[],
+  serviceId: string
+): ProShopServiceItem | undefined {
+  return services.find(
+    (s) => s.id.toLowerCase() === serviceId.toLowerCase()
+  );
+}
+
+export function buildProShopServiceFromForm(
+  values: ProShopServiceFormValues,
+  status: ProShopServiceStatus,
+  existing?: ProShopServiceItem
+): ProShopServiceItem {
+  const numericPrice =
+    Number(String(values.price).replace(/[^0-9.]/g, "")) || 150000;
+  const priceFormatted = `₦${numericPrice.toLocaleString("en-NG")}`;
+  const fallbackCover =
+    "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80";
+  const coverUrl = values.coverImageUrl || existing?.coverImageUrl || fallbackCover;
+  const gallery =
+    values.galleryImages.length > 0
+      ? [coverUrl, ...values.galleryImages.filter((img) => img !== coverUrl)]
+      : existing?.galleryImages ?? [coverUrl];
+
+  const descriptionText =
+    values.description.trim() ||
+    "Complete tailored service package delivered with clear milestones and transparent communication.";
+
+  return {
+    id: existing?.id ?? `pro-svc-${Date.now()}`,
+    title: values.title.trim() || "New Service Package",
+    shortDescription:
+      descriptionText.length > 90
+        ? `${descriptionText.slice(0, 87)}...`
+        : descriptionText,
+    fullDescription: descriptionText,
+    category: values.category || "Interior Design",
+    packageLabel: existing?.packageLabel ?? "Premium Package",
+    price: numericPrice,
+    priceFormatted,
+    priceUnitLabel: "PER PROJECT",
+    status,
+    deliveryValue: values.deliveryValue || "5",
+    deliveryUnit: values.deliveryUnit || "Days",
+    deliveryLabel: `${values.deliveryValue || "5"} ${values.deliveryUnit || "Days"}`,
+    revisionsLabel: existing?.revisionsLabel ?? "3 Rounds Included",
+    coverImageUrl: coverUrl,
+    galleryImages: gallery,
+    tags: existing?.tags ?? [
+      `#${(values.category || "SERVICE").replace(/[^a-zA-Z0-9]/g, "").toUpperCase()}`,
+      "#MYKOSTOMA",
+    ],
+    insights: existing?.insights ?? {
+      impressions: "0",
+      orders: 0,
+      avgRating: 5.0,
+    },
+    latestReview: existing?.latestReview,
+  };
+}
+
 
