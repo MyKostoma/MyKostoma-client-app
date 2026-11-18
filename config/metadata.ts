@@ -162,6 +162,10 @@ export const PAGE_METADATA = {
     title: "Order Status",
     description: "Track active order progress and milestones on MyKostoma.",
   },
+  orderDisputeDefault: {
+    title: "Open a Dispute",
+    description: "Submit a formal dispute and supporting evidence for an order on MyKostoma.",
+  },
 
   // Consumer Shop Module (/shop*)
   shopHome: {

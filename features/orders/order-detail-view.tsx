@@ -5,15 +5,25 @@ import { Button } from "@/components/ui/button";
 import { OrderDetailOverview } from "@/components/orders/order-detail-overview";
 import { OrderStatusWorkspace } from "@/components/orders/order-status-workspace";
 import { OrderCompletionWorkspace } from "@/components/orders/order-completion-workspace";
+import { ProOrderDetailWorkspace } from "@/components/orders/professional/pro-order-detail-workspace";
+import { ProOrderEscrowStatus } from "@/components/orders/professional/pro-order-escrow-status";
 import { ReleaseMilestoneModal } from "@/components/modals/order-modals";
 import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
 import { OrderDetailTopBar } from "@/components/layouts/top-bars/orders/order-detail-top-bar";
-import { useOrderDetailService } from "./services/ordersApi";
+import { ProfessionalOrderSubpageTopBar } from "@/components/layouts/top-bars/orders/professional-orders-top-bar";
+import { useAppSelector } from "@/store/hooks";
+import { selectUserRole } from "@/store/slices/authSlice";
+import { selectActivePerspective } from "@/store/slices/uiSlice";
+import { DEFAULT_PROFESSIONAL_ORDERS } from "./data";
+import {
+  useOrderDetailService,
+  useProfessionalOrderDetailService,
+} from "./services/ordersApi";
 import type { OrderDetailViewProps } from "./types";
 
 export type { OrderDetailViewProps } from "./types";
 
-export function OrderDetailView({
+function ConsumerOrderDetailView({
   orderId = "ORD-5547",
   initialMode = "overview",
 }: OrderDetailViewProps) {
@@ -23,7 +33,6 @@ export function OrderDetailView({
     cancelledReferenceOrder,
     nextMilestone,
     activeMode,
-    setActiveMode,
     releaseModalOpen,
     setReleaseModalOpen,
     handleBackToOrders,
@@ -160,6 +169,99 @@ export function OrderDetailView({
       />
     </>
   );
+}
+
+export function ProfessionalOrderDetailView({
+  orderId = "ORD-2026-001",
+  initialMode = "overview",
+}: OrderDetailViewProps) {
+  const {
+    order,
+    completionNotes,
+    setCompletionNotes,
+    uploadedDeliverableName,
+    handleBackToOrders,
+    handleBackToOrderDetail,
+    handleStartOrder,
+    handleMarkCompleted,
+    handleUploadDeliverable,
+    handleMessageConsumer,
+    handleViewConsumerProfile,
+    handleViewEscrowDetails,
+    handleRaiseDispute,
+    handleLeaveReview,
+    handleDownloadAttachment,
+    handleOrderGuidelines,
+    handleContactSupport,
+    handleReadEscrowPolicy,
+  } = useProfessionalOrderDetailService(orderId);
+
+  if (initialMode === "status") {
+    return (
+      <>
+        <DashboardTopBarSlot>
+          <ProfessionalOrderSubpageTopBar
+            backLabel={`Back to Order #${order.code}`}
+            onBack={handleBackToOrderDetail}
+          />
+        </DashboardTopBarSlot>
+
+        <ProOrderEscrowStatus
+          order={order}
+          onContactSupport={handleContactSupport}
+          onReadEscrowPolicy={handleReadEscrowPolicy}
+          onMessageConsumer={handleMessageConsumer}
+        />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <DashboardTopBarSlot>
+        <ProfessionalOrderSubpageTopBar
+          backLabel="Back to Orders"
+          onBack={handleBackToOrders}
+        />
+      </DashboardTopBarSlot>
+
+      <ProOrderDetailWorkspace
+        order={order}
+        completionNotes={completionNotes}
+        uploadedDeliverableName={uploadedDeliverableName}
+        onCompletionNotesChange={setCompletionNotes}
+        onUploadDeliverable={handleUploadDeliverable}
+        onStartOrder={handleStartOrder}
+        onMarkCompleted={handleMarkCompleted}
+        onLeaveReview={handleLeaveReview}
+        onMessageConsumer={handleMessageConsumer}
+        onViewProfile={handleViewConsumerProfile}
+        onViewEscrowDetails={handleViewEscrowDetails}
+        onRaiseDispute={handleRaiseDispute}
+        onOrderGuidelines={handleOrderGuidelines}
+        onDownloadAttachment={handleDownloadAttachment}
+      />
+    </>
+  );
+}
+
+export function OrderDetailView(props: OrderDetailViewProps) {
+  const userRole = useAppSelector(selectUserRole);
+  const activePerspective = useAppSelector(selectActivePerspective);
+  const effectiveRole = userRole || activePerspective || "consumer";
+
+  const orderId = props.orderId ?? "ORD-5547";
+  const isProOrderId = DEFAULT_PROFESSIONAL_ORDERS.some(
+    (o) =>
+      o.id.toLowerCase() === orderId.toLowerCase() ||
+      o.code.toLowerCase() === orderId.toLowerCase()
+  );
+
+  if (effectiveRole === "professional" || isProOrderId) {
+    return <ProfessionalOrderDetailView {...props} />;
+  }
+
+  return <ConsumerOrderDetailView {...props} />;
 }
 
 export default OrderDetailView;

@@ -139,7 +139,7 @@ export function ProfessionalRequestsListView() {
         />
       </DashboardTopBarSlot>
 
-      <div className="max-w-5xl mx-auto space-y-6">
+      <div className="mx-auto space-y-6">
         <ProRequestsFilterBar
           filters={draftFilters}
           onChange={setDraftFilters}

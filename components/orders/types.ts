@@ -168,3 +168,104 @@ export interface OrderFeedbackFormProps {
   onRaiseDispute: () => void;
   onLearnResolutionPolicy: () => void;
 }
+
+// ============================================================================
+// PROFESSIONAL ORDERS MODULE TYPES
+// ============================================================================
+
+export type ProfessionalOrderStatus =
+  | "pending"
+  | "in-progress"
+  | "completed"
+  | "disputed";
+
+export type ProfessionalOrderTabFilter =
+  | "all"
+  | "pending"
+  | "active"
+  | "completed"
+  | "disputed";
+
+export type ProfessionalEscrowStatus = "held" | "pending-release" | "released";
+
+export interface ProfessionalOrderFileAttachment {
+  id: string;
+  name: string;
+  size: string;
+  type: "pdf" | "image" | "archive";
+  statusLabel?: string;
+}
+
+export interface ProfessionalOrderTimelineStep {
+  id: string;
+  title: string;
+  subtitle: string;
+  state: "completed" | "active" | "pending";
+}
+
+export interface ProfessionalEscrowTimelineStep {
+  id: string;
+  title: string;
+  description: string;
+  timestampLabel?: string;
+  state: "completed" | "current" | "upcoming";
+}
+
+export interface ProfessionalOrderItem {
+  id: string;
+  code: string;
+  consumerName: string;
+  consumerAvatarUrl?: string;
+  consumerLocation: string;
+  consumerJoined: string;
+  consumerOrdersCount: string;
+  serviceTitle: string;
+  serviceCategory: string;
+  serviceSubtitle: string;
+  serviceDescription: string;
+  durationLabel: string;
+  revisionsLabel: string;
+  tableAmount: string;
+  totalAmountFormatted: string;
+  platformFeeFormatted: string;
+  netEarningsFormatted: string;
+  status: ProfessionalOrderStatus;
+  escrowStatus: ProfessionalEscrowStatus;
+  escrowRef: string;
+  currency: string;
+  paymentMethod: string;
+  dateShort: string;
+  placedAtLabel: string;
+  startedAtLabel?: string;
+  completedAtLabel?: string;
+  completedDateShort?: string;
+  requirementsNote: string;
+  requirementAttachments: ProfessionalOrderFileAttachment[];
+  completionNote?: string;
+  finalDeliverable?: ProfessionalOrderFileAttachment;
+  submittedDateLabel?: string;
+  orderTimeline: ProfessionalOrderTimelineStep[];
+  escrowTimeline: ProfessionalEscrowTimelineStep[];
+}
+
+export interface ProfessionalOrderDisputeFormValues {
+  reason: string;
+  description: string;
+  evidenceFiles: string[];
+}
+
+export interface ProfessionalOrderReviewFormValues {
+  overallRating: number;
+  communicationRating: number;
+  requirementsClarityRating: number;
+  feedback: string;
+  wouldRecommend: boolean;
+}
+
+export interface ProfessionalOrderKpiCard {
+  id: string;
+  label: string;
+  value: string;
+  iconType: "wallet" | "clock" | "zap";
+}
+

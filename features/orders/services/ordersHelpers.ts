@@ -3,6 +3,10 @@ import type {
   OrderMilestoneItem,
   OrderReviewFormValues,
   OrderTabFilter,
+  ProfessionalOrderDisputeFormValues,
+  ProfessionalOrderItem,
+  ProfessionalOrderReviewFormValues,
+  ProfessionalOrderTabFilter,
 } from "../types";
 
 export const INITIAL_ORDER_REVIEW_VALUES: OrderReviewFormValues = {
@@ -11,6 +15,22 @@ export const INITIAL_ORDER_REVIEW_VALUES: OrderReviewFormValues = {
   photos: [],
   isAnonymous: false,
 };
+
+export const INITIAL_PRO_ORDER_DISPUTE_VALUES: ProfessionalOrderDisputeFormValues =
+  {
+    reason: "",
+    description: "",
+    evidenceFiles: ["chat_history_export.pdf"],
+  };
+
+export const INITIAL_PRO_ORDER_REVIEW_VALUES: ProfessionalOrderReviewFormValues =
+  {
+    overallRating: 4,
+    communicationRating: 5,
+    requirementsClarityRating: 4,
+    feedback: "",
+    wouldRecommend: true,
+  };
 
 export function filterOrdersList(
   orders: ConsumerOrderItem[],
@@ -76,3 +96,42 @@ export function resolveNextEscrowMilestone(
     }
   );
 }
+
+// ============================================================================
+// PROFESSIONAL ORDERS HELPERS
+// ============================================================================
+
+export function filterProfessionalOrders(
+  orders: ProfessionalOrderItem[],
+  activeTab: ProfessionalOrderTabFilter,
+  searchQuery: string
+): ProfessionalOrderItem[] {
+  const q = searchQuery.trim().toLowerCase();
+
+  return orders.filter((order) => {
+    if (activeTab === "pending" && order.status !== "pending") return false;
+    if (activeTab === "active" && order.status !== "in-progress") return false;
+    if (activeTab === "completed" && order.status !== "completed") return false;
+    if (activeTab === "disputed" && order.status !== "disputed") return false;
+
+    if (q) {
+      const haystack =
+        `${order.code} ${order.consumerName} ${order.serviceTitle} ${order.tableAmount}`.toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+
+    return true;
+  });
+}
+
+export function findProfessionalOrderById(
+  orders: ProfessionalOrderItem[],
+  orderId: string
+): ProfessionalOrderItem | undefined {
+  return orders.find(
+    (o) =>
+      o.id.toLowerCase() === orderId.toLowerCase() ||
+      o.code.toLowerCase() === orderId.toLowerCase()
+  );
+}
+

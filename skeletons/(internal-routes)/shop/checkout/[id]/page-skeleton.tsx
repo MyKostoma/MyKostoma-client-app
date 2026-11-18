@@ -3,7 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function ShopCheckoutPageSkeleton() {
   return (
     <div className="min-h-screen bg-background">
-      <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto  px-4 py-8 sm:px-6 lg:px-8">
         <Skeleton className="mb-4 h-3.5 w-56" />
         <Skeleton className="mb-8 h-9 w-80" />
 
