@@ -1,5 +1,7 @@
 export type VerificationStatus = "unverified" | "pending" | "verified" | "rejected";
 
+export type VerificationModeTab = "individual" | "company";
+
 export type VerificationDocumentType =
   | "nin"
   | "pvc"
@@ -69,6 +71,7 @@ export interface VerificationUploadDropzoneProps {
   id: string;
   label: string;
   subtitle?: string;
+  accept?: string;
   file: VerificationUploadedFile | null;
   error?: string;
   disabled?: boolean;
@@ -103,6 +106,71 @@ export interface VerificationStatusResultCardProps {
   record: VerificationRecord;
   onViewProfile: () => void;
   onGoToDashboard: () => void;
+  onBackToOverview: () => void;
+  onStartVerification: () => void;
+}
+
+export interface CompanyRequirementItem {
+  id: string;
+  label: string;
+  icon: "building" | "document" | "person";
+}
+
+export interface CompanyVerificationRecord {
+  status: VerificationStatus;
+  verificationId?: string;
+  companyName?: string;
+  cacRegistrationNumber?: string;
+  verifiedDate?: string;
+  submittedAt?: string;
+  incorporationStatus?: string;
+  documentsCount?: number;
+  rejectionReason?: string;
+}
+
+export interface VerificationModeTabsProps {
+  activeTab: VerificationModeTab;
+  individualStatus: VerificationStatus;
+  companyStatus: VerificationStatus;
+}
+
+export interface CompanyVerificationOverviewProps {
+  record: CompanyVerificationRecord;
+  isLoading?: boolean;
+  onStartVerification: () => void;
+  onViewDetails: () => void;
+  onResubmit: () => void;
+  onLearnMore: () => void;
+}
+
+export interface CompanyVerificationSubmitFormProps {
+  companyName: string;
+  companyNameError?: string;
+  cacNumber: string;
+  cacNumberError?: string;
+  cacCertificateFile: VerificationUploadedFile | null;
+  cacCertificateError?: string;
+  incorporationFile: VerificationUploadedFile | null;
+  incorporationError?: string;
+  requirements: readonly string[];
+  isSubmitting?: boolean;
+  onCompanyNameChange: (value: string) => void;
+  onCacNumberChange: (value: string) => void;
+  onCacCertificateSelect: (file: File) => void;
+  onCacCertificateRemove: () => void;
+  onIncorporationSelect: (file: File) => void;
+  onIncorporationRemove: () => void;
+  onBack: () => void;
+  onCancel: () => void;
+  onSubmit: () => void;
+}
+
+export interface CompanyVerificationStatusCardProps {
+  record: CompanyVerificationRecord;
+  hasCopiedShareLink?: boolean;
+  onViewCompanyProfile: () => void;
+  onGoToDashboard: () => void;
+  onShareVerifiedStatus: () => void;
   onBackToOverview: () => void;
   onStartVerification: () => void;
 }

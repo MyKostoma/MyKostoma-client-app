@@ -5,6 +5,7 @@ import { DashboardTopBarSlot } from "@/providers/dashboard-top-bar-context";
 import { VerificationTopBar } from "@/components/layouts/top-bars/verification/verification-top-bar";
 import { VerificationStatusOverviewCard } from "@/components/verification/verification-status-overview-card";
 import { VerificationWhyCard } from "@/components/verification/verification-why-card";
+import { VerificationModeTabs } from "@/components/verification/verification-mode-tabs";
 import { VerificationBenefitsModal } from "@/components/modals/verification-benefits-modal";
 import { useVerificationOverviewService } from "./services/verificationApi";
 import type { VerificationOverviewViewProps } from "./types";
@@ -17,6 +18,7 @@ export function VerificationOverviewView({
 
   const {
     record,
+    companyStatus,
     isLoading,
     benefitsModalOpen,
     handleGetVerified,
@@ -33,6 +35,12 @@ export function VerificationOverviewView({
       </DashboardTopBarSlot>
 
       <div className="space-y-6 pb-8">
+        <VerificationModeTabs
+          activeTab="individual"
+          individualStatus={record.status}
+          companyStatus={companyStatus}
+        />
+
         <div className="space-y-1.5">
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
             Professional Verification

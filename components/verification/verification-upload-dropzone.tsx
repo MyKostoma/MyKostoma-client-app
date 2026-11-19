@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type ChangeEvent, type DragEvent } from "react";
-import { FileUp, RefreshCw, Trash2 } from "lucide-react";
+import { FileText, FileUp, RefreshCw, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormErrorMessage, Label } from "@/components/ui/form-fields";
 import type { VerificationUploadDropzoneProps } from "./types";
@@ -10,6 +10,7 @@ export function VerificationUploadDropzone({
   id,
   label,
   subtitle = "PNG, JPG up to 10MB",
+  accept = ".png,.jpg,.jpeg,image/png,image/jpeg",
   file,
   error,
   disabled = false,
@@ -18,6 +19,11 @@ export function VerificationUploadDropzone({
 }: VerificationUploadDropzoneProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [isDragOver, setIsDragOver] = useState(false);
+
+  const isPdf = file
+    ? file.type.toLowerCase() === "application/pdf" ||
+      file.name.toLowerCase().endsWith(".pdf")
+    : false;
 
   const handleOpenPicker = () => {
     if (disabled) return;
@@ -66,7 +72,7 @@ export function VerificationUploadDropzone({
         ref={inputRef}
         id={id}
         type="file"
-        accept=".png,.jpg,.jpeg,image/png,image/jpeg"
+        accept={accept}
         disabled={disabled}
         onChange={handleInputChange}
         className="hidden"
@@ -80,13 +86,22 @@ export function VerificationUploadDropzone({
           )}
         >
           <div className="flex items-center gap-3 min-w-0">
-            <div className="h-14 w-20 rounded-lg border border-border bg-secondary overflow-hidden shrink-0">
-              <img
-                src={file.previewUrl}
-                alt={file.name}
-                className="size-full object-cover"
-              />
-            </div>
+            {isPdf ? (
+              <div className="h-14 w-20 rounded-lg border border-info/25 bg-info-bg text-info flex flex-col items-center justify-center shrink-0">
+                <FileText className="size-5" />
+                <span className="text-[10px] font-bold uppercase mt-0.5">
+                  PDF
+                </span>
+              </div>
+            ) : (
+              <div className="h-14 w-20 rounded-lg border border-border bg-secondary overflow-hidden shrink-0">
+                <img
+                  src={file.previewUrl}
+                  alt={file.name}
+                  className="size-full object-cover"
+                />
+              </div>
+            )}
 
             <div className="min-w-0 space-y-0.5">
               <p className="text-xs sm:text-sm font-semibold text-foreground truncate">

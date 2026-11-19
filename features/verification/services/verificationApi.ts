@@ -5,9 +5,15 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
+  selectCompanyVerificationRecord,
+  selectCompanyVerificationStatus,
   selectVerificationRecord,
+  selectVerificationStatus,
+  submitCompanyVerificationLocal,
   submitVerificationLocal,
+  useGetCompanyVerificationStatusQuery,
   useGetVerificationStatusQuery,
+  useSubmitCompanyVerificationMutation,
   useSubmitVerificationDocumentMutation,
 } from "@/store/slices/verificationSlice";
 import type {
@@ -15,16 +21,24 @@ import type {
   VerificationUploadedFile,
 } from "@/components/verification/types";
 import {
+  buildCompanyVerificationOverviewHref,
+  buildCompanyVerificationStatusHref,
+  buildCompanyVerificationSubmitHref,
   buildVerificationOverviewHref,
   buildVerificationStatusHref,
   buildVerificationSubmitHref,
   formatVerificationDisplayDate,
   formatVerificationExpiryDate,
   formatVerificationFileSize,
+  generateCompanyVerificationId,
   generateVerificationId,
   getVerificationDocumentOption,
   maskDocumentNumber,
+  resolveCompanyVerificationRecordForStatus,
   resolveVerificationRecordForStatus,
+  validateCacRegistrationNumber,
+  validateCompanyDocumentFile,
+  validateCompanyName,
   validateVerificationDocumentNumber,
   validateVerificationImageFile,
 } from "./verificationHelpers";
@@ -34,6 +48,7 @@ export function useVerificationOverviewService(
 ) {
   const router = useRouter();
   const reduxRecord = useAppSelector(selectVerificationRecord);
+  const companyStatus = useAppSelector(selectCompanyVerificationStatus);
   const { data: apiRecord, isLoading } = useGetVerificationStatusQuery(
     undefined,
     {
@@ -71,6 +86,7 @@ export function useVerificationOverviewService(
 
   return {
     record,
+    companyStatus,
     isLoading,
     benefitsModalOpen,
     handleGetVerified,
@@ -334,6 +350,331 @@ export function useVerificationStatusService(
     record,
     handleViewProfile,
     handleGoToDashboard,
+    handleBackToOverview,
+    handleStartVerification,
+  };
+}
+
+export function useCompanyVerificationOverviewService(
+  overrideStatus?: string | null
+) {
+  const router = useRouter();
+  const reduxRecord = useAppSelector(selectCompanyVerificationRecord);
+  const individualStatus = useAppSelector(selectVerificationStatus);
+  const { data: apiRecord, isLoading } = useGetCompanyVerificationStatusQuery(
+    undefined,
+    {
+      refetchOnMountOrArgChange: false,
+    }
+  );
+  const [benefitsModalOpen, setBenefitsModalOpen] = useState(false);
+
+  const baseRecord =
+    reduxRecord.status !== "unverified"
+      ? reduxRecord
+      : (apiRecord ?? reduxRecord);
+
+  const record = resolveCompanyVerificationRecordForStatus(
+    baseRecord,
+    overrideStatus
+  );
+
+  const handleStartVerification = useCallback(() => {
+    router.push(buildCompanyVerificationSubmitHref());
+  }, [router]);
+
+  const handleViewDetails = useCallback(() => {
+    router.push(buildCompanyVerificationStatusHref(record.status));
+  }, [router, record.status]);
+
+  const handleResubmit = useCallback(() => {
+    router.push(buildCompanyVerificationSubmitHref());
+  }, [router]);
+
+  const handleOpenBenefits = useCallback(() => {
+    setBenefitsModalOpen(true);
+  }, []);
+
+  const handleCloseBenefits = useCallback(() => {
+    setBenefitsModalOpen(false);
+  }, []);
+
+  return {
+    record,
+    individualStatus,
+    isLoading,
+    benefitsModalOpen,
+    handleStartVerification,
+    handleViewDetails,
+    handleResubmit,
+    handleOpenBenefits,
+    handleCloseBenefits,
+  };
+}
+
+export function useCompanyVerificationSubmitService() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const [submitMutation, { isLoading: isMutating }] =
+    useSubmitCompanyVerificationMutation();
+
+  const [companyName, setCompanyName] = useState("");
+  const [cacNumber, setCacNumber] = useState("");
+  const [cacCertificateFile, setCacCertificateFile] =
+    useState<VerificationUploadedFile | null>(null);
+  const [incorporationFile, setIncorporationFile] =
+    useState<VerificationUploadedFile | null>(null);
+
+  const [companyNameError, setCompanyNameError] = useState<string | undefined>(
+    undefined
+  );
+  const [cacNumberError, setCacNumberError] = useState<string | undefined>(
+    undefined
+  );
+  const [cacCertificateError, setCacCertificateError] = useState<
+    string | undefined
+  >(undefined);
+  const [incorporationError, setIncorporationError] = useState<
+    string | undefined
+  >(undefined);
+  const [isSubmittingLocal, setIsSubmittingLocal] = useState(false);
+
+  const cacUrlRef = useRef<string | null>(null);
+  const incorporationUrlRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (cacUrlRef.current) URL.revokeObjectURL(cacUrlRef.current);
+      if (incorporationUrlRef.current) {
+        URL.revokeObjectURL(incorporationUrlRef.current);
+      }
+    };
+  }, []);
+
+  const handleCompanyNameChange = useCallback((value: string) => {
+    setCompanyName(value);
+    setCompanyNameError(undefined);
+  }, []);
+
+  const handleCacNumberChange = useCallback((value: string) => {
+    setCacNumber(value);
+    setCacNumberError(undefined);
+  }, []);
+
+  const handleCacCertificateSelect = useCallback((file: File) => {
+    const validation = validateCompanyDocumentFile(file);
+    if (!validation.valid) {
+      setCacCertificateError(validation.error);
+      toast.error(validation.error ?? "Invalid CAC Certificate file.");
+      return;
+    }
+
+    if (cacUrlRef.current) {
+      URL.revokeObjectURL(cacUrlRef.current);
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    cacUrlRef.current = previewUrl;
+
+    setCacCertificateFile({
+      name: file.name,
+      size: file.size,
+      sizeLabel: formatVerificationFileSize(file.size),
+      type: file.type,
+      previewUrl,
+    });
+    setCacCertificateError(undefined);
+  }, []);
+
+  const handleCacCertificateRemove = useCallback(() => {
+    if (cacUrlRef.current) {
+      URL.revokeObjectURL(cacUrlRef.current);
+      cacUrlRef.current = null;
+    }
+    setCacCertificateFile(null);
+    setCacCertificateError(undefined);
+  }, []);
+
+  const handleIncorporationSelect = useCallback((file: File) => {
+    const validation = validateCompanyDocumentFile(file);
+    if (!validation.valid) {
+      setIncorporationError(validation.error);
+      toast.error(validation.error ?? "Invalid Incorporation Document file.");
+      return;
+    }
+
+    if (incorporationUrlRef.current) {
+      URL.revokeObjectURL(incorporationUrlRef.current);
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    incorporationUrlRef.current = previewUrl;
+
+    setIncorporationFile({
+      name: file.name,
+      size: file.size,
+      sizeLabel: formatVerificationFileSize(file.size),
+      type: file.type,
+      previewUrl,
+    });
+    setIncorporationError(undefined);
+  }, []);
+
+  const handleIncorporationRemove = useCallback(() => {
+    if (incorporationUrlRef.current) {
+      URL.revokeObjectURL(incorporationUrlRef.current);
+      incorporationUrlRef.current = null;
+    }
+    setIncorporationFile(null);
+    setIncorporationError(undefined);
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    router.push(buildCompanyVerificationOverviewHref());
+  }, [router]);
+
+  const handleSubmit = useCallback(async () => {
+    const nameCheck = validateCompanyName(companyName);
+    const cacCheck = validateCacRegistrationNumber(cacNumber);
+    const hasCacFile = Boolean(cacCertificateFile);
+    const hasIncorporationFile = Boolean(incorporationFile);
+
+    if (!nameCheck.valid) {
+      setCompanyNameError(nameCheck.error);
+    }
+    if (!cacCheck.valid) {
+      setCacNumberError(cacCheck.error);
+    }
+    if (!hasCacFile) {
+      setCacCertificateError("Please upload your CAC Certificate.");
+    }
+    if (!hasIncorporationFile) {
+      setIncorporationError("Please upload your Incorporation Document.");
+    }
+
+    if (
+      !nameCheck.valid ||
+      !cacCheck.valid ||
+      !hasCacFile ||
+      !hasIncorporationFile ||
+      !cacCertificateFile ||
+      !incorporationFile
+    ) {
+      toast.error("Please complete all required company verification fields.");
+      return;
+    }
+
+    setIsSubmittingLocal(true);
+    const verificationId = generateCompanyVerificationId();
+    const verifiedDate = formatVerificationDisplayDate(new Date());
+
+    try {
+      await submitMutation({
+        companyName: companyName.trim(),
+        cacRegistrationNumber: cacNumber.trim(),
+        cacCertificateFileName: cacCertificateFile.name,
+        incorporationFileName: incorporationFile.name,
+      }).unwrap();
+    } catch {
+      // Mock fallback: persist local verified business entity when backend is unavailable
+    } finally {
+      dispatch(
+        submitCompanyVerificationLocal({
+          companyName: companyName.trim(),
+          cacRegistrationNumber: cacNumber.trim(),
+          cacCertificateFileName: cacCertificateFile.name,
+          incorporationFileName: incorporationFile.name,
+          verificationId,
+          verifiedDate,
+        })
+      );
+      setIsSubmittingLocal(false);
+    }
+
+    toast.success("Company entity verified successfully!");
+    router.push(buildCompanyVerificationStatusHref("verified"));
+  }, [
+    cacCertificateFile,
+    cacNumber,
+    companyName,
+    dispatch,
+    incorporationFile,
+    router,
+    submitMutation,
+  ]);
+
+  return {
+    companyName,
+    companyNameError,
+    cacNumber,
+    cacNumberError,
+    cacCertificateFile,
+    cacCertificateError,
+    incorporationFile,
+    incorporationError,
+    isSubmitting: isSubmittingLocal || isMutating,
+    handleCompanyNameChange,
+    handleCacNumberChange,
+    handleCacCertificateSelect,
+    handleCacCertificateRemove,
+    handleIncorporationSelect,
+    handleIncorporationRemove,
+    handleCancel,
+    handleSubmit,
+  };
+}
+
+export function useCompanyVerificationStatusService(
+  overrideStatus?: string | null
+) {
+  const router = useRouter();
+  const reduxRecord = useAppSelector(selectCompanyVerificationRecord);
+  const record = resolveCompanyVerificationRecordForStatus(
+    reduxRecord,
+    overrideStatus
+  );
+  const [hasCopiedShareLink, setHasCopiedShareLink] = useState(false);
+
+  const handleViewCompanyProfile = useCallback(() => {
+    router.push("/profile");
+  }, [router]);
+
+  const handleGoToDashboard = useCallback(() => {
+    router.push("/dashboard");
+  }, [router]);
+
+  const handleShareVerifiedStatus = useCallback(async () => {
+    const shareUrl =
+      typeof window !== "undefined"
+        ? `${window.location.origin}/verification/company/status?status=verified`
+        : "/verification/company/status?status=verified";
+
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+      }
+      setHasCopiedShareLink(true);
+      toast.success("Verified business link copied to clipboard!");
+    } catch {
+      setHasCopiedShareLink(true);
+      toast.success("Verified business status ready to share!");
+    }
+  }, []);
+
+  const handleBackToOverview = useCallback(() => {
+    router.push(buildCompanyVerificationOverviewHref());
+  }, [router]);
+
+  const handleStartVerification = useCallback(() => {
+    router.push(buildCompanyVerificationSubmitHref());
+  }, [router]);
+
+  return {
+    record,
+    hasCopiedShareLink,
+    handleViewCompanyProfile,
+    handleGoToDashboard,
+    handleShareVerifiedStatus,
     handleBackToOverview,
     handleStartVerification,
   };

@@ -25,6 +25,7 @@ const BENEFIT_ICONS: Record<string, typeof BadgeCheck> = {
 export function VerificationBenefitsModal({
   isOpen,
   isVerified = false,
+  ctaLabel = "Get Verified Now",
   onClose,
   onStartVerification,
 }: VerificationBenefitsModalProps) {
@@ -138,7 +139,7 @@ export function VerificationBenefitsModal({
                 }}
                 className="h-9 px-5 rounded-lg text-xs font-semibold shadow-xs"
               >
-                Get Verified Now
+                {ctaLabel}
               </Button>
             </>
           )}

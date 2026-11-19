@@ -231,6 +231,21 @@ export const PAGE_METADATA = {
     description:
       "View your MyKostoma professional identity verification result and credential details.",
   },
+  companyVerificationOverview: {
+    title: "Company Verification",
+    description:
+      "Verify your business entity with CAC incorporation documents to unlock corporate features on MyKostoma.",
+  },
+  companyVerificationSubmit: {
+    title: "Company Details & Documents",
+    description:
+      "Provide your official company details and upload CAC incorporation documents for MyKostoma business verification.",
+  },
+  companyVerificationStatus: {
+    title: "Company Verification Status",
+    description:
+      "View your MyKostoma business entity verification result and credential details.",
+  },
 
   // Not Found
   notFound: {

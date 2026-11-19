@@ -1,6 +1,9 @@
 import type {
+  CompanyRequirementItem,
+  CompanyVerificationRecord,
   VerificationDocumentOption,
   VerificationDocumentType,
+  VerificationModeTab,
   VerificationRecord,
   VerificationStatus,
   VerificationUploadedFile,
@@ -8,8 +11,11 @@ import type {
 } from "@/components/verification/types";
 
 export type {
+  CompanyRequirementItem,
+  CompanyVerificationRecord,
   VerificationDocumentOption,
   VerificationDocumentType,
+  VerificationModeTab,
   VerificationRecord,
   VerificationStatus,
   VerificationUploadedFile,
@@ -33,4 +39,19 @@ export interface SubmitVerificationPayload {
   documentNumber: string;
   frontFileName: string;
   backFileName?: string;
+}
+
+export interface CompanyVerificationOverviewViewProps {
+  initialStatus?: VerificationStatus;
+}
+
+export interface CompanyVerificationStatusViewProps {
+  initialStatus?: VerificationStatus;
+}
+
+export interface SubmitCompanyVerificationPayload {
+  companyName: string;
+  cacRegistrationNumber: string;
+  cacCertificateFileName: string;
+  incorporationFileName: string;
 }

@@ -93,6 +93,7 @@ export interface DeleteBankAccountModalProps {
 export interface VerificationBenefitsModalProps {
   isOpen: boolean;
   isVerified?: boolean;
+  ctaLabel?: string;
   onClose: () => void;
   onStartVerification: () => void;
 }

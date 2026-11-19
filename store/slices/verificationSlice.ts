@@ -2,11 +2,18 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { baseApi } from "../api/baseApi";
 import type { RootState } from "../index";
 import type {
+  CompanyVerificationRecord,
   VerificationDocumentType,
   VerificationRecord,
 } from "@/components/verification/types";
-import type { SubmitVerificationPayload } from "@/features/verification/types";
-import { DEFAULT_UNVERIFIED_RECORD } from "@/features/verification/data";
+import type {
+  SubmitCompanyVerificationPayload,
+  SubmitVerificationPayload,
+} from "@/features/verification/types";
+import {
+  DEFAULT_UNVERIFIED_COMPANY_RECORD,
+  DEFAULT_UNVERIFIED_RECORD,
+} from "@/features/verification/data";
 
 export interface VerificationDraftMeta {
   documentType: VerificationDocumentType;
@@ -15,14 +22,25 @@ export interface VerificationDraftMeta {
   backFileName?: string;
 }
 
+export interface CompanyVerificationDraftMeta {
+  companyName: string;
+  cacRegistrationNumber: string;
+  cacCertificateFileName: string;
+  incorporationFileName: string;
+}
+
 export interface VerificationSliceState {
   record: VerificationRecord;
   lastSubmittedDraft: VerificationDraftMeta | null;
+  companyRecord: CompanyVerificationRecord;
+  lastCompanyDraft: CompanyVerificationDraftMeta | null;
 }
 
 const initialState: VerificationSliceState = {
   record: DEFAULT_UNVERIFIED_RECORD,
   lastSubmittedDraft: null,
+  companyRecord: DEFAULT_UNVERIFIED_COMPANY_RECORD,
+  lastCompanyDraft: null,
 };
 
 const verificationSlice = createSlice({
@@ -76,6 +94,52 @@ const verificationSlice = createSlice({
       state.record = DEFAULT_UNVERIFIED_RECORD;
       state.lastSubmittedDraft = null;
     },
+    submitCompanyVerificationLocal: (
+      state,
+      action: PayloadAction<{
+        companyName: string;
+        cacRegistrationNumber: string;
+        cacCertificateFileName: string;
+        incorporationFileName: string;
+        verificationId: string;
+        verifiedDate: string;
+      }>
+    ) => {
+      const {
+        companyName,
+        cacRegistrationNumber,
+        cacCertificateFileName,
+        incorporationFileName,
+        verificationId,
+        verifiedDate,
+      } = action.payload;
+
+      state.companyRecord = {
+        status: "verified",
+        verificationId,
+        companyName,
+        cacRegistrationNumber,
+        verifiedDate,
+        incorporationStatus: "Active Incorporation",
+        documentsCount: state.record.status === "verified" ? 3 : 2,
+      };
+      state.lastCompanyDraft = {
+        companyName,
+        cacRegistrationNumber,
+        cacCertificateFileName,
+        incorporationFileName,
+      };
+    },
+    setCompanyVerificationRecordLocal: (
+      state,
+      action: PayloadAction<CompanyVerificationRecord>
+    ) => {
+      state.companyRecord = action.payload;
+    },
+    resetCompanyVerificationLocal: (state) => {
+      state.companyRecord = DEFAULT_UNVERIFIED_COMPANY_RECORD;
+      state.lastCompanyDraft = null;
+    },
   },
 });
 
@@ -83,6 +147,9 @@ export const {
   submitVerificationLocal,
   setVerificationRecordLocal,
   resetVerificationLocal,
+  submitCompanyVerificationLocal,
+  setCompanyVerificationRecordLocal,
+  resetCompanyVerificationLocal,
 } = verificationSlice.actions;
 
 export const selectVerificationRecord = (state: RootState) =>
@@ -93,6 +160,15 @@ export const selectIsProfessionalVerified = (state: RootState) =>
   state.verification.record.status === "verified";
 export const selectLastSubmittedDraft = (state: RootState) =>
   state.verification.lastSubmittedDraft;
+
+export const selectCompanyVerificationRecord = (state: RootState) =>
+  state.verification.companyRecord;
+export const selectCompanyVerificationStatus = (state: RootState) =>
+  state.verification.companyRecord.status;
+export const selectIsCompanyVerified = (state: RootState) =>
+  state.verification.companyRecord.status === "verified";
+export const selectLastCompanyDraft = (state: RootState) =>
+  state.verification.lastCompanyDraft;
 
 export const verificationApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -111,6 +187,24 @@ export const verificationApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Verification", "Profile", "User"],
     }),
+    getCompanyVerificationStatus: builder.query<
+      CompanyVerificationRecord,
+      void
+    >({
+      query: () => "/verification/company/status",
+      providesTags: ["Verification"],
+    }),
+    submitCompanyVerification: builder.mutation<
+      CompanyVerificationRecord,
+      SubmitCompanyVerificationPayload
+    >({
+      query: (body) => ({
+        url: "/verification/company/submit",
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Verification", "Profile", "User"],
+    }),
   }),
   overrideExisting: false,
 });
@@ -118,6 +212,8 @@ export const verificationApi = baseApi.injectEndpoints({
 export const {
   useGetVerificationStatusQuery,
   useSubmitVerificationDocumentMutation,
+  useGetCompanyVerificationStatusQuery,
+  useSubmitCompanyVerificationMutation,
 } = verificationApi;
 
 export default verificationSlice.reducer;

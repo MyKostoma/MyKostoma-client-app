@@ -1,4 +1,6 @@
 import type {
+  CompanyRequirementItem,
+  CompanyVerificationRecord,
   VerificationBenefitItem,
   VerificationDocumentOption,
   VerificationRecord,
@@ -110,4 +112,61 @@ export const DEFAULT_REJECTED_RECORD: VerificationRecord = {
   documentNumberMasked: "•••••••4829",
   rejectionReason:
     "The uploaded document image appeared slightly blurry around the identification number. Please upload clear, glare-free photos showing all four corners.",
+};
+
+export const COMPANY_VERIFICATION_REQUIREMENTS: readonly CompanyRequirementItem[] = [
+  {
+    id: "name",
+    label: "Official Company Name and Registration Number",
+    icon: "building",
+  },
+  {
+    id: "cac",
+    label: "Valid CAC Certificate or Incorporation Document",
+    icon: "document",
+  },
+  {
+    id: "authorized",
+    label: "Authorized person identification",
+    icon: "person",
+  },
+];
+
+export const COMPANY_DOCUMENT_REQUIREMENTS: readonly string[] = [
+  "Document must be the original or certified true copy",
+  "All text must be clearly legible and not blurry",
+  "Ensure the company stamp/seal is visible where applicable",
+  "Files must not exceed 10MB per document",
+];
+
+export const DEFAULT_UNVERIFIED_COMPANY_RECORD: CompanyVerificationRecord = {
+  status: "unverified",
+};
+
+export const DEFAULT_VERIFIED_COMPANY_RECORD: CompanyVerificationRecord = {
+  status: "verified",
+  verificationId: "BUS-4471-CK9",
+  companyName: "Rivera Creative Labs LLC",
+  cacRegistrationNumber: "RC 1849204",
+  verifiedDate: "Jan 12, 2026",
+  incorporationStatus: "Active Incorporation",
+  documentsCount: 3,
+};
+
+export const DEFAULT_PENDING_COMPANY_RECORD: CompanyVerificationRecord = {
+  status: "pending",
+  verificationId: "BUS-4109-PD",
+  companyName: "Rivera Creative Labs LLC",
+  cacRegistrationNumber: "RC 1849204",
+  submittedAt: "Just now",
+};
+
+export const DEFAULT_REJECTED_COMPANY_RECORD: CompanyVerificationRecord = {
+  status: "rejected",
+  verificationId: "BUS-3892-RJ",
+  companyName: "Rivera Creative Labs LLC",
+  cacRegistrationNumber: "RC 1849204",
+  submittedAt: "Oct 18, 2026",
+  rejectionReason:
+    "The uploaded CAC Certificate was missing the company seal. Please submit a certified true copy showing the registration stamp.",
 };
