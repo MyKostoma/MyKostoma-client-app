@@ -1,4 +1,17 @@
 import type {
+  ProBankAccount,
+  ProBankAccountFormValues,
+  ProBankAccountType,
+  ProPayoutSchedule,
+  ProPayoutSettingsState,
+  ProTransactionDirection,
+  ProTransactionFiltersState,
+  ProTransactionStatus,
+  ProWalletSummary,
+  ProWalletTransactionItem,
+  ProWithdrawalSession,
+  ProWithdrawalStatusState,
+  ProWithdrawalStep,
   WalletBalanceSummary,
   WalletBankTransferDetails,
   WalletFundingMethod,
@@ -12,6 +25,19 @@ import type {
 } from "@/components/wallet/types";
 
 export type {
+  ProBankAccount,
+  ProBankAccountFormValues,
+  ProBankAccountType,
+  ProPayoutSchedule,
+  ProPayoutSettingsState,
+  ProTransactionDirection,
+  ProTransactionFiltersState,
+  ProTransactionStatus,
+  ProWalletSummary,
+  ProWalletTransactionItem,
+  ProWithdrawalSession,
+  ProWithdrawalStatusState,
+  ProWithdrawalStep,
   WalletBalanceSummary,
   WalletBankTransferDetails,
   WalletFundingMethod,
@@ -45,5 +71,17 @@ export interface WalletTransactionsViewProps {
 
 export interface WalletTransactionDetailViewProps {
   transactionId: string;
+}
+
+export interface ProWalletWithdrawViewProps {
+  initialStep?: ProWithdrawalStep;
+}
+
+export interface ProWalletWithdrawStatusViewProps {
+  initialStatus?: ProWithdrawalStatusState;
+}
+
+export interface ProWalletAddBankViewProps {
+  editBankId?: string;
 }
 

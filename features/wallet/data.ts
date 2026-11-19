@@ -1,5 +1,11 @@
 import type { SelectOption } from "@/components/ui/form-fields";
 import type {
+  ProBankAccount,
+  ProPayoutSettingsState,
+  ProTransactionFiltersState,
+  ProWalletSummary,
+  ProWalletTransactionItem,
+  ProWithdrawalSession,
   WalletBalanceSummary,
   WalletBankTransferDetails,
   WalletFundingSession,
@@ -184,4 +190,235 @@ export const WALLET_TRANSACTION_STATUS_OPTIONS: SelectOption[] = [
   { value: "pending", label: "Pending / Held" },
   { value: "failed", label: "Failed" },
 ];
+
+// ============================================================================
+// PROFESSIONAL WALLET MODULE MOCK DATA
+// ============================================================================
+
+export const PRO_WITHDRAWAL_FEE = 50;
+
+export const DEFAULT_PRO_WALLET_SUMMARY: ProWalletSummary = {
+  availableBalance: 250000,
+  currency: "NGN",
+  pendingBalance: 45000,
+  escrowBalance: 120000,
+  totalCredits: 1240000,
+  totalDebits: 450000,
+};
+
+export const DEFAULT_PRO_BANK_ACCOUNTS: ProBankAccount[] = [
+  {
+    id: "bank-zenith-4829",
+    bankName: "Zenith Bank PLC",
+    bankShortName: "Zenith Bank PLC",
+    accountNumber: "2048194829",
+    last4: "4829",
+    accountName: "Alex Studio Design LTD",
+    accountType: "current",
+    isPrimary: true,
+    isVerified: true,
+  },
+  {
+    id: "bank-gtb-9012",
+    bankName: "Guaranty Trust Bank",
+    bankShortName: "GTBank",
+    accountNumber: "0128499012",
+    last4: "9012",
+    accountName: "Alexander O. Studio",
+    accountType: "savings",
+    isPrimary: false,
+    isVerified: true,
+  },
+];
+
+export const DEFAULT_PRO_PAYOUT_SETTINGS: ProPayoutSettingsState = {
+  schedule: "daily",
+  payoutAlertsEnabled: true,
+  require2FAForWithdrawals: true,
+};
+
+export const DEFAULT_PRO_WALLET_TRANSACTIONS: ProWalletTransactionItem[] = [
+  {
+    id: "TXN-4920194",
+    referenceId: "#REF-49201",
+    dateFormatted: "Oct 12, 2026",
+    dateTimeFormatted: "Oct 12, 2026, 15:20",
+    dateISO: "2026-10-12",
+    monthKey: "oct-2026",
+    title: "Brand Identity - Project Alpha",
+    subtitle: "Project Payment",
+    historySubtitle: "Project Milestone",
+    description:
+      "Brand Identity - Project Alpha — Final deliverable approval and escrow milestone payout.",
+    direction: "credit",
+    typeDetailLabel: "Service Payment (Credit)",
+    amount: 85000,
+    status: "completed",
+    paymentMethod: "Escrow Release",
+    relatedProjectTitle: "Brand Identity Design",
+    relatedOrderId: "ORD-2026-089",
+    clientName: "Elena Rodriguez",
+  },
+  {
+    id: "TXN-3829102",
+    referenceId: "#REF-38291",
+    dateFormatted: "Oct 10, 2026",
+    dateTimeFormatted: "Oct 10, 2026, 11:05",
+    dateISO: "2026-10-10",
+    monthKey: "oct-2026",
+    title: "Withdrawal to Zenith Bank",
+    subtitle: "Payout",
+    historySubtitle: "Payout",
+    description:
+      "Manual wallet payout transferred to Zenith Bank PLC account ending in •••• 4829.",
+    direction: "debit",
+    typeDetailLabel: "Bank Withdrawal (Debit)",
+    amount: 120000,
+    status: "completed",
+    paymentMethod: "Nigerian Bank Transfer",
+  },
+  {
+    id: "TXN-9021832",
+    referenceId: "#REF-90218",
+    dateFormatted: "Oct 08, 2026",
+    dateTimeFormatted: "Oct 08, 2026, 09:40",
+    dateISO: "2026-10-08",
+    monthKey: "oct-2026",
+    title: "UI Audit - Beta Tech",
+    subtitle: "Service Fee",
+    historySubtitle: "Service Fee",
+    description:
+      "UI/UX Usability Audit for Beta Tech dashboard — Clearing pending standard 24-48 hour verification window.",
+    direction: "credit",
+    typeDetailLabel: "Service Payment (Credit)",
+    amount: 45000,
+    status: "pending",
+    paymentMethod: "Escrow Release",
+    relatedProjectTitle: "Beta Tech UI Audit",
+    relatedOrderId: "ORD-2026-045",
+    clientName: "Marcus Chen",
+  },
+  {
+    id: "TXN-1120493",
+    referenceId: "#REF-11204",
+    dateFormatted: "Oct 05, 2026",
+    dateTimeFormatted: "Oct 05, 2026, 16:12",
+    dateISO: "2026-10-05",
+    monthKey: "oct-2026",
+    title: "Project Maintenance",
+    subtitle: "Monthly Support",
+    historySubtitle: "Monthly Support",
+    description:
+      "Monthly retainer billing failed due to expired client authorization.",
+    direction: "credit",
+    typeDetailLabel: "Service Payment (Credit)",
+    amount: 25000,
+    status: "failed",
+    paymentMethod: "Card Authorization",
+    relatedProjectTitle: "Monthly Support Retainer",
+    clientName: "Urban Loft Co.",
+  },
+  {
+    id: "TXN-0028472",
+    referenceId: "#REF-00284",
+    dateFormatted: "Oct 03, 2026",
+    dateTimeFormatted: "Oct 03, 2026, 10:15",
+    dateISO: "2026-10-03",
+    monthKey: "oct-2026",
+    title: "Consultation Fee",
+    subtitle: "Hourly Rate",
+    historySubtitle: "Hourly Rate",
+    description:
+      "Direct 1-on-1 design strategy and visual direction consultation session.",
+    direction: "credit",
+    typeDetailLabel: "Service Payment (Credit)",
+    amount: 15000,
+    status: "completed",
+    paymentMethod: "Escrow Release",
+    relatedProjectTitle: "Design Strategy Session",
+    clientName: "Sarah Jenkins",
+  },
+  {
+    id: "TXN-987654321",
+    referenceId: "#REF-12345",
+    dateFormatted: "Oct 24, 2026",
+    dateTimeFormatted: "Oct 24, 2026, 14:30",
+    dateISO: "2026-10-24",
+    monthKey: "oct-2026",
+    title: "Logo Design for Client XYZ",
+    subtitle: "Service Payment",
+    historySubtitle: "Service Payment",
+    description:
+      "Logo Design for Client XYZ — Final Milestone delivery and brand kit preparation.",
+    direction: "credit",
+    typeDetailLabel: "Service Payment (Credit)",
+    amount: 50000,
+    status: "completed",
+    paymentMethod: "Escrow Release",
+    relatedProjectTitle: "Brand Identity Design",
+    relatedOrderId: "ORD-2026-001",
+    clientName: "John Doe",
+  },
+];
+
+export const DEFAULT_PRO_WITHDRAWAL_SESSION: ProWithdrawalSession = {
+  transactionId: "TXN-123456789",
+  amount: 100000,
+  fee: PRO_WITHDRAWAL_FEE,
+  netAmount: 99950,
+  bankAccountId: "bank-gtb-9012",
+  bankName: "Guaranty Trust Bank",
+  bankShortName: "GTBank",
+  last4: "9012",
+  accountName: "Alexander O. Studio",
+  status: "processing",
+  errorCode: "BANK_REJECTED_01",
+  createdAt: "2026-10-24T14:30:00Z",
+};
+
+export const PRO_NIGERIAN_BANKS_OPTIONS: SelectOption[] = [
+  { value: "Zenith Bank PLC", label: "Zenith Bank PLC" },
+  { value: "Guaranty Trust Bank", label: "Guaranty Trust Bank (GTBank)" },
+  { value: "Access Bank PLC", label: "Access Bank PLC" },
+  { value: "First Bank of Nigeria", label: "First Bank of Nigeria" },
+  {
+    value: "United Bank for Africa",
+    label: "United Bank for Africa (UBA)",
+  },
+  { value: "Fidelity Bank PLC", label: "Fidelity Bank PLC" },
+  {
+    value: "First City Monument Bank",
+    label: "First City Monument Bank (FCMB)",
+  },
+  { value: "Stanbic IBTC Bank", label: "Stanbic IBTC Bank" },
+  { value: "Sterling Bank PLC", label: "Sterling Bank PLC" },
+  { value: "Kuda Microfinance Bank", label: "Kuda Microfinance Bank" },
+];
+
+export const PRO_WALLET_MONTH_OPTIONS: SelectOption[] = [
+  { value: "oct-2026", label: "Oct 2026" },
+  { value: "sep-2026", label: "Sep 2026" },
+  { value: "all", label: "All Time" },
+];
+
+export const PRO_WALLET_TYPE_OPTIONS: SelectOption[] = [
+  { value: "all", label: "All Types" },
+  { value: "credit", label: "Credit" },
+  { value: "debit", label: "Debit" },
+];
+
+export const PRO_WALLET_STATUS_OPTIONS: SelectOption[] = [
+  { value: "all", label: "All Status" },
+  { value: "completed", label: "Completed" },
+  { value: "pending", label: "Pending" },
+  { value: "failed", label: "Failed" },
+];
+
+export const DEFAULT_PRO_WALLET_FILTERS: ProTransactionFiltersState = {
+  searchQuery: "",
+  month: "oct-2026",
+  type: "all",
+  status: "all",
+};
+
 

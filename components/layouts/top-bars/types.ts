@@ -68,3 +68,12 @@ export interface WalletTopBarProps {
   className?: string;
 }
 
+export interface ProfessionalWalletTopBarProps {
+  title?: string;
+  breadcrumbs?: BreadcrumbItemConfig[];
+  highlightLastPrimary?: boolean;
+  onHelpCenter?: () => void;
+  onMenuClick?: () => void;
+  className?: string;
+}
+

@@ -1,4 +1,6 @@
 import type {
+  ProTransactionFiltersState,
+  ProWalletTransactionItem,
   WalletTransactionFiltersState,
   WalletTransactionItem,
   WalletTransactionStatus,
@@ -222,4 +224,166 @@ export function exportTransactionsToCsv(
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
 }
+
+// ============================================================================
+// PROFESSIONAL WALLET HELPERS
+// ============================================================================
+
+export function buildProPayoutSettingsHref(): string {
+  return "/wallet/payout-settings";
+}
+
+export function buildProAddBankHref(editId?: string): string {
+  if (editId) {
+    return `/wallet/payout-settings/add-bank?edit=${encodeURIComponent(editId)}`;
+  }
+  return "/wallet/payout-settings/add-bank";
+}
+
+export function buildProWithdrawHref(): string {
+  return "/wallet/withdraw";
+}
+
+export function buildProWithdrawStatusHref(status?: string): string {
+  if (status) {
+    return `/wallet/withdraw/status?status=${encodeURIComponent(status)}`;
+  }
+  return "/wallet/withdraw/status";
+}
+
+export function filterProWalletTransactions(
+  transactions: ProWalletTransactionItem[],
+  filters: ProTransactionFiltersState
+): ProWalletTransactionItem[] {
+  const q = filters.searchQuery.trim().toLowerCase();
+
+  return transactions.filter((tx) => {
+    if (filters.month !== "all" && tx.monthKey !== filters.month) {
+      return false;
+    }
+
+    if (filters.type !== "all" && tx.direction !== filters.type) {
+      return false;
+    }
+
+    if (filters.status !== "all" && tx.status !== filters.status) {
+      return false;
+    }
+
+    if (q) {
+      const haystack =
+        `${tx.title} ${tx.subtitle} ${tx.historySubtitle ?? ""} ${tx.id} ${tx.referenceId}`.toLowerCase();
+      if (!haystack.includes(q)) return false;
+    }
+
+    return true;
+  });
+}
+
+export function findProWalletTransactionById(
+  transactions: ProWalletTransactionItem[],
+  id: string
+): ProWalletTransactionItem | undefined {
+  const normalized = decodeURIComponent(id).toLowerCase();
+  return transactions.find(
+    (item) =>
+      item.id.toLowerCase() === normalized ||
+      item.referenceId.toLowerCase() === normalized
+  );
+}
+
+export function formatProSignedAmount(
+  direction: "credit" | "debit",
+  amount: number,
+  withSymbol = true
+): string {
+  const sign = direction === "credit" ? "+" : "-";
+  const formatted = formatWalletNaira(amount, {
+    showDecimals: true,
+    withSymbol,
+  });
+  return `${sign}${formatted}`;
+}
+
+export function maskBankLast4(last4: string): string {
+  return `•••• ${last4}`;
+}
+
+export function extractBankShortName(bankName: string): string {
+  const lower = bankName.toLowerCase();
+  if (lower.includes("guaranty") || lower.includes("gtbank")) return "GTBank";
+  if (lower.includes("zenith")) return "Zenith Bank";
+  if (lower.includes("access")) return "Access Bank";
+  if (lower.includes("united bank for africa") || lower.includes("uba")) {
+    return "UBA";
+  }
+  if (lower.includes("first city") || lower.includes("fcmb")) return "FCMB";
+  if (lower.includes("first bank")) return "First Bank";
+  if (lower.includes("stanbic")) return "Stanbic IBTC";
+  if (lower.includes("fidelity")) return "Fidelity Bank";
+  if (lower.includes("sterling")) return "Sterling Bank";
+  if (lower.includes("kuda")) return "Kuda Bank";
+  return bankName;
+}
+
+export function resolveMockVerifiedAccountName(
+  bankName: string,
+  accountNumber: string,
+  fallbackProfileName = "Alex Studio"
+): string {
+  if (!bankName || accountNumber.length !== 10) return "";
+  if (fallbackProfileName.toLowerCase().includes("alex")) {
+    return "Alex Studio Design LTD";
+  }
+  return fallbackProfileName.toUpperCase();
+}
+
+export function exportProTransactionsToCsv(
+  transactions: ProWalletTransactionItem[]
+): void {
+  if (typeof window === "undefined") return;
+
+  const headers = [
+    "Date",
+    "Transaction ID",
+    "Title",
+    "Subtitle",
+    "Type",
+    "Amount (NGN)",
+    "Status",
+    "Payment Method",
+    "Reference ID",
+  ];
+
+  const rows = transactions.map((tx) => [
+    `"${tx.dateFormatted}"`,
+    tx.id,
+    `"${tx.title.replace(/"/g, '""')}"`,
+    `"${(tx.historySubtitle || tx.subtitle).replace(/"/g, '""')}"`,
+    tx.direction.toUpperCase(),
+    tx.amount.toFixed(2),
+    tx.status,
+    `"${tx.paymentMethod}"`,
+    tx.referenceId,
+  ]);
+
+  const csvContent = [
+    headers.join(","),
+    ...rows.map((row) => row.join(",")),
+  ].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute(
+    "download",
+    `mykostoma-pro-transactions-${new Date().toISOString().slice(0, 10)}.csv`
+  );
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 
