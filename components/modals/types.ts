@@ -90,5 +90,12 @@ export interface DeleteBankAccountModalProps {
   onConfirmDelete: () => void;
 }
 
+export interface VerificationBenefitsModalProps {
+  isOpen: boolean;
+  isVerified?: boolean;
+  onClose: () => void;
+  onStartVerification: () => void;
+}
+
 
 

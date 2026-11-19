@@ -215,6 +215,23 @@ export const PAGE_METADATA = {
     description: "Track live payout processing, bank transfer confirmation, and withdrawal receipts on MyKostoma.",
   },
 
+  // Professional Verification Module (/verification*)
+  verificationOverview: {
+    title: "Professional Verification",
+    description:
+      "Manage and view the status of your personal and business credentials to unlock premium features and increase your trust score on MyKostoma.",
+  },
+  verificationSubmit: {
+    title: "Select Identity Document",
+    description:
+      "Submit a valid Nigerian government-issued identity document for secure MyKostoma professional verification.",
+  },
+  verificationStatus: {
+    title: "Verification Status",
+    description:
+      "View your MyKostoma professional identity verification result and credential details.",
+  },
+
   // Not Found
   notFound: {
     title: "404 - Page Not Found",

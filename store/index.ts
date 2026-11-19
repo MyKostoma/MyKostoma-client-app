@@ -21,6 +21,7 @@ import quotationsReducer from "./slices/quotationsSlice"
 import ordersReducer from "./slices/ordersSlice"
 import shopReducer from "./slices/shopSlice"
 import walletReducer from "./slices/walletSlice"
+import verificationReducer from "./slices/verificationSlice"
 import notificationsReducer from "./slices/notificationsSlice"
 import messagesReducer from "./slices/messagesSlice"
 import professionalDashboardReducer from "./slices/professionalDashboardSlice"
@@ -66,6 +67,7 @@ const rootReducer = combineReducers({
   orders: ordersReducer,
   shop: shopReducer,
   wallet: walletReducer,
+  verification: verificationReducer,
   notifications: notificationsReducer,
   messages: messagesReducer,
   professionalDashboard: professionalDashboardReducer,

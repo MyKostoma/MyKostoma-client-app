@@ -77,3 +77,13 @@ export interface ProfessionalWalletTopBarProps {
   className?: string;
 }
 
+export interface VerificationTopBarProps {
+  title?: string;
+  breadcrumbs?: BreadcrumbItemConfig[];
+  highlightLastPrimary?: boolean;
+  onHelpCenter?: () => void;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
+

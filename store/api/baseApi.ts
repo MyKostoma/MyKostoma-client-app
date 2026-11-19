@@ -181,6 +181,7 @@ export const baseApi = createApi({
     "SavedItem",
     "Earning",
     "Wallet",
+    "Verification",
     "Message",
     "Notification",
   ],
