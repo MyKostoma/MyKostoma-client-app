@@ -20,6 +20,13 @@ export const PROFILE_TABS: ProfileTabOption[] = [
   { id: "reviews", label: "Reviews" },
 ];
 
+export const COMPANY_PROFILE_TABS: ProfileTabOption[] = [
+  { id: "overview", label: "Identity & About" },
+  { id: "services", label: "Service Cards" },
+  { id: "portfolio", label: "Portfolio" },
+  { id: "reviews", label: "Reviews" },
+];
+
 export function ProfileTabsNav({
   tabs = PROFILE_TABS,
   activeTab,

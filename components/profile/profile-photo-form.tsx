@@ -29,6 +29,7 @@ const GUIDELINE_ICONS: Record<
 };
 
 export function ProfilePhotoForm({
+  variant = "individual",
   displayName,
   previewUrl,
   hasCustomPhoto,
@@ -43,6 +44,7 @@ export function ProfilePhotoForm({
   onCancel,
   onSubmit,
 }: ProfilePhotoFormProps) {
+  const isCompany = variant === "company";
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +77,7 @@ export function ProfilePhotoForm({
         </button>
 
         <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
-          Profile Photo
+          {isCompany ? "Company Logo" : "Profile Photo"}
         </h1>
       </div>
 
@@ -94,7 +96,7 @@ export function ProfilePhotoForm({
             <FallbackImage
               src={previewUrl}
               alt={displayName}
-              fallbackType="user"
+              fallbackType={isCompany ? "company" : "user"}
               variant="avatar"
               className="w-full h-full object-cover"
             />

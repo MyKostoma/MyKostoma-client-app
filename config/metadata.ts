@@ -49,6 +49,16 @@ export const PAGE_METADATA = {
     description:
       "Upload, update, or remove your public MyKostoma professional profile photo.",
   },
+  companyProfile: {
+    title: "Company Profile",
+    description:
+      "View business credentials, CAC verification, operating hours, service catalog, portfolio, and client reviews on MyKostoma.",
+  },
+  companyProfileEdit: {
+    title: "Edit Company Profile",
+    description:
+      "Update your business name, category, location, company bio, specializations, and logo on MyKostoma.",
+  },
 
   // Authentication
   login: {

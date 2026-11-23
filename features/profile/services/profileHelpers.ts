@@ -1,4 +1,5 @@
 import type {
+  CompanyProfileDetails,
   ProfessionalProfileData,
   ProfilePortfolioItem,
   ProfileReviewFilter,
@@ -37,6 +38,68 @@ export function buildPublicProfileHref(
   return tab && tab !== "overview"
     ? `/profile/${id}?tab=${tab}`
     : `/profile/${id}`;
+}
+
+export function buildCompanyProfileHref(tab?: ProfileTabId): string {
+  return tab && tab !== "overview"
+    ? `/profile/company?tab=${tab}`
+    : "/profile/company";
+}
+
+export function buildEditCompanyProfileHref(): string {
+  return "/profile/company/edit";
+}
+
+export function buildCompanyPhotoHref(): string {
+  return "/profile/photo?mode=company";
+}
+
+export function resolveCompanyProfileDetails(
+  profile: ProfessionalProfileData
+): CompanyProfileDetails {
+  if (profile.companyDetails) {
+    return profile.companyDetails;
+  }
+
+  const monogram =
+    profile.name
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((word) => word[0]?.toUpperCase() ?? "")
+      .join("") || "CO";
+
+  const primaryArea = profile.location.split(",")[0]?.trim() || profile.location;
+  const stateLabel =
+    profile.location.split(",")[1]?.trim()?.toUpperCase() || "NIGERIA";
+
+  return {
+    logoMonogram: monogram,
+    teamStrength: "15+ Professionals",
+    yearsActive: profile.experienceLabel || "5+ Years",
+    projectsCompleted: "80+ Completed",
+    activeCoverageLabel: `ACTIVE COVERAGE: ${stateLabel}`,
+    hqLabel: `HQ: ${primaryArea.toUpperCase()}`,
+    coverageZones: [primaryArea, "Lagos Mainland", "Lekki Axis"],
+    cacNumber: "RC: VERIFIED",
+    cacStatusLabel: "ACTIVE & VERIFIED",
+    trustChecks: [
+      { id: "identity", label: "Identity Check", verified: true },
+      { id: "address", label: "Address Proof", verified: true },
+      { id: "license", label: "Professional License", verified: true },
+    ],
+    operatingHours: [
+      { day: "Monday - Friday", hours: "08:00 - 18:00" },
+      { day: "Saturday", hours: "10:00 - 16:00" },
+      { day: "Sunday", hours: "Closed", isClosed: true },
+    ],
+    isCurrentlyOpen: true,
+    socialLinks: {
+      website: "https://mykostoma.com",
+      linkedin: "https://linkedin.com",
+      instagram: "https://instagram.com",
+    },
+  };
 }
 
 export function normalizeProfileTab(raw?: string | null): ProfileTabId {

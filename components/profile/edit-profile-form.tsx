@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import type { EditProfileFormProps } from "./types";
 
 export function EditProfileForm({
+  variant = "individual",
   fullName,
   fullNameError,
   category,
@@ -39,6 +40,7 @@ export function EditProfileForm({
   onCancel,
   onSubmit,
 }: EditProfileFormProps) {
+  const isCompany = variant === "company";
   const handleFormSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onSubmit();
@@ -70,18 +72,18 @@ export function EditProfileForm({
         </button>
 
         <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
-          Edit Profile
+          {isCompany ? "Edit Company Profile" : "Edit Profile"}
         </h1>
       </div>
 
-      {/* Profile Picture Card */}
+      {/* Profile Picture / Company Logo Card */}
       <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-2xs flex items-center gap-5">
         <div className="relative shrink-0">
           <div className="size-20 sm:size-22 rounded-2xl border border-border bg-secondary overflow-hidden">
             <FallbackImage
               src={avatarUrl}
               alt={fullName}
-              fallbackType="user"
+              fallbackType={isCompany ? "company" : "user"}
               variant="avatar"
               className="w-full h-full object-cover"
             />
@@ -89,7 +91,7 @@ export function EditProfileForm({
           <button
             type="button"
             onClick={onUploadPhotoClick}
-            aria-label="Change profile photo"
+            aria-label={isCompany ? "Change company logo" : "Change profile photo"}
             className="absolute -bottom-1.5 -right-1.5 size-7 rounded-lg border-2 border-card bg-primary text-primary-foreground flex items-center justify-center shadow-xs hover:bg-primary-hover transition-colors cursor-pointer"
           >
             <Camera className="size-3.5" />
@@ -98,7 +100,9 @@ export function EditProfileForm({
 
         <div className="space-y-2 min-w-0">
           <div>
-            <p className="text-sm font-bold text-foreground">Profile Picture</p>
+            <p className="text-sm font-bold text-foreground">
+              {isCompany ? "Company Logo" : "Profile Picture"}
+            </p>
             <p className="text-xs text-muted-foreground">
               PNG or JPG. Max 5MB.
             </p>
@@ -132,7 +136,7 @@ export function EditProfileForm({
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FormField
             id="edit-profile-fullname"
-            label="FULL NAME"
+            label={isCompany ? "BUSINESS NAME" : "FULL NAME"}
             state={fullNameError ? "error" : "default"}
             errorMessage={fullNameError}
           >
@@ -140,14 +144,19 @@ export function EditProfileForm({
               id="edit-profile-fullname"
               value={fullName}
               onChange={(e) => onFullNameChange(e.target.value)}
-              placeholder="Enter your full name"
+              placeholder={
+                isCompany ? "Enter your business name" : "Enter your full name"
+              }
               disabled={isSaving}
               state={fullNameError ? "error" : "default"}
               className="h-11 rounded-xl bg-card"
             />
           </FormField>
 
-          <FormField id="edit-profile-category" label="PROFESSIONAL CATEGORY">
+          <FormField
+            id="edit-profile-category"
+            label={isCompany ? "BUSINESS CATEGORY" : "PROFESSIONAL CATEGORY"}
+          >
             <Select
               id="edit-profile-category"
               value={category}
@@ -226,7 +235,7 @@ export function EditProfileForm({
         <div className="space-y-1.5">
           <FormField
             id="edit-profile-bio"
-            label="PROFESSIONAL BIO"
+            label={isCompany ? "COMPANY BIO" : "PROFESSIONAL BIO"}
             state={bioError ? "error" : "default"}
             errorMessage={bioError}
           >
@@ -234,7 +243,11 @@ export function EditProfileForm({
               id="edit-profile-bio"
               value={bio}
               onChange={(e) => onBioChange(e.target.value)}
-              placeholder="Write a concise summary of your experience and design approach..."
+              placeholder={
+                isCompany
+                  ? "Describe your firm, expertise, founding year, and key achievements..."
+                  : "Write a concise summary of your experience and design approach..."
+              }
               disabled={isSaving}
               state={bioError ? "error" : "default"}
               className="min-h-28 rounded-xl bg-card resize-none"
@@ -250,7 +263,9 @@ export function EditProfileForm({
       <div className="rounded-2xl border border-border bg-card p-5 sm:p-6 shadow-2xs space-y-4">
         <div className="flex items-center justify-between gap-2">
           <h2 className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-            SKILLS &amp; SPECIALIZATIONS
+            {isCompany
+              ? "SERVICES & SPECIALIZATIONS"
+              : "SKILLS & SPECIALIZATIONS"}
           </h2>
           <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
             MAX 10
@@ -288,8 +303,12 @@ export function EditProfileForm({
               disabled={isSaving || skills.length >= 10}
               placeholder={
                 skills.length >= 10
-                  ? "Maximum 10 skills reached"
-                  : "Add skill and press Enter..."
+                  ? isCompany
+                    ? "Maximum 10 specializations reached"
+                    : "Maximum 10 skills reached"
+                  : isCompany
+                    ? "Add specialization and press Enter..."
+                    : "Add skill and press Enter..."
               }
               className="w-full bg-transparent text-xs sm:text-sm text-foreground placeholder:text-muted-foreground/70 outline-none py-1 px-1"
             />
@@ -321,8 +340,9 @@ export function EditProfileForm({
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               Your phone number and exact email address are only visible to
-              clients who have a confirmed booking with you. This is to ensure
-              professional privacy and platform security.
+              clients who have a confirmed booking with you. This is to ensure{" "}
+              {isCompany ? "business" : "professional"} privacy and platform
+              security.
             </p>
           </div>
 

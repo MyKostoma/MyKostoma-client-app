@@ -12,29 +12,38 @@ import {
   useToggleFollowProfessionalMutation,
 } from "@/store/slices/discoverSlice";
 import {
+  selectCompanyVerificationRecord,
   selectIsCompanyVerified,
   selectIsProfessionalVerified,
 } from "@/store/slices/verificationSlice";
 import {
+  addCompanyPortfolioProjectLocal,
   addCustomerReviewLocal,
   addPortfolioProjectLocal,
+  deleteCompanyPortfolioProjectLocal,
   deletePortfolioProjectLocal,
   replyToReviewLocal,
   selectCustomReviewsByProfileId,
   selectHelpfulReviewIds,
+  selectOwnCompanyProfile,
   selectOwnProfessionalProfile,
   selectResponsesByReviewId,
   toggleReviewHelpfulLocal,
+  updateOwnCompanyPhotoLocal,
+  updateOwnCompanyProfileLocal,
   updateOwnProfileLocal,
   updateOwnProfilePhotoLocal,
   useRequestContactUpdateMutation,
   useSubmitCustomerReviewMutation,
   useSubmitReviewResponseMutation,
+  useUpdateOwnCompanyPhotoMutation,
+  useUpdateOwnCompanyProfileMutation,
   useUpdateOwnProfessionalProfileMutation,
   useUpdateOwnProfilePhotoMutation,
 } from "@/store/slices/profileSlice";
 import type {
   ProfessionalProfileData,
+  ProfileEntityMode,
   ProfilePortfolioItem,
   ProfileReviewFilter,
   ProfileReviewItem,
@@ -47,8 +56,14 @@ import type {
   AddPortfolioProjectPayload,
   RequestContactUpdatePayload,
 } from "../types";
-import { DEFAULT_PROFESSIONAL_PROFILE } from "../data";
 import {
+  DEFAULT_COMPANY_PROFILE,
+  DEFAULT_PROFESSIONAL_PROFILE,
+} from "../data";
+import {
+  buildCompanyPhotoHref,
+  buildCompanyProfileHref,
+  buildEditCompanyProfileHref,
   buildEditProfileHref,
   buildProfileHref,
   buildProfilePhotoHref,
@@ -60,6 +75,7 @@ import {
   mergeProfileWithOverrides,
   normalizeProfileTab,
   paginateItems,
+  resolveCompanyProfileDetails,
   validateProfilePhotoFile,
 } from "./profileHelpers";
 
@@ -68,6 +84,7 @@ const REVIEWS_PAGE_SIZE = 4;
 
 export function useProfileService(options?: {
   profile?: ProfessionalProfileData;
+  entityMode?: ProfileEntityMode;
   forcePerspective?: "owner" | "customer";
   initialTab?: ProfileTabId;
   initialMessagingOpen?: boolean;
@@ -80,6 +97,7 @@ export function useProfileService(options?: {
   const userRole = useAppSelector(selectUserRole);
   const activePerspective = useAppSelector(selectActivePerspective);
   const ownProfile = useAppSelector(selectOwnProfessionalProfile);
+  const ownCompanyProfile = useAppSelector(selectOwnCompanyProfile);
   const helpfulReviewIds = useAppSelector(selectHelpfulReviewIds);
   const customReviewsByProfileId = useAppSelector(
     selectCustomReviewsByProfileId
@@ -87,6 +105,9 @@ export function useProfileService(options?: {
   const responsesByReviewId = useAppSelector(selectResponsesByReviewId);
   const isIndividualVerified = useAppSelector(selectIsProfessionalVerified);
   const isCompanyVerified = useAppSelector(selectIsCompanyVerified);
+  const companyVerificationRecord = useAppSelector(
+    selectCompanyVerificationRecord
+  );
 
   const effectiveRole = userRole || activePerspective || "consumer";
   const resolvedPerspective =
@@ -94,16 +115,47 @@ export function useProfileService(options?: {
     (effectiveRole === "professional" ? "owner" : "customer");
   const isOwnerRole = resolvedPerspective === "owner";
 
+  const isCompanyProfile = Boolean(
+    options?.entityMode === "company" ||
+      options?.profile?.verificationType === "company"
+  );
+
   const [isPreviewingAsClient, setIsPreviewingAsClient] = useState(false);
   const isOwner = isOwnerRole && !isPreviewingAsClient;
 
   const baseProfile = useMemo(() => {
     const raw =
       isOwnerRole && !options?.profile
-        ? ownProfile
-        : (options?.profile ?? DEFAULT_PROFESSIONAL_PROFILE);
+        ? isCompanyProfile
+          ? ownCompanyProfile
+          : ownProfile
+        : (options?.profile ??
+            (isCompanyProfile
+              ? DEFAULT_COMPANY_PROFILE
+              : DEFAULT_PROFESSIONAL_PROFILE));
 
     if (!isOwnerRole) return raw;
+
+    if (isCompanyProfile) {
+      if (isCompanyVerified && companyVerificationRecord) {
+        return {
+          ...raw,
+          name: companyVerificationRecord.companyName || raw.name,
+          verificationType: "company" as const,
+          verificationLabel: "BUSINESS VERIFIED",
+          companyDetails: raw.companyDetails
+            ? {
+                ...raw.companyDetails,
+                cacNumber: companyVerificationRecord.cacRegistrationNumber
+                  ? `RC: ${companyVerificationRecord.cacRegistrationNumber}`
+                  : raw.companyDetails.cacNumber,
+                cacStatusLabel: "ACTIVE & VERIFIED",
+              }
+            : undefined,
+        };
+      }
+      return raw;
+    }
 
     if (isCompanyVerified) {
       return {
@@ -123,10 +175,13 @@ export function useProfileService(options?: {
 
     return raw;
   }, [
+    companyVerificationRecord,
+    isCompanyProfile,
     isCompanyVerified,
     isIndividualVerified,
     isOwnerRole,
     options?.profile,
+    ownCompanyProfile,
     ownProfile,
   ]);
 
@@ -144,6 +199,11 @@ export function useProfileService(options?: {
     helpfulReviewIds,
     responsesByReviewId,
   ]);
+
+  const companyDetails = useMemo(
+    () => (isCompanyProfile ? resolveCompanyProfileDetails(profile) : undefined),
+    [isCompanyProfile, profile]
+  );
 
   const tabFromUrl = searchParams.get("tab");
   const initialResolvedTab = tabFromUrl
@@ -231,8 +291,7 @@ export function useProfileService(options?: {
   );
 
   const paginatedPortfolio = useMemo(
-    () =>
-      paginateItems(filteredPortfolio, portfolioPage, PORTFOLIO_PAGE_SIZE),
+    () => paginateItems(filteredPortfolio, portfolioPage, PORTFOLIO_PAGE_SIZE),
     [filteredPortfolio, portfolioPage]
   );
 
@@ -316,18 +375,25 @@ export function useProfileService(options?: {
   }, [messageText, profile.id, profile.name, sendInquiryMutation]);
 
   const handleEditProfileClick = useCallback(() => {
-    router.push(buildEditProfileHref());
-  }, [router]);
+    router.push(
+      isCompanyProfile ? buildEditCompanyProfileHref() : buildEditProfileHref()
+    );
+  }, [isCompanyProfile, router]);
 
   const handleEditPhotoClick = useCallback(() => {
-    router.push(buildProfilePhotoHref());
-  }, [router]);
+    router.push(
+      isCompanyProfile ? buildCompanyPhotoHref() : buildProfilePhotoHref()
+    );
+  }, [isCompanyProfile, router]);
 
   const handleShareProfileClick = useCallback(async () => {
+    const targetPath = isCompanyProfile
+      ? `/profile/${profile.id}`
+      : `/profile/${profile.id}`;
     const shareUrl =
       typeof window !== "undefined"
-        ? `${window.location.origin}/profile/${profile.id}`
-        : `/profile/${profile.id}`;
+        ? `${window.location.origin}${targetPath}`
+        : targetPath;
     try {
       if (typeof navigator !== "undefined" && navigator.clipboard) {
         await navigator.clipboard.writeText(shareUrl);
@@ -336,7 +402,7 @@ export function useProfileService(options?: {
     } catch {
       toast.success("Profile link ready to share!");
     }
-  }, [profile.id]);
+  }, [isCompanyProfile, profile.id]);
 
   const handleTogglePreviewAsClient = useCallback(() => {
     setIsPreviewingAsClient((prev) => !prev);
@@ -375,20 +441,28 @@ export function useProfileService(options?: {
         tags: payload.tags,
         imageUrl: payload.imageUrl,
       };
-      dispatch(addPortfolioProjectLocal(newProject));
+      dispatch(
+        isCompanyProfile
+          ? addCompanyPortfolioProjectLocal(newProject)
+          : addPortfolioProjectLocal(newProject)
+      );
       setPortfolioCategory("All Projects");
       setPortfolioPage(1);
       toast.success("Portfolio project added!");
     },
-    [dispatch]
+    [dispatch, isCompanyProfile]
   );
 
   const handleDeletePortfolioProject = useCallback(
     (projectId: string) => {
-      dispatch(deletePortfolioProjectLocal({ projectId }));
+      dispatch(
+        isCompanyProfile
+          ? deleteCompanyPortfolioProjectLocal({ projectId })
+          : deletePortfolioProjectLocal({ projectId })
+      );
       toast.success("Project removed from portfolio.");
     },
-    [dispatch]
+    [dispatch, isCompanyProfile]
   );
 
   const handleReplyToReview = useCallback(
@@ -470,9 +544,15 @@ export function useProfileService(options?: {
     [profile.id]
   );
 
+  const handleSocialClick = useCallback((platform: string) => {
+    toast.success(`Opening ${profile.name} on ${platform}`);
+  }, [profile.name]);
+
   return {
     router,
     profile,
+    isCompanyProfile,
+    companyDetails,
     isOwner,
     isOwnerRole,
     isPreviewingAsClient,
@@ -538,26 +618,38 @@ export function useProfileService(options?: {
     handleSubmitCustomerReview,
     handleToggleReviewHelpful,
     handleShareReview,
+    handleSocialClick,
   };
 }
 
-export function useEditProfileService() {
+export function useEditProfileService(mode: ProfileEntityMode = "individual") {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const ownProfile = useAppSelector(selectOwnProfessionalProfile);
-  const [updateMutation, { isLoading: isMutating }] =
+  const ownCompanyProfile = useAppSelector(selectOwnCompanyProfile);
+  const activeSourceProfile =
+    mode === "company" ? ownCompanyProfile : ownProfile;
+
+  const [updateMutation, { isLoading: isUpdatingIndividual }] =
     useUpdateOwnProfessionalProfileMutation();
+  const [updateCompanyMutation, { isLoading: isUpdatingCompany }] =
+    useUpdateOwnCompanyProfileMutation();
   const [requestContactMutation] = useRequestContactUpdateMutation();
 
-  const [fullName, setFullName] = useState(ownProfile.name);
+  const [fullName, setFullName] = useState(activeSourceProfile.name);
   const [category, setCategory] = useState(
-    ownProfile.category || "Interior Design"
+    activeSourceProfile.category ||
+      (mode === "company"
+        ? "Interior Architecture & Renovation"
+        : "Interior Design")
   );
-  const [location, setLocation] = useState(ownProfile.location);
-  const [bio, setBio] = useState(ownProfile.bio);
-  const [skills, setSkills] = useState<string[]>(ownProfile.skills ?? []);
+  const [location, setLocation] = useState(activeSourceProfile.location);
+  const [bio, setBio] = useState(activeSourceProfile.bio);
+  const [skills, setSkills] = useState<string[]>(
+    activeSourceProfile.skills ?? []
+  );
   const [skillInput, setSkillInput] = useState("");
-  const [avatarUrl, setAvatarUrl] = useState(ownProfile.avatarUrl);
+  const [avatarUrl, setAvatarUrl] = useState(activeSourceProfile.avatarUrl);
   const [showMapPicker, setShowMapPicker] = useState(false);
   const [contactModalOpen, setContactModalOpen] = useState(false);
 
@@ -571,8 +663,8 @@ export function useEditProfileService() {
   const [isSavingLocal, setIsSavingLocal] = useState(false);
 
   useEffect(() => {
-    setAvatarUrl(ownProfile.avatarUrl);
-  }, [ownProfile.avatarUrl]);
+    setAvatarUrl(activeSourceProfile.avatarUrl);
+  }, [activeSourceProfile.avatarUrl]);
 
   const handleFullNameChange = useCallback((value: string) => {
     setFullName(value);
@@ -603,7 +695,7 @@ export function useEditProfileService() {
       if (!candidate) return;
 
       if (skills.length >= 10) {
-        toast.error("Maximum of 10 skills allowed.");
+        toast.error("Maximum of 10 items allowed.");
         return;
       }
 
@@ -626,16 +718,20 @@ export function useEditProfileService() {
   }, []);
 
   const handleUploadPhotoClick = useCallback(() => {
-    router.push(buildProfilePhotoHref());
-  }, [router]);
+    router.push(
+      mode === "company" ? buildCompanyPhotoHref() : buildProfilePhotoHref()
+    );
+  }, [mode, router]);
 
   const handleRemovePhoto = useCallback(() => {
     setAvatarUrl("");
   }, []);
 
   const handleCancel = useCallback(() => {
-    router.push(buildProfileHref());
-  }, [router]);
+    router.push(
+      mode === "company" ? buildCompanyProfileHref() : buildProfileHref()
+    );
+  }, [mode, router]);
 
   const handleSubmit = useCallback(async () => {
     const trimmedName = fullName.trim();
@@ -644,7 +740,11 @@ export function useEditProfileService() {
 
     let hasError = false;
     if (trimmedName.length < 2) {
-      setFullNameError("Please enter your full name (at least 2 characters).");
+      setFullNameError(
+        mode === "company"
+          ? "Please enter your business name (at least 2 characters)."
+          : "Please enter your full name (at least 2 characters)."
+      );
       hasError = true;
     }
     if (trimmedLocation.length < 2) {
@@ -652,12 +752,12 @@ export function useEditProfileService() {
       hasError = true;
     }
     if (trimmedBio.length > 500) {
-      setBioError("Professional bio cannot exceed 500 characters.");
+      setBioError("Bio cannot exceed 500 characters.");
       hasError = true;
     }
 
     if (hasError) {
-      toast.error("Please fix the highlighted profile fields.");
+      toast.error("Please fix the highlighted fields.");
       return;
     }
 
@@ -672,16 +772,30 @@ export function useEditProfileService() {
     };
 
     try {
-      await updateMutation(payload).unwrap();
+      if (mode === "company") {
+        await updateCompanyMutation(payload).unwrap();
+      } else {
+        await updateMutation(payload).unwrap();
+      }
     } catch {
       // Mock fallback: persist local profile updates
     } finally {
-      dispatch(updateOwnProfileLocal(payload));
+      dispatch(
+        mode === "company"
+          ? updateOwnCompanyProfileLocal(payload)
+          : updateOwnProfileLocal(payload)
+      );
       setIsSavingLocal(false);
     }
 
-    toast.success("Profile changes saved!");
-    router.push(buildProfileHref());
+    toast.success(
+      mode === "company"
+        ? "Company profile updated!"
+        : "Profile changes saved!"
+    );
+    router.push(
+      mode === "company" ? buildCompanyProfileHref() : buildProfileHref()
+    );
   }, [
     avatarUrl,
     bio,
@@ -689,8 +803,10 @@ export function useEditProfileService() {
     dispatch,
     fullName,
     location,
+    mode,
     router,
     skills,
+    updateCompanyMutation,
     updateMutation,
   ]);
 
@@ -725,7 +841,7 @@ export function useEditProfileService() {
     setShowMapPicker,
     contactModalOpen,
     setContactModalOpen,
-    isSaving: isSavingLocal || isMutating,
+    isSaving: isSavingLocal || isUpdatingIndividual || isUpdatingCompany,
     handleFullNameChange,
     handleLocationChange,
     handleBioChange,
@@ -740,14 +856,20 @@ export function useEditProfileService() {
   };
 }
 
-export function useProfilePhotoService() {
+export function useProfilePhotoService(mode: ProfileEntityMode = "individual") {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const ownProfile = useAppSelector(selectOwnProfessionalProfile);
-  const [updatePhotoMutation, { isLoading: isMutating }] =
-    useUpdateOwnProfilePhotoMutation();
+  const ownCompanyProfile = useAppSelector(selectOwnCompanyProfile);
+  const activeSourceProfile =
+    mode === "company" ? ownCompanyProfile : ownProfile;
 
-  const [previewUrl, setPreviewUrl] = useState(ownProfile.avatarUrl);
+  const [updatePhotoMutation, { isLoading: isMutatingIndividual }] =
+    useUpdateOwnProfilePhotoMutation();
+  const [updateCompanyPhotoMutation, { isLoading: isMutatingCompany }] =
+    useUpdateOwnCompanyPhotoMutation();
+
+  const [previewUrl, setPreviewUrl] = useState(activeSourceProfile.avatarUrl);
   const [pendingDataUrl, setPendingDataUrl] = useState<string | null>(null);
   const [selectedFileName, setSelectedFileName] = useState<
     string | undefined
@@ -802,43 +924,63 @@ export function useProfilePhotoService() {
   }, []);
 
   const handleCancel = useCallback(() => {
-    router.push(buildProfileHref());
-  }, [router]);
+    router.push(
+      mode === "company" ? buildCompanyProfileHref() : buildProfileHref()
+    );
+  }, [mode, router]);
 
   const handleSubmit = useCallback(async () => {
     const nextAvatarUrl = isRemoved ? "" : (pendingDataUrl ?? previewUrl);
 
     setIsSavingLocal(true);
     try {
-      await updatePhotoMutation({ avatarUrl: nextAvatarUrl }).unwrap();
+      if (mode === "company") {
+        await updateCompanyPhotoMutation({ avatarUrl: nextAvatarUrl }).unwrap();
+      } else {
+        await updatePhotoMutation({ avatarUrl: nextAvatarUrl }).unwrap();
+      }
     } catch {
       // Mock fallback: persist local photo update
     } finally {
-      dispatch(updateOwnProfilePhotoLocal({ avatarUrl: nextAvatarUrl }));
+      dispatch(
+        mode === "company"
+          ? updateOwnCompanyPhotoLocal({ avatarUrl: nextAvatarUrl })
+          : updateOwnProfilePhotoLocal({ avatarUrl: nextAvatarUrl })
+      );
       setIsSavingLocal(false);
     }
 
     toast.success(
-      isRemoved ? "Profile photo removed." : "Profile photo updated!"
+      isRemoved
+        ? mode === "company"
+          ? "Company logo removed."
+          : "Profile photo removed."
+        : mode === "company"
+          ? "Company logo updated!"
+          : "Profile photo updated!"
     );
-    router.push(buildProfileHref());
+    router.push(
+      mode === "company" ? buildCompanyProfileHref() : buildProfileHref()
+    );
   }, [
     dispatch,
     isRemoved,
+    mode,
     pendingDataUrl,
     previewUrl,
     router,
+    updateCompanyPhotoMutation,
     updatePhotoMutation,
   ]);
 
   return {
-    displayName: ownProfile.name,
+    displayName: activeSourceProfile.name,
     previewUrl,
     hasCustomPhoto: Boolean(previewUrl),
     selectedFileName,
     fileError,
     dimensionWarning,
-    isSaving: isSavingLocal || isMutating,
+    isSaving: isSavingLocal || isMutatingIndividual || isMutatingCompany,
     handleFileSelect,
     handleRemovePhoto,
     handleCancel,

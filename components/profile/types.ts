@@ -2,6 +2,8 @@ import type { HTMLAttributes } from "react";
 
 export type ProfileTabId = "overview" | "services" | "portfolio" | "reviews";
 
+export type ProfileEntityMode = "individual" | "company";
+
 export type FollowInteractionState = "default" | "active" | "hover-unfollow";
 
 export type ServiceIconVariant = "info" | "warning" | "primary" | "success";
@@ -74,6 +76,42 @@ export interface ProfileReviewItem {
   helpfulCount?: number;
 }
 
+export interface CompanyTrustCheckItem {
+  id: string;
+  label: string;
+  verified: boolean;
+}
+
+export interface CompanyOperatingHourItem {
+  day: string;
+  hours: string;
+  isClosed?: boolean;
+}
+
+export interface CompanySocialLinks {
+  instagram?: string;
+  linkedin?: string;
+  facebook?: string;
+  website?: string;
+}
+
+export interface CompanyProfileDetails {
+  coverImageUrl?: string;
+  logoMonogram?: string;
+  teamStrength: string;
+  yearsActive: string;
+  projectsCompleted: string;
+  activeCoverageLabel: string;
+  hqLabel: string;
+  coverageZones: string[];
+  cacNumber: string;
+  cacStatusLabel: string;
+  trustChecks: CompanyTrustCheckItem[];
+  operatingHours: CompanyOperatingHourItem[];
+  isCurrentlyOpen: boolean;
+  socialLinks: CompanySocialLinks;
+}
+
 export interface ProfessionalProfileData {
   id: string;
   name: string;
@@ -89,6 +127,7 @@ export interface ProfessionalProfileData {
   responseTimeText: string;
   category?: string;
   skills?: string[];
+  companyDetails?: CompanyProfileDetails;
   services: ProfileServiceItem[];
   portfolio: ProfilePortfolioItem[];
   ratingBreakdown: ProfileRatingBarItem[];
@@ -117,6 +156,7 @@ export interface ProfileTabsNavProps {
 
 export interface ProfileHeaderCardProps {
   profile: ProfessionalProfileData;
+  companyDetails?: CompanyProfileDetails;
   activeTab?: ProfileTabId;
   onTabChange?: (tab: ProfileTabId) => void;
   isOwner?: boolean;
@@ -134,6 +174,12 @@ export interface ProfileHeaderCardProps {
   onTogglePreviewAsClient?: () => void;
   showTabs?: boolean;
   className?: string;
+}
+
+export interface CompanyIdentitySectionProps {
+  profile: ProfessionalProfileData;
+  companyDetails: CompanyProfileDetails;
+  onSocialClick?: (platform: string) => void;
 }
 
 export interface AvailableServiceCardProps {
@@ -253,6 +299,7 @@ export interface ProfileReviewsTabProps {
 }
 
 export interface EditProfileFormProps {
+  variant?: ProfileEntityMode;
   fullName: string;
   fullNameError?: string;
   category: string;
@@ -285,6 +332,7 @@ export interface EditProfileFormProps {
 }
 
 export interface ProfilePhotoFormProps {
+  variant?: ProfileEntityMode;
   displayName: string;
   previewUrl: string;
   hasCustomPhoto: boolean;

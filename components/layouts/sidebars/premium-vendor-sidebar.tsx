@@ -154,7 +154,10 @@ export function PremiumVendorSidebar({
           {header || (
             isOpen ? (
               <div className="px-4 pb-2 pt-1">
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-[#D81B60] to-[#E91E63] text-white shadow-md">
+                <Link
+                  href="/profile/company"
+                  className="flex items-center gap-3 p-3 rounded-2xl bg-gradient-to-r from-[#D81B60] to-[#E91E63] text-white shadow-md hover:opacity-95 transition-opacity"
+                >
                   <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
                     <Briefcase className="h-5 w-5 text-white" />
                   </div>
@@ -171,20 +174,20 @@ export function PremiumVendorSidebar({
                       Premium Vendor
                     </p>
                   </div>
-                </div>
+                </Link>
               </div>
             ) : (
               <div className="pt-4 pb-2 flex flex-col items-center gap-3">
                 {/* Collapsed Vendor Briefcase Badge with Blue Checkmark */}
                 <SidebarTooltip content={`${vendorName} (Premium Vendor)`} enabled={!isOpen}>
-                  <div className="relative cursor-default">
+                  <Link href="/profile/company" className="relative cursor-pointer block">
                     <div className="h-10 w-10 rounded-xl bg-gradient-to-r from-[#D81B60] to-[#E91E63] text-white flex items-center justify-center shadow-xs">
                       <Briefcase className="h-5 w-5 text-white" />
                     </div>
                     <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-card flex items-center justify-center">
                       <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500" />
                     </span>
-                  </div>
+                  </Link>
                 </SidebarTooltip>
               </div>
             )

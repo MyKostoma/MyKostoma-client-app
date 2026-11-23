@@ -18,14 +18,15 @@ import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
 import { FollowButton } from "./follow-button";
 import { ProfileMessageComposer } from "./profile-message-composer";
-import { PROFILE_TABS } from "./profile-tabs-nav";
+import { COMPANY_PROFILE_TABS, PROFILE_TABS } from "./profile-tabs-nav";
 import type { ProfileHeaderCardProps } from "./types";
 
 export type { ProfileHeaderCardProps } from "./types";
 
 export function ProfileHeaderCard({
   profile,
-  activeTab,
+  companyDetails,
+  activeTab = "overview",
   onTabChange,
   isOwner = false,
   isPreviewingAsClient = false,
@@ -43,7 +44,9 @@ export function ProfileHeaderCard({
   showTabs = false,
   className,
 }: ProfileHeaderCardProps) {
-  const isCompanyVerified = profile.verificationType === "company";
+  const isCompanyProfile = profile.verificationType === "company";
+  const showBioBlock = !(isCompanyProfile && activeTab === "overview");
+  const tabsToRender = isCompanyProfile ? COMPANY_PROFILE_TABS : PROFILE_TABS;
 
   return (
     <section
@@ -54,12 +57,24 @@ export function ProfileHeaderCard({
       )}
     >
       {/* Top Cover Banner */}
-      <div
-        aria-hidden="true"
-        className="relative h-32 sm:h-40 w-full bg-linear-to-r from-primary via-primary-hover to-primary-active"
-      >
+      <div className="relative h-32 sm:h-40 w-full bg-linear-to-r from-primary via-primary-hover to-primary-active overflow-hidden">
+        {isCompanyProfile && companyDetails?.coverImageUrl && (
+          <>
+            <FallbackImage
+              src={companyDetails.coverImageUrl}
+              alt={`${profile.name} studio cover`}
+              fallbackType="company"
+              className="w-full h-full object-cover select-none"
+            />
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 bg-linear-to-t from-black/55 via-black/20 to-black/10"
+            />
+          </>
+        )}
+
         {isPreviewingAsClient && onTogglePreviewAsClient && (
-          <div className="pointer-events-auto absolute top-3 right-3 sm:top-4 sm:right-6 flex items-center gap-2 rounded-full bg-card/95 border border-border px-3 py-1.5 shadow-sm">
+          <div className="pointer-events-auto absolute top-3 right-3 sm:top-4 sm:right-6 z-10 flex items-center gap-2 rounded-full bg-card/95 border border-border px-3 py-1.5 shadow-sm">
             <span className="text-[11px] font-semibold text-foreground">
               Client Preview Mode
             </span>
@@ -81,24 +96,36 @@ export function ProfileHeaderCard({
           isMessagingOpen || !showTabs ? "pb-6 sm:pb-8" : "pb-0"
         )}
       >
-        {/* Overlapping Profile Avatar */}
+        {/* Overlapping Profile Avatar / Company Monogram */}
         <div className="relative -mt-12 sm:-mt-14 mb-4 inline-block">
-          <div className="size-24 sm:size-28 rounded-2xl border-4 border-card bg-secondary shadow-md overflow-hidden">
-            <FallbackImage
-              src={profile.avatarUrl}
-              alt={profile.name}
-              fallbackType="user"
-              variant="avatar"
-              className="w-full h-full object-cover select-none"
-            />
-          </div>
+          {isCompanyProfile &&
+          !profile.avatarUrl &&
+          companyDetails?.logoMonogram ? (
+            <div className="size-24 sm:size-28 rounded-2xl border-4 border-card bg-foreground text-background shadow-md flex items-center justify-center text-xl sm:text-2xl font-extrabold tracking-tight select-none">
+              {companyDetails.logoMonogram}
+            </div>
+          ) : (
+            <div className="size-24 sm:size-28 rounded-2xl border-4 border-card bg-secondary shadow-md overflow-hidden">
+              <FallbackImage
+                src={profile.avatarUrl}
+                alt={profile.name}
+                fallbackType={isCompanyProfile ? "company" : "user"}
+                variant="avatar"
+                className="w-full h-full object-cover select-none"
+              />
+            </div>
+          )}
 
           {isOwner && onEditPhotoClick && (
             <button
               type="button"
               onClick={onEditPhotoClick}
-              aria-label="Update profile photo"
-              title="Update profile photo"
+              aria-label={
+                isCompanyProfile ? "Update company logo" : "Update profile photo"
+              }
+              title={
+                isCompanyProfile ? "Update company logo" : "Update profile photo"
+              }
               className="absolute -bottom-1.5 -right-1.5 size-8 rounded-xl border-2 border-card bg-primary text-primary-foreground flex items-center justify-center shadow-sm hover:bg-primary-hover transition-colors cursor-pointer"
             >
               <Camera className="size-3.5" />
@@ -117,7 +144,7 @@ export function ProfileHeaderCard({
               <span
                 className={cn(
                   "inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border text-[9px] sm:text-[10px] font-bold uppercase tracking-wider select-none",
-                  isCompanyVerified
+                  isCompanyProfile
                     ? "bg-info-bg border-info/25 text-info"
                     : "bg-warning-bg border-warning/25 text-warning"
                 )}
@@ -125,12 +152,12 @@ export function ProfileHeaderCard({
                 <span
                   className={cn(
                     "size-3.5 rounded-full flex items-center justify-center shrink-0",
-                    isCompanyVerified
+                    isCompanyProfile
                       ? "bg-info text-info-foreground"
                       : "bg-warning text-warning-foreground"
                   )}
                 >
-                  {isCompanyVerified ? (
+                  {isCompanyProfile ? (
                     <Briefcase className="size-2" />
                   ) : (
                     <Check className="size-2 stroke-[3.5]" />
@@ -140,12 +167,20 @@ export function ProfileHeaderCard({
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm font-medium text-muted-foreground mt-1">
-              {profile.roleTitle}
-            </p>
+            {!isCompanyProfile && (
+              <p className="text-xs sm:text-sm font-medium text-muted-foreground mt-1">
+                {profile.roleTitle}
+              </p>
+            )}
 
             {/* Metadata Row */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs mt-3.5">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs mt-3">
+              {isCompanyProfile && profile.category && (
+                <span className="px-2.5 py-1 rounded-md bg-secondary text-foreground font-semibold">
+                  {profile.category}
+                </span>
+              )}
+
               <span className="inline-flex items-center gap-1.5 font-semibold text-foreground">
                 <MapPin className="size-3.5 text-muted-foreground shrink-0" />
                 <span>{profile.location}</span>
@@ -157,16 +192,22 @@ export function ProfileHeaderCard({
                   {profile.rating.toFixed(1)}
                 </span>
                 <span className="text-muted-foreground">
-                  ({profile.reviewCount} Reviews)
+                  (
+                  {isCompanyProfile
+                    ? `${profile.reviewCount} Total Reviews`
+                    : `${profile.reviewCount} Reviews`}
+                  )
                 </span>
               </span>
 
-              {!isMessagingOpen && profile.experienceLabel && (
-                <span className="inline-flex items-center gap-1.5 font-semibold text-foreground">
-                  <Calendar className="size-3.5 text-muted-foreground shrink-0" />
-                  <span>{profile.experienceLabel}</span>
-                </span>
-              )}
+              {!isCompanyProfile &&
+                !isMessagingOpen &&
+                profile.experienceLabel && (
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-foreground">
+                    <Calendar className="size-3.5 text-muted-foreground shrink-0" />
+                    <span>{profile.experienceLabel}</span>
+                  </span>
+                )}
             </div>
           </div>
 
@@ -209,7 +250,7 @@ export function ProfileHeaderCard({
                     leadingIcon={<Pencil className="size-3.5" />}
                     className="h-10 px-5 rounded-xl text-xs font-semibold shadow-xs"
                   >
-                    Edit Profile
+                    {isCompanyProfile ? "Edit Company Profile" : "Edit Profile"}
                   </Button>
                 )}
               </>
@@ -226,7 +267,7 @@ export function ProfileHeaderCard({
                     isMessagingOpen ? "shadow-xs" : "text-foreground"
                   )}
                 >
-                  MESSAGE
+                  {isCompanyProfile ? "MESSAGE BUSINESS" : "MESSAGE"}
                 </Button>
 
                 <FollowButton
@@ -249,27 +290,29 @@ export function ProfileHeaderCard({
           />
         ) : (
           <>
-            <div className="mt-6 max-w-3xl space-y-2.5">
-              <h2 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
-                PROFESSIONAL BIO
-              </h2>
-              <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                {profile.bio}
-              </p>
+            {showBioBlock && (
+              <div className="mt-6 max-w-3xl space-y-2.5">
+                <h2 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                  {isCompanyProfile ? "COMPANY BIO" : "PROFESSIONAL BIO"}
+                </h2>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+                  {profile.bio}
+                </p>
 
-              {profile.skills && profile.skills.length > 0 && (
-                <div className="flex flex-wrap items-center gap-2 pt-1.5">
-                  {profile.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="px-2.5 py-1 rounded-md bg-secondary/80 border border-border/60 text-[11px] font-medium text-foreground"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
+                {profile.skills && profile.skills.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2 pt-1.5">
+                    {profile.skills.map((skill) => (
+                      <span
+                        key={skill}
+                        className="px-2.5 py-1 rounded-md bg-secondary/80 border border-border/60 text-[11px] font-medium text-foreground"
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
 
             {showTabs && (
               <div
@@ -277,7 +320,7 @@ export function ProfileHeaderCard({
                 aria-label="Profile sections"
                 className="mt-6 border-t border-border/70 -mx-4 sm:-mx-8 px-4 sm:px-8 flex items-center gap-6 sm:gap-9 overflow-x-auto no-scrollbar"
               >
-                {PROFILE_TABS.map((tab) => {
+                {tabsToRender.map((tab) => {
                   const isActive = activeTab === tab.id;
                   return (
                     <button

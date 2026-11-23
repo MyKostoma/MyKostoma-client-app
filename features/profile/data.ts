@@ -22,6 +22,17 @@ export const PROFESSIONAL_CATEGORY_OPTIONS: readonly string[] = [
   "Cleaning & Maintenance",
 ];
 
+export const BUSINESS_CATEGORY_OPTIONS: readonly string[] = [
+  "Interior Architecture & Renovation",
+  "Commercial Electrical Systems",
+  "Architecture & Urban Planning",
+  "Facility Management",
+  "Civil & Structural Engineering",
+  "MEP & HVAC Contracting",
+  "Design & Build Studio",
+  "Commercial Cleaning Services",
+];
+
 export const NIGERIAN_LOCATION_PRESETS: readonly string[] = [
   "Lekki Phase 1, Lagos",
   "Victoria Island, Lagos",
@@ -839,10 +850,293 @@ export const MOCK_PROFESSIONAL_PROFILES: Record<string, ProfessionalProfileData>
       "Can you inspect my building site?",
     ],
   },
+
+  "urbanvibe-design-studio": {
+    id: "urbanvibe-design-studio",
+    name: "UrbanVibe Design Studio",
+    roleTitle: "Interior Architecture & Renovation",
+    category: "Interior Architecture & Renovation",
+    verificationLabel: "BUSINESS VERIFIED",
+    verificationType: "company",
+    location: "Victoria Island, Lagos",
+    rating: 4.8,
+    reviewCount: 412,
+    experienceLabel: "6+ Years Active",
+    avatarUrl: "",
+    bio: "UrbanVibe Design Studio is a premier multi-disciplinary design firm founded in 2018. We specialize in transforming commercial and high-end residential spaces through innovative spatial planning and sustainable material sourcing. Our philosophy centers on \"Functional Elegance,\" ensuring every square foot serves a purpose while maintaining a sophisticated aesthetic.",
+    skills: [
+      "3D Visualization",
+      "Sustainable Materials",
+      "Residential",
+      "AutoCAD",
+    ],
+    responseTimeText: "Under 1 hour",
+    companyDetails: {
+      coverImageUrl:
+        "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=80",
+      logoMonogram: "UV",
+      teamStrength: "24 Professionals",
+      yearsActive: "6+ Years",
+      projectsCompleted: "120+ Completed",
+      activeCoverageLabel: "ACTIVE COVERAGE: LAGOS STATE",
+      hqLabel: "HQ: VICTORIA ISLAND",
+      coverageZones: [
+        "Victoria Island",
+        "Lekki Phase 1",
+        "Ikoyi",
+        "Ikeja GRA",
+        "Yaba",
+      ],
+      cacNumber: "RC: 1489023-X",
+      cacStatusLabel: "ACTIVE & VERIFIED",
+      trustChecks: [
+        { id: "identity", label: "Identity Check", verified: true },
+        { id: "address", label: "Address Proof", verified: true },
+        { id: "license", label: "Professional License", verified: true },
+      ],
+      operatingHours: [
+        { day: "Monday - Friday", hours: "08:00 - 18:00" },
+        { day: "Saturday", hours: "10:00 - 16:00" },
+        { day: "Sunday", hours: "Closed", isClosed: true },
+      ],
+      isCurrentlyOpen: true,
+      socialLinks: {
+        instagram: "https://instagram.com",
+        linkedin: "https://linkedin.com",
+        facebook: "https://facebook.com",
+        website: "https://mykostoma.com",
+      },
+    },
+    services: [
+      {
+        id: "uv-full-interior-design",
+        title: "Full Interior Design Consultation",
+        description:
+          "Comprehensive design service including space planning, mood boards, material selection, and 3D visualization. Perfect for homeowners looking for a professional touch from concept to completion.",
+        tags: ["14-21 Days Delivery", "3 Revisions Included"],
+        categoryTags: ["ON-SITE", "RESIDENTIAL"],
+        deliveryTime: "14–21 Days Delivery",
+        revisionsLabel: "3 Revisions Included",
+        priceLabel: "STARTING AT",
+        priceValue: "₦450,000",
+        ctaLabel: "BOOK NOW",
+        ctaVariant: "default",
+        iconName: "briefcase",
+        iconVariant: "primary",
+        imageUrl:
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=600&q=80",
+      },
+      {
+        id: "uv-virtual-space-styling",
+        title: "Virtual Space Styling & Color Palette",
+        description:
+          "Quick virtual consultation for refreshes. Includes a custom color palette, furniture arrangement suggestions, and a shopping list for accessories.",
+        tags: ["3-5 Days Delivery", "1 Revision Included"],
+        categoryTags: ["REMOTE", "EXPRESS"],
+        deliveryTime: "3–5 Days Delivery",
+        revisionsLabel: "1 Revision Included",
+        priceLabel: "STARTING AT",
+        priceValue: "₦120,000",
+        ctaLabel: "BOOK NOW",
+        ctaVariant: "default",
+        iconName: "sparkles",
+        iconVariant: "success",
+        imageUrl:
+          "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=600&q=80",
+      },
+      {
+        id: "uv-office-workspace-optimization",
+        title: "Office Workspace Optimization",
+        description:
+          "Boost productivity with a professional workspace layout. Includes ergonomic assessment, lighting design, and branding integration for small to medium offices.",
+        tags: ["30 Days Delivery", "5 Revisions Included"],
+        categoryTags: ["ON-SITE", "COMMERCIAL"],
+        deliveryTime: "30 Days Delivery",
+        revisionsLabel: "5 Revisions Included",
+        priceLabel: "STARTING AT",
+        priceValue: "₦800,000",
+        ctaLabel: "BOOK NOW",
+        ctaVariant: "default",
+        iconName: "store",
+        iconVariant: "info",
+        imageUrl:
+          "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=600&q=80",
+      },
+    ],
+    portfolio: [
+      {
+        id: "uv-minimalist-penthouse",
+        title: "The Minimalist Penthouse",
+        category: "Residential",
+        filterCategory: "Residential",
+        dateLabel: "FEB 2026",
+        createdAtISO: "2026-02-18",
+        description:
+          "A complete renovation of a 3,000 sq ft penthouse in Lekki, focusing on natural light and open-concept living with premium sustainable materials.",
+        tags: ["3D MODELING", "SOURCING"],
+        imageUrl:
+          "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=900&q=80",
+      },
+      {
+        id: "uv-hub-x-workspace",
+        title: "Hub-X Tech Workspace",
+        category: "Commercial",
+        filterCategory: "Commercial",
+        dateLabel: "JAN 2026",
+        createdAtISO: "2026-01-20",
+        description:
+          "Designing a collaborative environment for a high-growth tech startup. Focused on ergonomic workstations and vibrant breakout zones.",
+        tags: ["BRANDING", "LAYOUT"],
+        imageUrl:
+          "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=900&q=80",
+      },
+      {
+        id: "uv-industrial-loft-concept",
+        title: "Industrial Loft Concept",
+        category: "Residential",
+        filterCategory: "Residential",
+        dateLabel: "DEC 2025",
+        createdAtISO: "2025-12-12",
+        description:
+          "Transforming an old warehouse space into a luxury living area. Exposed brick, metal accents, and reclaimed wood integration.",
+        tags: ["INDUSTRIAL", "LIGHTING"],
+        imageUrl:
+          "https://images.unsplash.com/photo-1556911220-bff31c812dba?auto=format&fit=crop&w=900&q=80",
+      },
+      {
+        id: "uv-nordic-coffee-house",
+        title: "Nordic Coffee House",
+        category: "Commercial",
+        filterCategory: "Minimalist",
+        dateLabel: "NOV 2025",
+        createdAtISO: "2025-11-15",
+        description:
+          "A cozy, minimalist coffee shop design in the heart of Victoria Island. Scandinavian inspired furniture and palette.",
+        tags: ["RETAIL", "FURNITURE"],
+        imageUrl:
+          "https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80",
+      },
+      {
+        id: "uv-ikoyi-boardroom",
+        title: "Ikoyi Executive Boardroom",
+        category: "Commercial",
+        filterCategory: "Minimalist",
+        dateLabel: "OCT 2025",
+        createdAtISO: "2025-10-09",
+        description:
+          "Acoustic walnut panelling, custom conference joinery, and integrated video-conferencing lighting for a fintech headquarters.",
+        tags: ["ACOUSTICS", "COMMERCIAL"],
+        imageUrl:
+          "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=900&q=80",
+      },
+    ],
+    ratingBreakdown: [
+      { stars: 5, percentage: 92 },
+      { stars: 4, percentage: 6 },
+      { stars: 3, percentage: 2 },
+      { stars: 2, percentage: 0 },
+      { stars: 1, percentage: 0 },
+    ],
+    reviews: [
+      {
+        id: "uv-review-marcus",
+        authorName: "Marcus Thompson",
+        authorRole: "Verified Purchase",
+        timeAgo: "2 weeks ago",
+        dateLabel: "May 14, 2026",
+        createdAtISO: "2026-05-14",
+        verifiedPurchase: true,
+        avatarUrl:
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        helpfulCount: 12,
+        comment:
+          "UrbanVibe Design Studio was incredible to work with. The team really listened to our needs for the office redesign and came up with a concept that balanced professional aesthetics with a cozy atmosphere. The 3D visualizations were spot on!",
+        professionalResponse:
+          "Thank you so much, Marcus! It was a pleasure working on your workspace. We're so glad the final result is helping the team's productivity.",
+        professionalResponseDate: "May 15, 2026",
+      },
+      {
+        id: "uv-review-sarah",
+        authorName: "Sarah Jenkins",
+        authorRole: "Verified Purchase",
+        timeAgo: "1 month ago",
+        dateLabel: "Apr 28, 2026",
+        createdAtISO: "2026-04-28",
+        verifiedPurchase: true,
+        avatarUrl:
+          "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        helpfulCount: 4,
+        comment:
+          "Great virtual consultation. The color palette the team suggested really opened up our small living room. Deducted half a star only because the shopping list had one item that was out of stock, but UrbanVibe Design Studio quickly provided an alternative.",
+        photos: [
+          "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=400&q=80",
+          "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?auto=format&fit=crop&w=400&q=80",
+        ],
+      },
+      {
+        id: "uv-review-tolu",
+        authorName: "Tolu Adeyemi",
+        authorRole: "Operations Lead, Ikoyi",
+        timeAgo: "2 months ago",
+        dateLabel: "Apr 05, 2026",
+        createdAtISO: "2026-04-05",
+        verifiedPurchase: true,
+        avatarUrl:
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        helpfulCount: 6,
+        comment:
+          "Delivered our Victoria Island flagship showroom ahead of launch deadline with flawless millwork supervision.",
+      },
+      {
+        id: "uv-review-ngozi",
+        authorName: "Ngozi Okafor",
+        authorRole: "Founder, Atelier NO",
+        timeAgo: "3 months ago",
+        dateLabel: "Mar 19, 2026",
+        createdAtISO: "2026-03-19",
+        verifiedPurchase: true,
+        avatarUrl:
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80",
+        rating: 4,
+        helpfulCount: 2,
+        comment:
+          "Detailed BOQs and material boards made contractor coordination painless for our studio fit-out.",
+      },
+      {
+        id: "uv-review-kemi",
+        authorName: "Kemi Adewale",
+        authorRole: "Verified Purchase",
+        timeAgo: "3 months ago",
+        dateLabel: "Mar 02, 2026",
+        createdAtISO: "2026-03-02",
+        verifiedPurchase: true,
+        avatarUrl:
+          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80",
+        rating: 5,
+        helpfulCount: 9,
+        comment:
+          "Their spatial planning completely transformed our Lekki headquarters reception and breakout lounge.",
+        professionalResponse:
+          "Thank you Kemi! Wishing your team continued growth in the new space.",
+        professionalResponseDate: "Mar 04, 2026",
+      },
+    ],
+    quickActions: [
+      "Can we schedule a commercial site inspection?",
+      "What is your turnaround for a full office fit-out?",
+      "Send our architectural brief",
+    ],
+  },
 };
 
 export const DEFAULT_PROFESSIONAL_PROFILE: ProfessionalProfileData =
   MOCK_PROFESSIONAL_PROFILES["elena-rodriguez"];
+
+export const DEFAULT_COMPANY_PROFILE: ProfessionalProfileData =
+  MOCK_PROFESSIONAL_PROFILES["urbanvibe-design-studio"];
 
 /**
  * Retrieves a professional profile by ID.

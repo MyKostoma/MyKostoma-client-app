@@ -11,7 +11,10 @@ import type {
   RequestContactUpdatePayload,
   SubmitReviewPayload,
 } from "@/features/profile/types";
-import { MOCK_PROFESSIONAL_PROFILES } from "@/features/profile/data";
+import {
+  DEFAULT_COMPANY_PROFILE,
+  MOCK_PROFESSIONAL_PROFILES,
+} from "@/features/profile/data";
 
 export interface ProfileResponseOverride {
   text: string;
@@ -20,6 +23,7 @@ export interface ProfileResponseOverride {
 
 export interface ProfileSliceState {
   ownProfile: ProfessionalProfileData;
+  ownCompanyProfile: ProfessionalProfileData;
   helpfulReviewIds: string[];
   customReviewsByProfileId: Record<string, ProfileReviewItem[]>;
   responsesByReviewId: Record<string, ProfileResponseOverride>;
@@ -27,6 +31,7 @@ export interface ProfileSliceState {
 
 const initialState: ProfileSliceState = {
   ownProfile: MOCK_PROFESSIONAL_PROFILES["elena-rodriguez"],
+  ownCompanyProfile: DEFAULT_COMPANY_PROFILE,
   helpfulReviewIds: [],
   customReviewsByProfileId: {},
   responsesByReviewId: {},
@@ -69,6 +74,46 @@ const profileSlice = createSlice({
         avatarUrl: action.payload.avatarUrl,
       };
     },
+    updateOwnCompanyProfileLocal: (
+      state,
+      action: PayloadAction<EditProfileFormValues>
+    ) => {
+      const { fullName, category, location, bio, skills, avatarUrl } =
+        action.payload;
+
+      const initials = fullName
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map((word) => word[0]?.toUpperCase() ?? "")
+        .join("") || "CO";
+
+      state.ownCompanyProfile = {
+        ...state.ownCompanyProfile,
+        name: fullName,
+        category,
+        roleTitle: category,
+        location,
+        bio,
+        skills,
+        avatarUrl,
+        companyDetails: state.ownCompanyProfile.companyDetails
+          ? {
+              ...state.ownCompanyProfile.companyDetails,
+              logoMonogram: initials,
+            }
+          : undefined,
+      };
+    },
+    updateOwnCompanyPhotoLocal: (
+      state,
+      action: PayloadAction<{ avatarUrl: string }>
+    ) => {
+      state.ownCompanyProfile = {
+        ...state.ownCompanyProfile,
+        avatarUrl: action.payload.avatarUrl,
+      };
+    },
     addPortfolioProjectLocal: (
       state,
       action: PayloadAction<ProfilePortfolioItem>
@@ -89,6 +134,26 @@ const profileSlice = createSlice({
         ),
       };
     },
+    addCompanyPortfolioProjectLocal: (
+      state,
+      action: PayloadAction<ProfilePortfolioItem>
+    ) => {
+      state.ownCompanyProfile = {
+        ...state.ownCompanyProfile,
+        portfolio: [action.payload, ...state.ownCompanyProfile.portfolio],
+      };
+    },
+    deleteCompanyPortfolioProjectLocal: (
+      state,
+      action: PayloadAction<{ projectId: string }>
+    ) => {
+      state.ownCompanyProfile = {
+        ...state.ownCompanyProfile,
+        portfolio: state.ownCompanyProfile.portfolio.filter(
+          (item) => item.id !== action.payload.projectId
+        ),
+      };
+    },
     replyToReviewLocal: (
       state,
       action: PayloadAction<{
@@ -102,6 +167,18 @@ const profileSlice = createSlice({
       state.ownProfile = {
         ...state.ownProfile,
         reviews: state.ownProfile.reviews.map((rev) =>
+          rev.id === reviewId
+            ? {
+                ...rev,
+                professionalResponse: text,
+                professionalResponseDate: date,
+              }
+            : rev
+        ),
+      };
+      state.ownCompanyProfile = {
+        ...state.ownCompanyProfile,
+        reviews: state.ownCompanyProfile.reviews.map((rev) =>
           rev.id === reviewId
             ? {
                 ...rev,
@@ -142,8 +219,12 @@ const profileSlice = createSlice({
 export const {
   updateOwnProfileLocal,
   updateOwnProfilePhotoLocal,
+  updateOwnCompanyProfileLocal,
+  updateOwnCompanyPhotoLocal,
   addPortfolioProjectLocal,
   deletePortfolioProjectLocal,
+  addCompanyPortfolioProjectLocal,
+  deleteCompanyPortfolioProjectLocal,
   replyToReviewLocal,
   addCustomerReviewLocal,
   toggleReviewHelpfulLocal,
@@ -151,6 +232,8 @@ export const {
 
 export const selectOwnProfessionalProfile = (state: RootState) =>
   state.profile.ownProfile;
+export const selectOwnCompanyProfile = (state: RootState) =>
+  state.profile.ownCompanyProfile;
 export const selectHelpfulReviewIds = (state: RootState) =>
   state.profile.helpfulReviewIds;
 export const selectCustomReviewsByProfileId = (state: RootState) =>
@@ -181,6 +264,32 @@ export const profileApi = baseApi.injectEndpoints({
     >({
       query: (body) => ({
         url: "/profile/me/photo",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Profile", "User"],
+    }),
+    getOwnCompanyProfile: builder.query<ProfessionalProfileData, void>({
+      query: () => "/profile/company/me",
+      providesTags: ["Profile"],
+    }),
+    updateOwnCompanyProfile: builder.mutation<
+      ProfessionalProfileData,
+      EditProfileFormValues
+    >({
+      query: (body) => ({
+        url: "/profile/company/me",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Profile", "User"],
+    }),
+    updateOwnCompanyPhoto: builder.mutation<
+      { avatarUrl: string },
+      { avatarUrl: string }
+    >({
+      query: (body) => ({
+        url: "/profile/company/me/photo",
         method: "PATCH",
         body,
       }),
@@ -226,6 +335,9 @@ export const {
   useGetOwnProfessionalProfileQuery,
   useUpdateOwnProfessionalProfileMutation,
   useUpdateOwnProfilePhotoMutation,
+  useGetOwnCompanyProfileQuery,
+  useUpdateOwnCompanyProfileMutation,
+  useUpdateOwnCompanyPhotoMutation,
   useSubmitReviewResponseMutation,
   useSubmitCustomerReviewMutation,
   useRequestContactUpdateMutation,

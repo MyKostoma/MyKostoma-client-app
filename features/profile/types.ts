@@ -1,5 +1,9 @@
 import type {
+  CompanyOperatingHourItem,
+  CompanyProfileDetails,
+  CompanyTrustCheckItem,
   ProfessionalProfileData,
+  ProfileEntityMode,
   ProfilePhotoGuidelineItem,
   ProfilePortfolioItem,
   ProfileReviewFilter,
@@ -11,7 +15,11 @@ import type {
 } from "@/components/profile/types";
 
 export type {
+  CompanyOperatingHourItem,
+  CompanyProfileDetails,
+  CompanyTrustCheckItem,
   ProfessionalProfileData,
+  ProfileEntityMode,
   ProfilePhotoGuidelineItem,
   ProfilePortfolioItem,
   ProfileReviewFilter,
@@ -24,10 +32,19 @@ export type {
 
 export interface ProfileViewProps {
   profile?: ProfessionalProfileData;
+  entityMode?: ProfileEntityMode;
   forcePerspective?: "owner" | "customer";
   initialTab?: ProfileTabId;
   initialMessagingOpen?: boolean;
   initialFollowing?: boolean;
+}
+
+export interface EditProfileViewProps {
+  mode?: ProfileEntityMode;
+}
+
+export interface ProfilePhotoViewProps {
+  mode?: ProfileEntityMode;
 }
 
 export interface EditProfileFormValues {

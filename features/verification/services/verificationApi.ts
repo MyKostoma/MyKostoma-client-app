@@ -636,7 +636,7 @@ export function useCompanyVerificationStatusService(
   const [hasCopiedShareLink, setHasCopiedShareLink] = useState(false);
 
   const handleViewCompanyProfile = useCallback(() => {
-    router.push("/profile");
+    router.push("/profile/company");
   }, [router]);
 
   const handleGoToDashboard = useCallback(() => {
