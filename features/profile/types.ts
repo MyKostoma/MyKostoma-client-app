@@ -2,6 +2,15 @@ import type {
   CompanyOperatingHourItem,
   CompanyProfileDetails,
   CompanyTrustCheckItem,
+  ConsumerAddressTag,
+  ConsumerContactPreference,
+  ConsumerProfileData,
+  ConsumerProfileStats,
+  ConsumerProfileTabId,
+  ConsumerRecentActivityItem,
+  ConsumerSavedAddress,
+  ConsumerSavedProCardItem,
+  ConsumerWrittenReview,
   ProfessionalProfileData,
   ProfileEntityMode,
   ProfilePhotoGuidelineItem,
@@ -18,6 +27,15 @@ export type {
   CompanyOperatingHourItem,
   CompanyProfileDetails,
   CompanyTrustCheckItem,
+  ConsumerAddressTag,
+  ConsumerContactPreference,
+  ConsumerProfileData,
+  ConsumerProfileStats,
+  ConsumerProfileTabId,
+  ConsumerRecentActivityItem,
+  ConsumerSavedAddress,
+  ConsumerSavedProCardItem,
+  ConsumerWrittenReview,
   ProfessionalProfileData,
   ProfileEntityMode,
   ProfilePhotoGuidelineItem,
@@ -54,6 +72,29 @@ export interface EditProfileFormValues {
   bio: string;
   skills: string[];
   avatarUrl: string;
+}
+
+export interface ConsumerEditProfileFormValues {
+  fullName: string;
+  email: string;
+  phone: string;
+  location: string;
+  bio: string;
+  preferredContact: ConsumerContactPreference;
+  serviceInterests: string[];
+  avatarUrl: string;
+}
+
+export interface ConsumerAddressFormValues {
+  id?: string;
+  label: string;
+  tag: ConsumerAddressTag;
+  streetAddress: string;
+  area: string;
+  landmark?: string;
+  phone: string;
+  accessNotes?: string;
+  isDefault: boolean;
 }
 
 export interface AddPortfolioProjectPayload {

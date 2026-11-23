@@ -1,7 +1,11 @@
 import type { Notification } from "@/store/slices/uiSlice";
-import type { ProfilePortfolioItem } from "@/components/profile/types";
+import type {
+  ConsumerSavedAddress,
+  ProfilePortfolioItem,
+} from "@/components/profile/types";
 import type {
   AddPortfolioProjectPayload,
+  ConsumerAddressFormValues,
   RequestContactUpdatePayload,
 } from "@/features/profile/types";
 
@@ -125,6 +129,14 @@ export interface RequestContactUpdateModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmitRequest: (payload: RequestContactUpdatePayload) => void;
+}
+
+export interface ConsumerAddressModalProps {
+  isOpen: boolean;
+  editingAddress?: ConsumerSavedAddress | null;
+  areaPresets?: readonly string[];
+  onClose: () => void;
+  onSaveAddress: (values: ConsumerAddressFormValues) => void;
 }
 
 

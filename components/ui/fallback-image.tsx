@@ -75,7 +75,7 @@ export function FallbackImage({
     return (
       <AvatarPrimitive.Root
         className={cn(
-          "relative inline-flex size-full shrink-0 overflow-hidden rounded-full bg-secondary align-middle select-none",
+          "relative inline-flex size-full shrink-0 overflow-hidden bg-secondary align-middle select-none",
           className
         )}
       >

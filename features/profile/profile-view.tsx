@@ -28,12 +28,16 @@ import {
   WriteReviewModal,
 } from "@/components/modals/profile-modals";
 import { cn } from "@/lib/utils";
+import { useAppSelector } from "@/store/hooks";
+import { selectUserRole } from "@/store/slices/authSlice";
+import { selectActivePerspective } from "@/store/slices/uiSlice";
+import { ConsumerProfileView } from "./consumer-profile-view";
 import { useProfileService } from "./services/profileApi";
 import type { ProfileViewProps } from "./types";
 
 export type { ProfileViewProps };
 
-export function ProfileView({
+function ProfessionalProfileViewContent({
   profile: profileProp,
   entityMode,
   forcePerspective,
@@ -349,6 +353,24 @@ export function ProfileView({
       />
     </main>
   );
+}
+
+export function ProfileView(props: ProfileViewProps) {
+  const userRole = useAppSelector(selectUserRole);
+  const activePerspective = useAppSelector(selectActivePerspective);
+  const effectiveRole = userRole || activePerspective || "consumer";
+
+  const showConsumerOwnProfile =
+    !props.profile &&
+    !props.entityMode &&
+    !props.forcePerspective &&
+    effectiveRole === "consumer";
+
+  if (showConsumerOwnProfile) {
+    return <ConsumerProfileView />;
+  }
+
+  return <ProfessionalProfileViewContent {...props} />;
 }
 
 export default ProfileView;

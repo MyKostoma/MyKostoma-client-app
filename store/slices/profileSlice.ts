@@ -2,17 +2,22 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { baseApi } from "../api/baseApi";
 import type { RootState } from "../index";
 import type {
+  ConsumerProfileData,
+  ConsumerSavedAddress,
   ProfessionalProfileData,
   ProfilePortfolioItem,
   ProfileReviewItem,
 } from "@/components/profile/types";
 import type {
+  ConsumerAddressFormValues,
+  ConsumerEditProfileFormValues,
   EditProfileFormValues,
   RequestContactUpdatePayload,
   SubmitReviewPayload,
 } from "@/features/profile/types";
 import {
   DEFAULT_COMPANY_PROFILE,
+  DEFAULT_CONSUMER_PROFILE,
   MOCK_PROFESSIONAL_PROFILES,
 } from "@/features/profile/data";
 
@@ -24,6 +29,7 @@ export interface ProfileResponseOverride {
 export interface ProfileSliceState {
   ownProfile: ProfessionalProfileData;
   ownCompanyProfile: ProfessionalProfileData;
+  consumerProfile: ConsumerProfileData;
   helpfulReviewIds: string[];
   customReviewsByProfileId: Record<string, ProfileReviewItem[]>;
   responsesByReviewId: Record<string, ProfileResponseOverride>;
@@ -32,6 +38,7 @@ export interface ProfileSliceState {
 const initialState: ProfileSliceState = {
   ownProfile: MOCK_PROFESSIONAL_PROFILES["elena-rodriguez"],
   ownCompanyProfile: DEFAULT_COMPANY_PROFILE,
+  consumerProfile: DEFAULT_CONSUMER_PROFILE,
   helpfulReviewIds: [],
   customReviewsByProfileId: {},
   responsesByReviewId: {},
@@ -81,12 +88,13 @@ const profileSlice = createSlice({
       const { fullName, category, location, bio, skills, avatarUrl } =
         action.payload;
 
-      const initials = fullName
-        .split(/\s+/)
-        .filter(Boolean)
-        .slice(0, 2)
-        .map((word) => word[0]?.toUpperCase() ?? "")
-        .join("") || "CO";
+      const initials =
+        fullName
+          .split(/\s+/)
+          .filter(Boolean)
+          .slice(0, 2)
+          .map((word) => word[0]?.toUpperCase() ?? "")
+          .join("") || "CO";
 
       state.ownCompanyProfile = {
         ...state.ownCompanyProfile,
@@ -113,6 +121,143 @@ const profileSlice = createSlice({
         ...state.ownCompanyProfile,
         avatarUrl: action.payload.avatarUrl,
       };
+    },
+    updateConsumerProfileLocal: (
+      state,
+      action: PayloadAction<ConsumerEditProfileFormValues>
+    ) => {
+      const {
+        fullName,
+        email,
+        phone,
+        location,
+        bio,
+        preferredContact,
+        serviceInterests,
+        avatarUrl,
+      } = action.payload;
+
+      state.consumerProfile = {
+        ...state.consumerProfile,
+        fullName,
+        email,
+        phone,
+        location,
+        bio,
+        preferredContact,
+        serviceInterests,
+        avatarUrl,
+      };
+    },
+    updateConsumerPhotoLocal: (
+      state,
+      action: PayloadAction<{ avatarUrl: string }>
+    ) => {
+      state.consumerProfile = {
+        ...state.consumerProfile,
+        avatarUrl: action.payload.avatarUrl,
+      };
+    },
+    saveConsumerAddressLocal: (
+      state,
+      action: PayloadAction<ConsumerAddressFormValues>
+    ) => {
+      const incoming = action.payload;
+      const addressId = incoming.id || `addr-${Date.now()}`;
+      const record: ConsumerSavedAddress = {
+        id: addressId,
+        label: incoming.label,
+        tag: incoming.tag,
+        streetAddress: incoming.streetAddress,
+        area: incoming.area,
+        landmark: incoming.landmark,
+        phone: incoming.phone,
+        accessNotes: incoming.accessNotes,
+        isDefault:
+          incoming.isDefault || state.consumerProfile.savedAddresses.length === 0,
+      };
+
+      const exists = state.consumerProfile.savedAddresses.some(
+        (a) => a.id === addressId
+      );
+
+      let nextList = exists
+        ? state.consumerProfile.savedAddresses.map((a) =>
+            a.id === addressId ? record : a
+          )
+        : [record, ...state.consumerProfile.savedAddresses];
+
+      if (record.isDefault) {
+        nextList = nextList.map((a) => ({
+          ...a,
+          isDefault: a.id === addressId,
+        }));
+      }
+
+      state.consumerProfile.savedAddresses = nextList;
+    },
+    deleteConsumerAddressLocal: (
+      state,
+      action: PayloadAction<{ addressId: string }>
+    ) => {
+      const removed = state.consumerProfile.savedAddresses.find(
+        (a) => a.id === action.payload.addressId
+      );
+      const remaining = state.consumerProfile.savedAddresses.filter(
+        (a) => a.id !== action.payload.addressId
+      );
+      if (removed?.isDefault && remaining.length > 0) {
+        remaining[0] = { ...remaining[0], isDefault: true };
+      }
+      state.consumerProfile.savedAddresses = remaining;
+    },
+    setDefaultConsumerAddressLocal: (
+      state,
+      action: PayloadAction<{ addressId: string }>
+    ) => {
+      state.consumerProfile.savedAddresses =
+        state.consumerProfile.savedAddresses.map((addr) => ({
+          ...addr,
+          isDefault: addr.id === action.payload.addressId,
+        }));
+    },
+    toggleConsumerSavedProLocal: (
+      state,
+      action: PayloadAction<{ proId: string }>
+    ) => {
+      const { proId } = action.payload;
+      if (state.consumerProfile.savedProIds.includes(proId)) {
+        state.consumerProfile.savedProIds =
+          state.consumerProfile.savedProIds.filter((id) => id !== proId);
+      } else {
+        state.consumerProfile.savedProIds = [
+          proId,
+          ...state.consumerProfile.savedProIds,
+        ];
+      }
+    },
+    updateConsumerWrittenReviewLocal: (
+      state,
+      action: PayloadAction<{
+        reviewId: string;
+        rating: number;
+        comment: string;
+      }>
+    ) => {
+      const { reviewId, rating, comment } = action.payload;
+      state.consumerProfile.writtenReviews =
+        state.consumerProfile.writtenReviews.map((rev) =>
+          rev.id === reviewId ? { ...rev, rating, comment } : rev
+        );
+    },
+    deleteConsumerWrittenReviewLocal: (
+      state,
+      action: PayloadAction<{ reviewId: string }>
+    ) => {
+      state.consumerProfile.writtenReviews =
+        state.consumerProfile.writtenReviews.filter(
+          (rev) => rev.id !== action.payload.reviewId
+        );
     },
     addPortfolioProjectLocal: (
       state,
@@ -221,6 +366,14 @@ export const {
   updateOwnProfilePhotoLocal,
   updateOwnCompanyProfileLocal,
   updateOwnCompanyPhotoLocal,
+  updateConsumerProfileLocal,
+  updateConsumerPhotoLocal,
+  saveConsumerAddressLocal,
+  deleteConsumerAddressLocal,
+  setDefaultConsumerAddressLocal,
+  toggleConsumerSavedProLocal,
+  updateConsumerWrittenReviewLocal,
+  deleteConsumerWrittenReviewLocal,
   addPortfolioProjectLocal,
   deletePortfolioProjectLocal,
   addCompanyPortfolioProjectLocal,
@@ -234,6 +387,8 @@ export const selectOwnProfessionalProfile = (state: RootState) =>
   state.profile.ownProfile;
 export const selectOwnCompanyProfile = (state: RootState) =>
   state.profile.ownCompanyProfile;
+export const selectConsumerProfile = (state: RootState) =>
+  state.profile.consumerProfile;
 export const selectHelpfulReviewIds = (state: RootState) =>
   state.profile.helpfulReviewIds;
 export const selectCustomReviewsByProfileId = (state: RootState) =>
@@ -295,6 +450,32 @@ export const profileApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["Profile", "User"],
     }),
+    getConsumerProfile: builder.query<ConsumerProfileData, void>({
+      query: () => "/profile/consumer/me",
+      providesTags: ["Profile"],
+    }),
+    updateConsumerProfile: builder.mutation<
+      ConsumerProfileData,
+      ConsumerEditProfileFormValues
+    >({
+      query: (body) => ({
+        url: "/profile/consumer/me",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Profile", "User"],
+    }),
+    updateConsumerPhoto: builder.mutation<
+      { avatarUrl: string },
+      { avatarUrl: string }
+    >({
+      query: (body) => ({
+        url: "/profile/consumer/me/photo",
+        method: "PATCH",
+        body,
+      }),
+      invalidatesTags: ["Profile", "User"],
+    }),
     submitReviewResponse: builder.mutation<
       { reviewId: string; response: string },
       { reviewId: string; response: string }
@@ -338,6 +519,9 @@ export const {
   useGetOwnCompanyProfileQuery,
   useUpdateOwnCompanyProfileMutation,
   useUpdateOwnCompanyPhotoMutation,
+  useGetConsumerProfileQuery,
+  useUpdateConsumerProfileMutation,
+  useUpdateConsumerPhotoMutation,
   useSubmitReviewResponseMutation,
   useSubmitCustomerReviewMutation,
   useRequestContactUpdateMutation,

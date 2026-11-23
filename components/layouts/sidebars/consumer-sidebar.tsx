@@ -153,7 +153,10 @@ export function ConsumerSidebar({
           {header || (
             isOpen ? (
               <div className="px-4 pb-2 pt-1">
-                <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-secondary/40 border border-border/50">
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-3 p-2.5 rounded-2xl bg-secondary/40 border border-border/50 hover:bg-secondary/70 transition-colors"
+                >
                   <div className="relative shrink-0">
                     {avatarUrl ? (
                       <img
@@ -180,13 +183,13 @@ export function ConsumerSidebar({
                       {roleTitle}
                     </p>
                   </div>
-                </div>
+                </Link>
               </div>
             ) : (
               <div className="pt-4 pb-2 flex flex-col items-center gap-3">
                 {/* User Avatar */}
                 <SidebarTooltip content={`${displayName} (${roleTitle})`} enabled={!isOpen}>
-                  <div className="relative cursor-default">
+                  <Link href="/profile" className="relative cursor-pointer block">
                     {avatarUrl ? (
                       <img
                         src={avatarUrl}
@@ -203,7 +206,7 @@ export function ConsumerSidebar({
                           .toUpperCase() || "SJ"}
                       </div>
                     )}
-                  </div>
+                  </Link>
                 </SidebarTooltip>
               </div>
             )

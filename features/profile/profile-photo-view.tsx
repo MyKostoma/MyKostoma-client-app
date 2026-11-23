@@ -2,16 +2,28 @@
 
 import { useSearchParams } from "next/navigation";
 import { ProfilePhotoForm } from "@/components/profile/profile-photo-form";
+import { useAppSelector } from "@/store/hooks";
+import { selectUserRole } from "@/store/slices/authSlice";
+import { selectActivePerspective } from "@/store/slices/uiSlice";
 import { PROFILE_PHOTO_GUIDELINES } from "./data";
 import { useProfilePhotoService } from "./services/profileApi";
-import type { ProfilePhotoViewProps } from "./types";
+import type { ProfileEntityMode, ProfilePhotoViewProps } from "./types";
 
-export function ProfilePhotoView({
-  mode = "individual",
-}: ProfilePhotoViewProps) {
+export function ProfilePhotoView({ mode }: ProfilePhotoViewProps) {
   const searchParams = useSearchParams();
   const modeParam = searchParams.get("mode");
-  const resolvedMode = modeParam === "company" ? "company" : mode;
+  const userRole = useAppSelector(selectUserRole);
+  const activePerspective = useAppSelector(selectActivePerspective);
+  const effectiveRole = userRole || activePerspective || "consumer";
+
+  const resolvedMode: ProfileEntityMode =
+    modeParam === "company" || mode === "company"
+      ? "company"
+      : modeParam === "consumer" ||
+          mode === "consumer" ||
+          (!modeParam && !mode && effectiveRole === "consumer")
+        ? "consumer"
+        : "individual";
 
   const {
     displayName,

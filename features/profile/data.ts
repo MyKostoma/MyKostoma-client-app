@@ -1,4 +1,6 @@
 import type {
+  ConsumerContactPreference,
+  ConsumerProfileData,
   ProfessionalProfileData,
   ProfilePhotoGuidelineItem,
   ProfileServiceItem,
@@ -1137,6 +1139,106 @@ export const DEFAULT_PROFESSIONAL_PROFILE: ProfessionalProfileData =
 
 export const DEFAULT_COMPANY_PROFILE: ProfessionalProfileData =
   MOCK_PROFESSIONAL_PROFILES["urbanvibe-design-studio"];
+
+export const CONSUMER_SERVICE_INTEREST_OPTIONS: readonly string[] = [
+  "Interior Design",
+  "Electrical",
+  "Plumbing",
+  "Home Cleaning",
+  "HVAC & Cooling",
+  "Painting",
+  "Renovation",
+  "Smart Home",
+  "Carpentry",
+  "Event Planning",
+];
+
+export const CONSUMER_CONTACT_PREFERENCE_OPTIONS: readonly {
+  value: ConsumerContactPreference;
+  label: string;
+}[] = [
+  { value: "in-app", label: "In-App Messages" },
+  { value: "phone", label: "Phone Call" },
+  { value: "whatsapp", label: "WhatsApp / SMS" },
+  { value: "email", label: "Email" },
+];
+
+export const DEFAULT_CONSUMER_PROFILE: ConsumerProfileData = {
+  id: "consumer-sarah-jenkins",
+  fullName: "Sarah Jenkins",
+  email: "sarah.jenkins@example.com",
+  phone: "+234 803 452 8910",
+  location: "Lekki Phase 1, Lagos",
+  memberSince: "Member since Jan 2025",
+  avatarUrl:
+    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=400&q=80",
+  bio: "Homeowner in Lekki Phase 1 managing periodic home maintenance, interior upgrades, and office fit-out bookings across Lagos.",
+  emailVerified: true,
+  phoneVerified: true,
+  preferredContact: "in-app",
+  serviceInterests: [
+    "Interior Design",
+    "Electrical",
+    "Home Cleaning",
+    "Smart Home",
+  ],
+  savedAddresses: [
+    {
+      id: "addr-home-lekki",
+      label: "Primary Residence",
+      tag: "Home",
+      streetAddress: "14B Admiralty Road",
+      area: "Lekki Phase 1, Lagos",
+      landmark: "Opposite Domino's Pizza / Sterling Bank",
+      phone: "+234 803 452 8910",
+      accessNotes: "Call security gatehouse upon arrival for visitor pass.",
+      isDefault: true,
+    },
+    {
+      id: "addr-office-vi",
+      label: "Studio Annex Office",
+      tag: "Office",
+      streetAddress: "Plot 22 Adeola Odeku Street",
+      area: "Victoria Island, Lagos",
+      landmark: "Next to Zenith Heights",
+      phone: "+234 809 210 4412",
+      accessNotes: "Weekdays 9:00 AM – 5:00 PM at front reception.",
+      isDefault: false,
+    },
+  ],
+  savedProIds: [
+    "elena-rodriguez",
+    "urbanvibe-design-studio",
+    "tunde-balogun",
+  ],
+  writtenReviews: [
+    {
+      id: "crev-urbanvibe",
+      professionalId: "urbanvibe-design-studio",
+      professionalName: "UrbanVibe Design Studio",
+      professionalAvatar: "",
+      professionalCategory: "Interior Architecture & Renovation",
+      rating: 5,
+      dateLabel: "Apr 28, 2026",
+      comment:
+        "Great virtual consultation. The color palette the team suggested really opened up our small living room, and they quickly provided an alternative when one item went out of stock.",
+    },
+    {
+      id: "crev-elena",
+      professionalId: "elena-rodriguez",
+      professionalName: "Elena Rodriguez",
+      professionalAvatar:
+        "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80",
+      professionalCategory: "Lead Interior Designer at UrbanVibe",
+      rating: 5,
+      dateLabel: "Mar 14, 2026",
+      comment:
+        "Clear mood boards, transparent budgeting, and punctual weekly progress updates throughout our living room makeover.",
+      professionalResponse:
+        "Thank you Sarah! It was wonderful working with you to refresh your space.",
+    },
+  ],
+};
 
 /**
  * Retrieves a professional profile by ID.

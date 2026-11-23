@@ -7,10 +7,14 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { selectUserRole } from "@/store/slices/authSlice";
 import { selectActivePerspective } from "@/store/slices/uiSlice";
 import {
+  selectFollowedProIds,
   toggleFollowedProfessional,
   useSendProfessionalInquiryMutation,
   useToggleFollowProfessionalMutation,
 } from "@/store/slices/discoverSlice";
+import { selectAllOrders } from "@/store/slices/ordersSlice";
+import { selectAllRequests } from "@/store/slices/requestsSlice";
+import { selectWalletSummary } from "@/store/slices/walletSlice";
 import {
   selectCompanyVerificationRecord,
   selectIsCompanyVerified,
@@ -21,14 +25,23 @@ import {
   addCustomerReviewLocal,
   addPortfolioProjectLocal,
   deleteCompanyPortfolioProjectLocal,
+  deleteConsumerAddressLocal,
+  deleteConsumerWrittenReviewLocal,
   deletePortfolioProjectLocal,
   replyToReviewLocal,
+  saveConsumerAddressLocal,
+  selectConsumerProfile,
   selectCustomReviewsByProfileId,
   selectHelpfulReviewIds,
   selectOwnCompanyProfile,
   selectOwnProfessionalProfile,
   selectResponsesByReviewId,
+  setDefaultConsumerAddressLocal,
+  toggleConsumerSavedProLocal,
   toggleReviewHelpfulLocal,
+  updateConsumerPhotoLocal,
+  updateConsumerProfileLocal,
+  updateConsumerWrittenReviewLocal,
   updateOwnCompanyPhotoLocal,
   updateOwnCompanyProfileLocal,
   updateOwnProfileLocal,
@@ -36,12 +49,19 @@ import {
   useRequestContactUpdateMutation,
   useSubmitCustomerReviewMutation,
   useSubmitReviewResponseMutation,
+  useUpdateConsumerPhotoMutation,
+  useUpdateConsumerProfileMutation,
   useUpdateOwnCompanyPhotoMutation,
   useUpdateOwnCompanyProfileMutation,
   useUpdateOwnProfessionalProfileMutation,
   useUpdateOwnProfilePhotoMutation,
 } from "@/store/slices/profileSlice";
 import type {
+  ConsumerContactPreference,
+  ConsumerProfileTabId,
+  ConsumerRecentActivityItem,
+  ConsumerSavedAddress,
+  ConsumerWrittenReview,
   ProfessionalProfileData,
   ProfileEntityMode,
   ProfilePortfolioItem,
@@ -54,11 +74,13 @@ import type {
 } from "@/components/profile/types";
 import type {
   AddPortfolioProjectPayload,
+  ConsumerAddressFormValues,
   RequestContactUpdatePayload,
 } from "../types";
 import {
   DEFAULT_COMPANY_PROFILE,
   DEFAULT_PROFESSIONAL_PROFILE,
+  getProfessionalProfileById,
 } from "../data";
 import {
   buildCompanyPhotoHref,
@@ -67,15 +89,19 @@ import {
   buildEditProfileHref,
   buildProfileHref,
   buildProfilePhotoHref,
+  buildPublicProfileHref,
   buildServiceInquiryPrefill,
   extractPortfolioCategories,
   filterAndSortPortfolioItems,
   filterAndSortReviews,
+  formatConsumerNairaBalance,
   formatProfileDisplayDate,
   mergeProfileWithOverrides,
+  normalizeConsumerProfileTab,
   normalizeProfileTab,
   paginateItems,
   resolveCompanyProfileDetails,
+  resolveSavedProfessionalsList,
   validateProfilePhotoFile,
 } from "./profileHelpers";
 
@@ -861,13 +887,24 @@ export function useProfilePhotoService(mode: ProfileEntityMode = "individual") {
   const dispatch = useAppDispatch();
   const ownProfile = useAppSelector(selectOwnProfessionalProfile);
   const ownCompanyProfile = useAppSelector(selectOwnCompanyProfile);
+  const consumerProfile = useAppSelector(selectConsumerProfile);
+
   const activeSourceProfile =
-    mode === "company" ? ownCompanyProfile : ownProfile;
+    mode === "company"
+      ? ownCompanyProfile
+      : mode === "consumer"
+        ? {
+            name: consumerProfile.fullName,
+            avatarUrl: consumerProfile.avatarUrl,
+          }
+        : ownProfile;
 
   const [updatePhotoMutation, { isLoading: isMutatingIndividual }] =
     useUpdateOwnProfilePhotoMutation();
   const [updateCompanyPhotoMutation, { isLoading: isMutatingCompany }] =
     useUpdateOwnCompanyPhotoMutation();
+  const [updateConsumerPhotoMutation, { isLoading: isMutatingConsumer }] =
+    useUpdateConsumerPhotoMutation();
 
   const [previewUrl, setPreviewUrl] = useState(activeSourceProfile.avatarUrl);
   const [pendingDataUrl, setPendingDataUrl] = useState<string | null>(null);
@@ -936,17 +973,21 @@ export function useProfilePhotoService(mode: ProfileEntityMode = "individual") {
     try {
       if (mode === "company") {
         await updateCompanyPhotoMutation({ avatarUrl: nextAvatarUrl }).unwrap();
+      } else if (mode === "consumer") {
+        await updateConsumerPhotoMutation({ avatarUrl: nextAvatarUrl }).unwrap();
       } else {
         await updatePhotoMutation({ avatarUrl: nextAvatarUrl }).unwrap();
       }
     } catch {
       // Mock fallback: persist local photo update
     } finally {
-      dispatch(
-        mode === "company"
-          ? updateOwnCompanyPhotoLocal({ avatarUrl: nextAvatarUrl })
-          : updateOwnProfilePhotoLocal({ avatarUrl: nextAvatarUrl })
-      );
+      if (mode === "company") {
+        dispatch(updateOwnCompanyPhotoLocal({ avatarUrl: nextAvatarUrl }));
+      } else if (mode === "consumer") {
+        dispatch(updateConsumerPhotoLocal({ avatarUrl: nextAvatarUrl }));
+      } else {
+        dispatch(updateOwnProfilePhotoLocal({ avatarUrl: nextAvatarUrl }));
+      }
       setIsSavingLocal(false);
     }
 
@@ -970,6 +1011,7 @@ export function useProfilePhotoService(mode: ProfileEntityMode = "individual") {
     previewUrl,
     router,
     updateCompanyPhotoMutation,
+    updateConsumerPhotoMutation,
     updatePhotoMutation,
   ]);
 
@@ -980,9 +1022,426 @@ export function useProfilePhotoService(mode: ProfileEntityMode = "individual") {
     selectedFileName,
     fileError,
     dimensionWarning,
-    isSaving: isSavingLocal || isMutatingIndividual || isMutatingCompany,
+    isSaving:
+      isSavingLocal ||
+      isMutatingIndividual ||
+      isMutatingCompany ||
+      isMutatingConsumer,
     handleFileSelect,
     handleRemovePhoto,
+    handleCancel,
+    handleSubmit,
+  };
+}
+
+export function useConsumerProfileService() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const dispatch = useAppDispatch();
+
+  const consumerProfile = useAppSelector(selectConsumerProfile);
+  const orders = useAppSelector(selectAllOrders);
+  const requests = useAppSelector(selectAllRequests);
+  const walletSummary = useAppSelector(selectWalletSummary);
+  const followedProIds = useAppSelector(selectFollowedProIds);
+  const customReviewsByProfileId = useAppSelector(
+    selectCustomReviewsByProfileId
+  );
+
+  const tabFromUrl = searchParams.get("tab");
+  const [activeTab, setActiveTab] = useState<ConsumerProfileTabId>(
+    tabFromUrl ? normalizeConsumerProfileTab(tabFromUrl) : "overview"
+  );
+  const [addressModalOpen, setAddressModalOpen] = useState(false);
+  const [editingAddress, setEditingAddress] =
+    useState<ConsumerSavedAddress | null>(null);
+
+  useEffect(() => {
+    if (tabFromUrl) {
+      setActiveTab(normalizeConsumerProfileTab(tabFromUrl));
+    }
+  }, [tabFromUrl]);
+
+  const savedProfessionals = useMemo(
+    () =>
+      resolveSavedProfessionalsList([
+        ...followedProIds,
+        ...consumerProfile.savedProIds,
+      ]),
+    [consumerProfile.savedProIds, followedProIds]
+  );
+
+  const writtenReviews: ConsumerWrittenReview[] = useMemo(() => {
+    const customList: ConsumerWrittenReview[] = [];
+    for (const [proId, items] of Object.entries(customReviewsByProfileId)) {
+      const pro = getProfessionalProfileById(proId);
+      for (const item of items) {
+        customList.push({
+          id: item.id,
+          professionalId: proId,
+          professionalName: pro.name,
+          professionalAvatar: pro.avatarUrl,
+          professionalCategory: pro.roleTitle,
+          rating: item.rating,
+          dateLabel: item.dateLabel || item.timeAgo,
+          comment: item.comment,
+          professionalResponse: item.professionalResponse,
+        });
+      }
+    }
+    return [...customList, ...consumerProfile.writtenReviews];
+  }, [consumerProfile.writtenReviews, customReviewsByProfileId]);
+
+  const stats = useMemo(() => {
+    const activeOrdersCount = orders.filter(
+      (o) => o.status !== "completed" && o.status !== "cancelled"
+    ).length;
+    const openRequestsCount = requests.filter(
+      (r) => r.status === "open" || r.status === "in-progress"
+    ).length;
+
+    return {
+      activeOrdersCount,
+      openRequestsCount,
+      walletBalanceFormatted: formatConsumerNairaBalance(
+        walletSummary.availableBalance
+      ),
+      savedProsCount: savedProfessionals.length,
+    };
+  }, [orders, requests, savedProfessionals.length, walletSummary.availableBalance]);
+
+  const recentActivity: ConsumerRecentActivityItem[] = useMemo(() => {
+    const orderItems: ConsumerRecentActivityItem[] = orders
+      .slice(0, 2)
+      .map((order) => ({
+        id: order.id,
+        kind: "order",
+        title: order.title,
+        subtitle: `${order.providerName} • Order ${order.code}`,
+        statusLabel: order.status.replace(/-/g, " "),
+        statusVariant:
+          order.status === "completed"
+            ? "success"
+            : order.status === "in-progress"
+              ? "info"
+              : order.status === "awaiting-confirmation"
+                ? "warning"
+                : "muted",
+        href: `/orders/${order.id}`,
+      }));
+
+    const requestItems: ConsumerRecentActivityItem[] = requests
+      .slice(0, 2)
+      .map((req) => ({
+        id: req.id,
+        kind: "request",
+        title: req.title,
+        subtitle: `${req.category} • ${req.quotesBadgeLabel}`,
+        statusLabel: req.status.replace(/-/g, " "),
+        statusVariant:
+          req.status === "open"
+            ? "info"
+            : req.status === "in-progress"
+              ? "warning"
+              : req.status === "completed"
+                ? "success"
+                : "muted",
+        href: `/requests/${req.id}`,
+      }));
+
+    return [...orderItems, ...requestItems].slice(0, 4);
+  }, [orders, requests]);
+
+  const defaultAddress = useMemo(
+    () =>
+      consumerProfile.savedAddresses.find((a) => a.isDefault) ??
+      consumerProfile.savedAddresses[0],
+    [consumerProfile.savedAddresses]
+  );
+
+  const handleTabChange = useCallback((tab: ConsumerProfileTabId) => {
+    setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
+
+  const handleEditProfile = useCallback(() => {
+    router.push(buildEditProfileHref());
+  }, [router]);
+
+  const handleEditPhoto = useCallback(() => {
+    router.push(buildProfilePhotoHref());
+  }, [router]);
+
+  const handlePostRequest = useCallback(() => {
+    router.push("/requests/new");
+  }, [router]);
+
+  const handleOpenAddAddress = useCallback(() => {
+    setEditingAddress(null);
+    setAddressModalOpen(true);
+  }, []);
+
+  const handleOpenEditAddress = useCallback((address: ConsumerSavedAddress) => {
+    setEditingAddress(address);
+    setAddressModalOpen(true);
+  }, []);
+
+  const handleSaveAddress = useCallback(
+    (values: ConsumerAddressFormValues) => {
+      dispatch(saveConsumerAddressLocal(values));
+      toast.success(
+        values.id ? "Service address updated!" : "Service address added!"
+      );
+    },
+    [dispatch]
+  );
+
+  const handleDeleteAddress = useCallback(
+    (addressId: string) => {
+      dispatch(deleteConsumerAddressLocal({ addressId }));
+      toast.success("Service address removed.");
+    },
+    [dispatch]
+  );
+
+  const handleSetDefaultAddress = useCallback(
+    (addressId: string) => {
+      dispatch(setDefaultConsumerAddressLocal({ addressId }));
+      toast.success("Default service address updated.");
+    },
+    [dispatch]
+  );
+
+  const handleRemoveSavedPro = useCallback(
+    (proId: string) => {
+      if (consumerProfile.savedProIds.includes(proId)) {
+        dispatch(toggleConsumerSavedProLocal({ proId }));
+      }
+      if (followedProIds.includes(proId)) {
+        dispatch(toggleFollowedProfessional(proId));
+      }
+      toast.success("Removed from saved professionals.");
+    },
+    [consumerProfile.savedProIds, dispatch, followedProIds]
+  );
+
+  const handleEditWrittenReview = useCallback(
+    (reviewId: string, rating: number, comment: string) => {
+      dispatch(updateConsumerWrittenReviewLocal({ reviewId, rating, comment }));
+      toast.success("Your review was updated.");
+    },
+    [dispatch]
+  );
+
+  const handleDeleteWrittenReview = useCallback(
+    (reviewId: string) => {
+      dispatch(deleteConsumerWrittenReviewLocal({ reviewId }));
+      toast.success("Review deleted.");
+    },
+    [dispatch]
+  );
+
+  return {
+    profile: consumerProfile,
+    stats,
+    defaultAddress,
+    recentActivity,
+    savedProfessionals,
+    writtenReviews,
+    activeTab,
+    addressModalOpen,
+    setAddressModalOpen,
+    editingAddress,
+    handleTabChange,
+    handleEditProfile,
+    handleEditPhoto,
+    handlePostRequest,
+    handleOpenAddAddress,
+    handleOpenEditAddress,
+    handleSaveAddress,
+    handleDeleteAddress,
+    handleSetDefaultAddress,
+    handleRemoveSavedPro,
+    handleEditWrittenReview,
+    handleDeleteWrittenReview,
+    handleViewPro: (proId: string) => router.push(buildPublicProfileHref(proId)),
+    handleMessagePro: () => router.push("/messages"),
+    handleExplorePros: () => router.push("/search"),
+    handleBrowseOrders: () => router.push("/orders"),
+    handleOpenWallet: () => router.push("/wallet"),
+    handleOpenOrders: () => router.push("/orders"),
+    handleOpenRequests: () => router.push("/requests"),
+  };
+}
+
+export function useConsumerEditProfileService() {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const consumerProfile = useAppSelector(selectConsumerProfile);
+  const [updateConsumerMutation, { isLoading: isMutating }] =
+    useUpdateConsumerProfileMutation();
+
+  const [fullName, setFullName] = useState(consumerProfile.fullName);
+  const [email, setEmail] = useState(consumerProfile.email);
+  const [phone, setPhone] = useState(consumerProfile.phone);
+  const [location, setLocation] = useState(consumerProfile.location);
+  const [bio, setBio] = useState(consumerProfile.bio);
+  const [preferredContact, setPreferredContact] =
+    useState<ConsumerContactPreference>(consumerProfile.preferredContact);
+  const [serviceInterests, setServiceInterests] = useState<string[]>(
+    consumerProfile.serviceInterests
+  );
+  const [avatarUrl, setAvatarUrl] = useState(consumerProfile.avatarUrl);
+  const [showMapPicker, setShowMapPicker] = useState(false);
+
+  const [fullNameError, setFullNameError] = useState<string | undefined>(
+    undefined
+  );
+  const [emailError, setEmailError] = useState<string | undefined>(undefined);
+  const [phoneError, setPhoneError] = useState<string | undefined>(undefined);
+  const [locationError, setLocationError] = useState<string | undefined>(
+    undefined
+  );
+  const [bioError, setBioError] = useState<string | undefined>(undefined);
+  const [isSavingLocal, setIsSavingLocal] = useState(false);
+
+  useEffect(() => {
+    setAvatarUrl(consumerProfile.avatarUrl);
+  }, [consumerProfile.avatarUrl]);
+
+  const handleToggleInterest = useCallback((interest: string) => {
+    setServiceInterests((prev) =>
+      prev.includes(interest)
+        ? prev.filter((item) => item !== interest)
+        : [...prev, interest]
+    );
+  }, []);
+
+  const handleSelectPresetLocation = useCallback((preset: string) => {
+    setLocation(preset);
+    setLocationError(undefined);
+    setShowMapPicker(false);
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    router.push(buildProfileHref());
+  }, [router]);
+
+  const handleSubmit = useCallback(async () => {
+    const trimmedName = fullName.trim();
+    const trimmedEmail = email.trim();
+    const trimmedPhone = phone.trim();
+    const trimmedLocation = location.trim();
+    const trimmedBio = bio.trim();
+
+    let hasError = false;
+    if (trimmedName.length < 2) {
+      setFullNameError("Please enter your full name.");
+      hasError = true;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      setEmailError("Please enter a valid email address.");
+      hasError = true;
+    }
+    if (trimmedPhone.length < 7) {
+      setPhoneError("Please enter a valid phone number.");
+      hasError = true;
+    }
+    if (trimmedLocation.length < 2) {
+      setLocationError("Please select or enter your location.");
+      hasError = true;
+    }
+    if (trimmedBio.length > 300) {
+      setBioError("About notes cannot exceed 300 characters.");
+      hasError = true;
+    }
+
+    if (hasError) {
+      toast.error("Please fix the highlighted fields.");
+      return;
+    }
+
+    setIsSavingLocal(true);
+    const payload = {
+      fullName: trimmedName,
+      email: trimmedEmail,
+      phone: trimmedPhone,
+      location: trimmedLocation,
+      bio: trimmedBio,
+      preferredContact,
+      serviceInterests,
+      avatarUrl,
+    };
+
+    try {
+      await updateConsumerMutation(payload).unwrap();
+    } catch {
+      // Mock fallback persists in Redux
+    } finally {
+      dispatch(updateConsumerProfileLocal(payload));
+      setIsSavingLocal(false);
+    }
+
+    toast.success("Your profile has been updated!");
+    router.push(buildProfileHref());
+  }, [
+    avatarUrl,
+    bio,
+    dispatch,
+    email,
+    fullName,
+    location,
+    phone,
+    preferredContact,
+    router,
+    serviceInterests,
+    updateConsumerMutation,
+  ]);
+
+  return {
+    fullName,
+    fullNameError,
+    email,
+    emailError,
+    phone,
+    phoneError,
+    location,
+    locationError,
+    bio,
+    bioError,
+    preferredContact,
+    setPreferredContact,
+    serviceInterests,
+    avatarUrl,
+    showMapPicker,
+    setShowMapPicker,
+    isSaving: isSavingLocal || isMutating,
+    onFullNameChange: (val: string) => {
+      setFullName(val);
+      setFullNameError(undefined);
+    },
+    onEmailChange: (val: string) => {
+      setEmail(val);
+      setEmailError(undefined);
+    },
+    onPhoneChange: (val: string) => {
+      setPhone(val);
+      setPhoneError(undefined);
+    },
+    onLocationChange: (val: string) => {
+      setLocation(val);
+      setLocationError(undefined);
+    },
+    onBioChange: (val: string) => {
+      if (val.length <= 300) {
+        setBio(val);
+        setBioError(undefined);
+      }
+    },
+    handleSelectPresetLocation,
+    handleToggleInterest,
+    handleUploadPhotoClick: () => router.push(buildProfilePhotoHref()),
+    handleRemovePhoto: () => setAvatarUrl(""),
     handleCancel,
     handleSubmit,
   };

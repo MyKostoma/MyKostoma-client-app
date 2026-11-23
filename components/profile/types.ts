@@ -2,7 +2,21 @@ import type { HTMLAttributes } from "react";
 
 export type ProfileTabId = "overview" | "services" | "portfolio" | "reviews";
 
-export type ProfileEntityMode = "individual" | "company";
+export type ProfileEntityMode = "individual" | "company" | "consumer";
+
+export type ConsumerProfileTabId =
+  | "overview"
+  | "addresses"
+  | "saved-pros"
+  | "reviews";
+
+export type ConsumerContactPreference =
+  | "in-app"
+  | "phone"
+  | "whatsapp"
+  | "email";
+
+export type ConsumerAddressTag = "Home" | "Office" | "Other";
 
 export type FollowInteractionState = "default" | "active" | "hover-unfollow";
 
@@ -342,6 +356,171 @@ export interface ProfilePhotoFormProps {
   guidelines: readonly ProfilePhotoGuidelineItem[];
   isSaving?: boolean;
   onFileSelect: (file: File) => void;
+  onRemovePhoto: () => void;
+  onBack: () => void;
+  onCancel: () => void;
+  onSubmit: () => void;
+}
+
+export interface ConsumerSavedAddress {
+  id: string;
+  label: string;
+  tag: ConsumerAddressTag;
+  streetAddress: string;
+  area: string;
+  landmark?: string;
+  phone: string;
+  accessNotes?: string;
+  isDefault: boolean;
+}
+
+export interface ConsumerWrittenReview {
+  id: string;
+  professionalId: string;
+  professionalName: string;
+  professionalAvatar: string;
+  professionalCategory: string;
+  rating: number;
+  dateLabel: string;
+  comment: string;
+  professionalResponse?: string;
+}
+
+export interface ConsumerProfileData {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  location: string;
+  memberSince: string;
+  avatarUrl: string;
+  bio: string;
+  emailVerified: boolean;
+  phoneVerified: boolean;
+  preferredContact: ConsumerContactPreference;
+  serviceInterests: string[];
+  savedAddresses: ConsumerSavedAddress[];
+  savedProIds: string[];
+  writtenReviews: ConsumerWrittenReview[];
+}
+
+export interface ConsumerProfileStats {
+  activeOrdersCount: number;
+  openRequestsCount: number;
+  walletBalanceFormatted: string;
+  savedProsCount: number;
+}
+
+export interface ConsumerSavedProCardItem {
+  id: string;
+  name: string;
+  roleTitle: string;
+  location: string;
+  rating: number;
+  reviewCount: number;
+  avatarUrl: string;
+  logoMonogram?: string;
+  verificationLabel: string;
+  verificationType: "individual" | "company";
+}
+
+export interface ConsumerRecentActivityItem {
+  id: string;
+  kind: "order" | "request";
+  title: string;
+  subtitle: string;
+  statusLabel: string;
+  statusVariant: "info" | "warning" | "success" | "muted";
+  href: string;
+}
+
+export interface ConsumerProfileHeaderProps {
+  profile: ConsumerProfileData;
+  stats: ConsumerProfileStats;
+  onEditProfileClick: () => void;
+  onEditPhotoClick: () => void;
+  onPostRequestClick: () => void;
+  onStatTabJump: (tab: ConsumerProfileTabId) => void;
+  onOpenWalletClick: () => void;
+  onOpenOrdersClick: () => void;
+  onOpenRequestsClick: () => void;
+}
+
+export interface ConsumerProfileTabsProps {
+  activeTab: ConsumerProfileTabId;
+  addressesCount: number;
+  savedProsCount: number;
+  reviewsCount: number;
+  onTabChange: (tab: ConsumerProfileTabId) => void;
+}
+
+export interface ConsumerOverviewSectionProps {
+  profile: ConsumerProfileData;
+  defaultAddress?: ConsumerSavedAddress;
+  recentActivity: ConsumerRecentActivityItem[];
+  onManageAddresses: () => void;
+  onAddAddress: () => void;
+  onEditProfile: () => void;
+  onViewAllOrders: () => void;
+  onViewAllRequests: () => void;
+}
+
+export interface ConsumerAddressesSectionProps {
+  addresses: ConsumerSavedAddress[];
+  onAddAddress: () => void;
+  onEditAddress: (address: ConsumerSavedAddress) => void;
+  onDeleteAddress: (addressId: string) => void;
+  onSetDefaultAddress: (addressId: string) => void;
+}
+
+export interface ConsumerSavedProsSectionProps {
+  professionals: ConsumerSavedProCardItem[];
+  onViewProfile: (proId: string) => void;
+  onMessagePro: (proId: string) => void;
+  onRemoveSavedPro: (proId: string) => void;
+  onExplorePros: () => void;
+}
+
+export interface ConsumerReviewsGivenSectionProps {
+  reviews: ConsumerWrittenReview[];
+  onViewProfessional: (proId: string) => void;
+  onEditReview: (reviewId: string, rating: number, comment: string) => void;
+  onDeleteReview: (reviewId: string) => void;
+  onBrowseOrders: () => void;
+}
+
+export interface ConsumerEditProfileFormProps {
+  fullName: string;
+  fullNameError?: string;
+  email: string;
+  emailError?: string;
+  phone: string;
+  phoneError?: string;
+  location: string;
+  locationError?: string;
+  locationPresets: readonly string[];
+  showMapPicker: boolean;
+  bio: string;
+  bioError?: string;
+  preferredContact: ConsumerContactPreference;
+  contactOptions: readonly {
+    value: ConsumerContactPreference;
+    label: string;
+  }[];
+  serviceInterests: string[];
+  interestOptions: readonly string[];
+  avatarUrl: string;
+  isSaving?: boolean;
+  onFullNameChange: (value: string) => void;
+  onEmailChange: (value: string) => void;
+  onPhoneChange: (value: string) => void;
+  onLocationChange: (value: string) => void;
+  onToggleMapPicker: () => void;
+  onSelectPresetLocation: (preset: string) => void;
+  onBioChange: (value: string) => void;
+  onPreferredContactChange: (pref: ConsumerContactPreference) => void;
+  onToggleInterest: (interest: string) => void;
+  onUploadPhotoClick: () => void;
   onRemovePhoto: () => void;
   onBack: () => void;
   onCancel: () => void;

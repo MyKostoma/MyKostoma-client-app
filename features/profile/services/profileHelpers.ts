@@ -1,5 +1,8 @@
 import type {
   CompanyProfileDetails,
+  ConsumerContactPreference,
+  ConsumerProfileTabId,
+  ConsumerSavedProCardItem,
   ProfessionalProfileData,
   ProfilePortfolioItem,
   ProfileReviewFilter,
@@ -10,6 +13,7 @@ import type {
   ProfileTabId,
 } from "@/components/profile/types";
 import type { ProfileResponseOverride } from "@/store/slices/profileSlice";
+import { getProfessionalProfileById } from "../data";
 
 export function buildServiceInquiryPrefill(
   professionalName: string,
@@ -301,4 +305,60 @@ export function paginateItems<T>(
     currentPage: safePage,
     totalPages,
   };
+}
+
+export function normalizeConsumerProfileTab(
+  raw?: string | null
+): ConsumerProfileTabId {
+  if (
+    raw === "overview" ||
+    raw === "addresses" ||
+    raw === "saved-pros" ||
+    raw === "reviews"
+  ) {
+    return raw;
+  }
+  return "overview";
+}
+
+export function formatConsumerContactPreference(
+  pref: ConsumerContactPreference
+): string {
+  switch (pref) {
+    case "phone":
+      return "Phone Call";
+    case "whatsapp":
+      return "WhatsApp / SMS";
+    case "email":
+      return "Email";
+    case "in-app":
+    default:
+      return "In-App Messages";
+  }
+}
+
+export function formatConsumerNairaBalance(amount: number): string {
+  if (!Number.isFinite(amount)) return "₦0";
+  return `₦${Math.round(amount).toLocaleString("en-NG")}`;
+}
+
+export function resolveSavedProfessionalsList(
+  savedIds: string[]
+): ConsumerSavedProCardItem[] {
+  const uniqueIds = Array.from(new Set(savedIds)).filter(Boolean);
+  return uniqueIds.map((id) => {
+    const pro = getProfessionalProfileById(id);
+    return {
+      id: pro.id,
+      name: pro.name,
+      roleTitle: pro.roleTitle,
+      location: pro.location,
+      rating: pro.rating,
+      reviewCount: pro.reviewCount,
+      avatarUrl: pro.avatarUrl,
+      logoMonogram: pro.companyDetails?.logoMonogram,
+      verificationLabel: pro.verificationLabel,
+      verificationType: pro.verificationType,
+    };
+  });
 }
