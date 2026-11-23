@@ -1,4 +1,18 @@
 import type { Notification } from "@/store/slices/uiSlice";
+import type {
+  ConsumerSavedAddress,
+  ProfilePortfolioItem,
+} from "@/components/profile/types";
+import type {
+  ManagedReelItem,
+  ReelItem,
+  ReelVisibility,
+} from "@/components/reels/types";
+import type {
+  AddPortfolioProjectPayload,
+  ConsumerAddressFormValues,
+  RequestContactUpdatePayload,
+} from "@/features/profile/types";
 
 export interface NotificationModalProps {
   isOpen: boolean;
@@ -96,6 +110,125 @@ export interface VerificationBenefitsModalProps {
   ctaLabel?: string;
   onClose: () => void;
   onStartVerification: () => void;
+}
+
+export interface PortfolioProjectModalProps {
+  isOpen: boolean;
+  mode: "view" | "create";
+  project?: ProfilePortfolioItem | null;
+  categories?: string[];
+  isOwner?: boolean;
+  onClose: () => void;
+  onCreateProject?: (payload: AddPortfolioProjectPayload) => void;
+  onDeleteProject?: (projectId: string) => void;
+}
+
+export interface WriteReviewModalProps {
+  isOpen: boolean;
+  recipientName: string;
+  onClose: () => void;
+  onSubmitReview: (payload: { rating: number; comment: string }) => void;
+}
+
+export interface RequestContactUpdateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmitRequest: (payload: RequestContactUpdatePayload) => void;
+}
+
+export interface ConsumerAddressModalProps {
+  isOpen: boolean;
+  editingAddress?: ConsumerSavedAddress | null;
+  areaPresets?: readonly string[];
+  onClose: () => void;
+  onSaveAddress: (values: ConsumerAddressFormValues) => void;
+}
+
+export interface RateExperienceModalProps {
+  isOpen: boolean;
+  variant: "professional" | "consumer";
+  recipientName: string;
+  recipientAvatarUrl?: string;
+  serviceTitle: string;
+  completedDateLabel: string;
+  orderCode?: string;
+  feeFormatted?: string;
+  onClose: () => void;
+  onSubmitReview: (payload: { rating: number; comment: string }) => void;
+}
+
+export interface ReviewSubmittedModalProps {
+  isOpen: boolean;
+  variant?: "professional" | "consumer";
+  title?: string;
+  description?: string;
+  actionLabel?: string;
+  onClose: () => void;
+  onPrimaryAction?: () => void;
+}
+
+export interface ReportReviewModalProps {
+  isOpen: boolean;
+  authorName: string;
+  reasons: readonly string[];
+  onClose: () => void;
+  onSubmitReport: (payload: { reason: string; details: string }) => void;
+}
+
+export interface DeleteReviewResponseModalProps {
+  isOpen: boolean;
+  authorName: string;
+  onClose: () => void;
+  onConfirmDelete: () => void;
+}
+
+export interface RequestEditResponseModalProps {
+  isOpen: boolean;
+  currentResponse: string;
+  onClose: () => void;
+  onSubmitRequest: (payload: { revisedText: string; reason: string }) => void;
+}
+
+export interface EditReelModalProps {
+  isOpen: boolean;
+  reel: ManagedReelItem | null;
+  onClose: () => void;
+  onSaveReel: (payload: {
+    reelId: string;
+    title: string;
+    caption: string;
+    hashtags: string[];
+    status: ReelVisibility;
+    audioLabel: string;
+  }) => void;
+}
+
+export interface DeleteReelModalProps {
+  isOpen: boolean;
+  reelTitle: string;
+  onClose: () => void;
+  onConfirmDelete: () => void;
+}
+
+export interface ReportReelModalProps {
+  isOpen: boolean;
+  creatorName: string;
+  reasons: readonly string[];
+  onClose: () => void;
+  onSubmitReport: (payload: { reason: string; details: string }) => void;
+}
+
+export interface ReelPlayerModalProps {
+  isOpen: boolean;
+  reels: ReelItem[];
+  activeIndex: number;
+  likedReelIds: string[];
+  followedCreatorIds: string[];
+  onClose: () => void;
+  onChangeIndex: (nextIndex: number) => void;
+  onToggleLike: (reelId: string) => void;
+  onToggleFollow: (creatorId: string, creatorName: string) => void;
+  onShare: (reel: ReelItem) => void;
 }
 
 

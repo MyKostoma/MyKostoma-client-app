@@ -1,56 +1,78 @@
 "use client";
 
-import { Check, MessageSquare, Star } from "lucide-react";
+import { useCallback, useEffect, useRef } from "react";
+import { Check, MessageSquare, Pencil, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
-import type { ProfessionalProfileData, ProfileTabId } from "./types";
+import type {
+  ProfileTabId,
+  ProfileTabOption,
+  ProfileTabsNavProps,
+} from "./types";
 
-export interface ProfileTabOption {
-  id: ProfileTabId;
-  label: string;
-}
+export type { ProfileTabOption, ProfileTabsNavProps } from "./types";
 
 export const PROFILE_TABS: ProfileTabOption[] = [
-  { id: "services", label: "SERVICES" },
-  { id: "portfolio", label: "PORTFOLIO" },
-  { id: "reviews", label: "REVIEWS" },
-  { id: "about", label: "ABOUT" },
+  { id: "overview", label: "Overview" },
+  { id: "services", label: "Services" },
+  { id: "portfolio", label: "Portfolio" },
+  { id: "reviews", label: "Reviews" },
 ];
 
-export interface ProfileTabsNavProps {
-  tabs?: ProfileTabOption[];
-  activeTab: ProfileTabId;
-  onTabChange: (tab: ProfileTabId) => void;
-  profile?: ProfessionalProfileData;
-  onMessageClick?: () => void;
-  isStuck?: boolean;
-  className?: string;
-}
+export const COMPANY_PROFILE_TABS: ProfileTabOption[] = [
+  { id: "overview", label: "Identity & About" },
+  { id: "services", label: "Service Cards" },
+  { id: "portfolio", label: "Portfolio" },
+  { id: "reviews", label: "Reviews" },
+];
 
 export function ProfileTabsNav({
   tabs = PROFILE_TABS,
   activeTab,
   onTabChange,
   profile,
+  isOwner = false,
   onMessageClick,
+  onEditClick,
   isStuck = false,
   className,
 }: ProfileTabsNavProps) {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+
+  const scrollToTab = useCallback((tabId: ProfileTabId) => {
+    const container = containerRef.current;
+    const tabEl = tabRefs.current[tabId];
+    if (!container || !tabEl) return;
+
+    const targetLeft =
+      tabEl.offsetLeft - container.offsetWidth / 2 + tabEl.offsetWidth / 2;
+
+    container.scrollTo({
+      left: Math.max(0, targetLeft),
+      behavior: "smooth",
+    });
+  }, []);
+
+  useEffect(() => {
+    const frameId = requestAnimationFrame(() => scrollToTab(activeTab));
+    return () => cancelAnimationFrame(frameId);
+  }, [activeTab, scrollToTab]);
+
   return (
     <nav
       aria-label="Profile section navigation"
       className={cn(
-        "w-full rounded-b-2xl border border-border bg-card/95 backdrop-blur-md px-3 sm:px-6 py-1.5 sm:py-2 shadow-2xs transition-all duration-200",
+        "w-full sticky top-2 sm:static z-20 rounded-full sm:rounded-none sm:rounded-b-2xl border border-border sm:border-t sm:border-t-border/70 bg-card/95 backdrop-blur-md p-1.5 sm:px-6 sm:py-0 shadow-2xs transition-all duration-200",
         isStuck && "shadow-md border-border/90",
         className
       )}
     >
-      <div className="flex items-center justify-between gap-3 sm:gap-6 min-h-10 sm:min-h-11">
-        {/* Left: Compact Pro Identity (fades in when sticky on sm+ screens) */}
+      <div className="flex items-center justify-between gap-3 sm:gap-6 min-h-10 sm:min-h-12">
         {isStuck && profile ? (
-          <div className="hidden sm:flex items-center gap-3 min-w-0 shrink-0 animate-in fade-in slide-in-from-left-2 duration-200">
-            <div className="size-8 sm:size-9 rounded-xl border border-border overflow-hidden bg-secondary shrink-0">
+          <div className="hidden md:flex items-center gap-3 min-w-0 shrink-0 animate-in fade-in slide-in-from-left-2 duration-200">
+            <div className="size-8 rounded-xl border border-border overflow-hidden bg-secondary shrink-0">
               <FallbackImage
                 src={profile.avatarUrl}
                 alt={profile.name}
@@ -62,7 +84,7 @@ export function ProfileTabsNav({
 
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
-                <span className="text-xs sm:text-sm font-bold text-foreground truncate max-w-[130px] lg:max-w-[200px]">
+                <span className="text-xs sm:text-sm font-bold text-foreground truncate max-w-[160px]">
                   {profile.name}
                 </span>
                 <span className="size-3.5 rounded-full bg-warning text-warning-foreground flex items-center justify-center shrink-0">
@@ -76,31 +98,39 @@ export function ProfileTabsNav({
                   <span>{profile.rating.toFixed(1)}</span>
                 </span>
                 <span>•</span>
-                <span>{profile.roleTitle}</span>
+                <span className="truncate max-w-[180px]">
+                  {profile.roleTitle}
+                </span>
               </div>
             </div>
           </div>
         ) : null}
 
-        {/* Center / Main: Tab Buttons */}
         <div
+          ref={containerRef}
           role="tablist"
           aria-label="Profile sections"
-          className="flex items-center justify-around sm:justify-start gap-4 sm:gap-7 overflow-x-auto no-scrollbar flex-1 sm:flex-initial"
+          className="flex items-center gap-1.5 sm:gap-7 overflow-x-auto no-scrollbar flex-1 sm:flex-initial"
         >
           {tabs.map((tab) => {
             const isActive = activeTab === tab.id;
             return (
               <button
                 key={tab.id}
+                ref={(el) => {
+                  tabRefs.current[tab.id] = el;
+                }}
                 type="button"
                 role="tab"
                 aria-selected={isActive}
-                onClick={() => onTabChange(tab.id)}
+                onClick={() => {
+                  onTabChange(tab.id);
+                  scrollToTab(tab.id);
+                }}
                 className={cn(
-                  "relative py-2.5 sm:py-3 px-1 text-[11px] font-bold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap select-none",
+                  "relative rounded-full sm:rounded-none px-4 py-2 sm:px-1 sm:py-3.5 text-xs sm:text-[13px] font-semibold transition-all cursor-pointer whitespace-nowrap select-none shrink-0",
                   isActive
-                    ? "text-primary"
+                    ? "bg-primary text-primary-foreground sm:bg-transparent sm:text-foreground shadow-2xs sm:shadow-none"
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -108,7 +138,7 @@ export function ProfileTabsNav({
                 {isActive && (
                   <span
                     aria-hidden="true"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
+                    className="hidden sm:block absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                   />
                 )}
               </button>
@@ -116,19 +146,33 @@ export function ProfileTabsNav({
           })}
         </div>
 
-        {/* Right: Quick Action Message Button (visible on md+ when sticky) */}
-        {isStuck && onMessageClick ? (
+        {isStuck && (isOwner ? onEditClick : onMessageClick) ? (
           <div className="hidden md:flex items-center gap-2 shrink-0 animate-in fade-in slide-in-from-right-2 duration-200">
-            <Button
-              type="button"
-              size="sm"
-              variant="default"
-              onClick={onMessageClick}
-              leadingIcon={<MessageSquare className="size-3 fill-current" />}
-              className="h-8 px-3.5 rounded-xl text-[10px] font-semibold uppercase tracking-wider shadow-xs"
-            >
-              Message
-            </Button>
+            {isOwner && onEditClick ? (
+              <Button
+                type="button"
+                size="sm"
+                variant="default"
+                onClick={onEditClick}
+                leadingIcon={<Pencil className="size-3" />}
+                className="h-8 px-3.5 rounded-xl text-[11px] font-semibold shadow-xs"
+              >
+                Edit Profile
+              </Button>
+            ) : (
+              onMessageClick && (
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="default"
+                  onClick={onMessageClick}
+                  leadingIcon={<MessageSquare className="size-3 fill-current" />}
+                  className="h-8 px-3.5 rounded-xl text-[11px] font-semibold uppercase tracking-wider shadow-xs"
+                >
+                  Message
+                </Button>
+              )
+            )}
           </div>
         ) : null}
       </div>
@@ -137,4 +181,3 @@ export function ProfileTabsNav({
 }
 
 export default ProfileTabsNav;
-

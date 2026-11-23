@@ -1,11 +1,19 @@
 "use client";
 
-import type { HTMLAttributes } from "react";
-import { Briefcase, PieChart, Sparkles, Store } from "lucide-react";
+import { Briefcase, ChevronRight, PieChart, Sparkles, Store } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/consumer-home/section-header";
 import { cn } from "@/lib/utils";
-import type { ProfileServiceItem, ServiceIconVariant } from "./types";
+import type {
+  AvailableServiceCardProps,
+  AvailableServicesSectionProps,
+  ServiceIconVariant,
+} from "./types";
+
+export type {
+  AvailableServiceCardProps,
+  AvailableServicesSectionProps,
+} from "./types";
 
 const SERVICE_ICON_MAP = {
   "pie-chart": PieChart,
@@ -21,18 +29,18 @@ const ICON_VARIANT_STYLES: Record<ServiceIconVariant, string> = {
   success: "bg-success-bg text-success",
 };
 
-export interface AvailableServiceCardProps {
-  service: ProfileServiceItem;
-  onActionClick?: (service: ProfileServiceItem) => void;
-  className?: string;
-}
-
 export function AvailableServiceCard({
   service,
+  isOwner = false,
   onActionClick,
   className,
 }: AvailableServiceCardProps) {
   const Icon = SERVICE_ICON_MAP[service.iconName] ?? PieChart;
+
+  const resolvedCtaLabel = isOwner ? "MANAGE SERVICE" : service.ctaLabel;
+  const resolvedVariant = isOwner
+    ? "outline"
+    : (service.ctaVariant ?? "default");
 
   return (
     <article
@@ -41,7 +49,6 @@ export function AvailableServiceCard({
         className
       )}
     >
-      {/* Left Side: Icon + Service Details */}
       <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-5 min-w-0">
         <div
           className={cn(
@@ -76,7 +83,6 @@ export function AvailableServiceCard({
         </div>
       </div>
 
-      {/* Right Side: Price & Action CTA */}
       <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 pt-3.5 sm:pt-0 border-t sm:border-t-0 border-border/60 shrink-0">
         <div className="text-left sm:text-right">
           <span className="block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
@@ -89,28 +95,24 @@ export function AvailableServiceCard({
 
         <Button
           type="button"
-          variant={service.ctaVariant ?? "default"}
+          variant={resolvedVariant}
           size="sm"
           onClick={() => onActionClick?.(service)}
           className="h-8 px-4 rounded-lg text-[10px] font-bold uppercase tracking-wider mt-0.5"
         >
-          {service.ctaLabel}
+          {resolvedCtaLabel}
         </Button>
       </div>
     </article>
   );
 }
 
-export interface AvailableServicesSectionProps
-  extends HTMLAttributes<HTMLElement> {
-  title?: string;
-  services: ProfileServiceItem[];
-  onServiceAction?: (service: ProfileServiceItem) => void;
-}
-
 export function AvailableServicesSection({
   title = "Available Services",
+  actionLabel = "VIEW ALL SERVICES",
+  isOwner = false,
   services,
+  onViewAllClick,
   onServiceAction,
   className,
   ...props
@@ -121,13 +123,27 @@ export function AvailableServicesSection({
       className={cn("w-full space-y-5 scroll-mt-32 sm:scroll-mt-36", className)}
       {...props}
     >
-      <SectionHeader title={title} />
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <SectionHeader title={title} />
+
+        {actionLabel && onViewAllClick && (
+          <button
+            type="button"
+            onClick={onViewAllClick}
+            className="group inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-primary hover:text-primary-hover transition-colors shrink-0 cursor-pointer"
+          >
+            <span>{actionLabel}</span>
+            <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+          </button>
+        )}
+      </div>
 
       <div className="space-y-4">
         {services.map((service) => (
           <AvailableServiceCard
             key={service.id}
             service={service}
+            isOwner={isOwner}
             onActionClick={onServiceAction}
           />
         ))}

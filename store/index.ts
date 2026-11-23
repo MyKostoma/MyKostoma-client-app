@@ -22,6 +22,9 @@ import ordersReducer from "./slices/ordersSlice"
 import shopReducer from "./slices/shopSlice"
 import walletReducer from "./slices/walletSlice"
 import verificationReducer from "./slices/verificationSlice"
+import profileReducer from "./slices/profileSlice"
+import reviewsReducer from "./slices/reviewsSlice"
+import reelsReducer from "./slices/reelsSlice"
 import notificationsReducer from "./slices/notificationsSlice"
 import messagesReducer from "./slices/messagesSlice"
 import professionalDashboardReducer from "./slices/professionalDashboardSlice"
@@ -68,6 +71,9 @@ const rootReducer = combineReducers({
   shop: shopReducer,
   wallet: walletReducer,
   verification: verificationReducer,
+  profile: profileReducer,
+  reviews: reviewsReducer,
+  reels: reelsReducer,
   notifications: notificationsReducer,
   messages: messagesReducer,
   professionalDashboard: professionalDashboardReducer,

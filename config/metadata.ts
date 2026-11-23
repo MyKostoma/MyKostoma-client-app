@@ -39,6 +39,26 @@ export const PAGE_METADATA = {
     description:
       "View professional credentials, project history, and customer reviews on MyKostoma.",
   },
+  profileEdit: {
+    title: "Edit Profile",
+    description:
+      "Update your professional bio, category, location, skills, and profile picture on MyKostoma.",
+  },
+  profilePhoto: {
+    title: "Profile Photo",
+    description:
+      "Upload, update, or remove your public MyKostoma professional profile photo.",
+  },
+  companyProfile: {
+    title: "Company Profile",
+    description:
+      "View business credentials, CAC verification, operating hours, service catalog, portfolio, and client reviews on MyKostoma.",
+  },
+  companyProfileEdit: {
+    title: "Edit Company Profile",
+    description:
+      "Update your business name, category, location, company bio, specializations, and logo on MyKostoma.",
+  },
 
   // Authentication
   login: {
@@ -247,6 +267,25 @@ export const PAGE_METADATA = {
       "View your MyKostoma business entity verification result and credential details.",
   },
 
+  // Reviews Module (/reviews*)
+  reviewsDashboard: {
+    title: "Reviews",
+    description:
+      "Manage client feedback, respond publicly to customer reviews, and rate completed orders on MyKostoma.",
+  },
+
+  // Reels Module (/reels*)
+  reelsHome: {
+    title: "Reels",
+    description:
+      "Watch short vertical project showcases from verified professionals, follow creators, and manage your own studio reels on MyKostoma.",
+  },
+  reelsUpload: {
+    title: "Upload Reel",
+    description:
+      "Upload, configure hashtags and cover art, and publish a vertical showcase reel to your MyKostoma audience.",
+  },
+
   // Not Found
   notFound: {
     title: "404 - Page Not Found",
@@ -418,6 +457,48 @@ export const PAGE_METADATA_GENERATORS = {
       description:
         description ||
         "Inspect full transaction details, payment method, and downloadable receipt on MyKostoma.",
+    };
+  },
+
+  // Review Detail: /reviews/[id]
+  reviewDetail(authorName?: string, orderCode?: string): Metadata {
+    return {
+      title: authorName
+        ? `Review from ${authorName}${orderCode ? ` (#${orderCode})` : ""}`
+        : "Review Detail",
+      description:
+        "Inspect full customer review feedback, verified order details, and manage your public response on MyKostoma.",
+    };
+  },
+
+  // Rate Consumer / Order Review: /reviews/rate/[orderId]
+  rateConsumer(recipientName?: string, orderCode?: string): Metadata {
+    return {
+      title: recipientName
+        ? `Rate ${recipientName}${orderCode ? ` (#${orderCode})` : ""}`
+        : "Rate Experience",
+      description:
+        "Share honest feedback and star ratings for completed MyKostoma orders to help strengthen community trust.",
+    };
+  },
+
+  // Manage Reel: /reels/manage/[id]
+  manageReel(title?: string): Metadata {
+    return {
+      title: title ? `Manage Reel: ${title}` : "Manage Reel",
+      description:
+        "Track views, likes, comments, edit reel details, or manage visibility from your MyKostoma creator studio.",
+    };
+  },
+
+  // Creator Reels Profile: /reels/creator/[id]
+  creatorReelsProfile(name?: string, roleTitle?: string): Metadata {
+    return {
+      title: name
+        ? `${name}${roleTitle ? ` • ${roleTitle}` : ""} | Reels`
+        : "Creator Reels Profile",
+      description:
+        "Explore vertical video reels, biography, and bookable services from verified MyKostoma professionals.",
     };
   },
 };

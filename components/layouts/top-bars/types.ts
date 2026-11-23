@@ -86,4 +86,50 @@ export interface VerificationTopBarProps {
   className?: string;
 }
 
+export interface ReviewsTopBarProps {
+  title?: string;
+  searchQuery: string;
+  onSearchChange: (val: string) => void;
+  filterOpen: boolean;
+  activeFilterCount?: number;
+  onToggleFilters: () => void;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
+export interface ReviewSubpageTopBarProps {
+  title: string;
+  backLabel: string;
+  onBack: () => void;
+  actionLabel?: string;
+  onAction?: () => void;
+  actionDisabled?: boolean;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
+export interface ReelsTopBarProps {
+  title?: string;
+  isProfessional: boolean;
+  viewMode: "my-reels" | "discover" | "following";
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
+  mobileSearchOpen?: boolean;
+  onToggleMobileSearch?: () => void;
+  onViewModeChange?: (mode: "my-reels" | "discover" | "following") => void;
+  onUploadClick?: () => void;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
+export interface ReelsSubpageTopBarProps {
+  title: string;
+  backLabel: string;
+  onBack: () => void;
+  actionLabel?: string;
+  onAction?: () => void;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
 
