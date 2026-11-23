@@ -108,4 +108,26 @@ export interface ReviewSubpageTopBarProps {
   className?: string;
 }
 
+export interface ReelsTopBarProps {
+  title?: string;
+  isProfessional: boolean;
+  viewMode: "my-reels" | "discover" | "following";
+  searchQuery: string;
+  onSearchChange: (value: string) => void;
+  onViewModeChange?: (mode: "my-reels" | "discover" | "following") => void;
+  onUploadClick?: () => void;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
+export interface ReelsSubpageTopBarProps {
+  title: string;
+  backLabel: string;
+  onBack: () => void;
+  actionLabel?: string;
+  onAction?: () => void;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
 

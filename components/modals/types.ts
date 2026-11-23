@@ -4,6 +4,11 @@ import type {
   ProfilePortfolioItem,
 } from "@/components/profile/types";
 import type {
+  ManagedReelItem,
+  ReelItem,
+  ReelVisibility,
+} from "@/components/reels/types";
+import type {
   AddPortfolioProjectPayload,
   ConsumerAddressFormValues,
   RequestContactUpdatePayload,
@@ -182,6 +187,48 @@ export interface RequestEditResponseModalProps {
   currentResponse: string;
   onClose: () => void;
   onSubmitRequest: (payload: { revisedText: string; reason: string }) => void;
+}
+
+export interface EditReelModalProps {
+  isOpen: boolean;
+  reel: ManagedReelItem | null;
+  onClose: () => void;
+  onSaveReel: (payload: {
+    reelId: string;
+    title: string;
+    caption: string;
+    hashtags: string[];
+    status: ReelVisibility;
+    audioLabel: string;
+  }) => void;
+}
+
+export interface DeleteReelModalProps {
+  isOpen: boolean;
+  reelTitle: string;
+  onClose: () => void;
+  onConfirmDelete: () => void;
+}
+
+export interface ReportReelModalProps {
+  isOpen: boolean;
+  creatorName: string;
+  reasons: readonly string[];
+  onClose: () => void;
+  onSubmitReport: (payload: { reason: string; details: string }) => void;
+}
+
+export interface ReelPlayerModalProps {
+  isOpen: boolean;
+  reels: ReelItem[];
+  activeIndex: number;
+  likedReelIds: string[];
+  followedCreatorIds: string[];
+  onClose: () => void;
+  onChangeIndex: (nextIndex: number) => void;
+  onToggleLike: (reelId: string) => void;
+  onToggleFollow: (creatorId: string, creatorName: string) => void;
+  onShare: (reel: ReelItem) => void;
 }
 
 

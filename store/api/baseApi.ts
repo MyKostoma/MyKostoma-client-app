@@ -178,6 +178,7 @@ export const baseApi = createApi({
     "Orders",
     "Shop",
     "Reel",
+    "Reels",
     "SavedItem",
     "Earning",
     "Wallet",

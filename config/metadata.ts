@@ -274,6 +274,18 @@ export const PAGE_METADATA = {
       "Manage client feedback, respond publicly to customer reviews, and rate completed orders on MyKostoma.",
   },
 
+  // Reels Module (/reels*)
+  reelsHome: {
+    title: "Reels",
+    description:
+      "Watch short vertical project showcases from verified professionals, follow creators, and manage your own studio reels on MyKostoma.",
+  },
+  reelsUpload: {
+    title: "Upload Reel",
+    description:
+      "Upload, configure hashtags and cover art, and publish a vertical showcase reel to your MyKostoma audience.",
+  },
+
   // Not Found
   notFound: {
     title: "404 - Page Not Found",
@@ -467,6 +479,26 @@ export const PAGE_METADATA_GENERATORS = {
         : "Rate Experience",
       description:
         "Share honest feedback and star ratings for completed MyKostoma orders to help strengthen community trust.",
+    };
+  },
+
+  // Manage Reel: /reels/manage/[id]
+  manageReel(title?: string): Metadata {
+    return {
+      title: title ? `Manage Reel: ${title}` : "Manage Reel",
+      description:
+        "Track views, likes, comments, edit reel details, or manage visibility from your MyKostoma creator studio.",
+    };
+  },
+
+  // Creator Reels Profile: /reels/creator/[id]
+  creatorReelsProfile(name?: string, roleTitle?: string): Metadata {
+    return {
+      title: name
+        ? `${name}${roleTitle ? ` • ${roleTitle}` : ""} | Reels`
+        : "Creator Reels Profile",
+      description:
+        "Explore vertical video reels, biography, and bookable services from verified MyKostoma professionals.",
     };
   },
 };
