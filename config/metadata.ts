@@ -39,6 +39,16 @@ export const PAGE_METADATA = {
     description:
       "View professional credentials, project history, and customer reviews on MyKostoma.",
   },
+  profileEdit: {
+    title: "Edit Profile",
+    description:
+      "Update your professional bio, category, location, skills, and profile picture on MyKostoma.",
+  },
+  profilePhoto: {
+    title: "Profile Photo",
+    description:
+      "Upload, update, or remove your public MyKostoma professional profile photo.",
+  },
 
   // Authentication
   login: {

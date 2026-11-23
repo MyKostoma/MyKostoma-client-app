@@ -1,4 +1,9 @@
 import type { Notification } from "@/store/slices/uiSlice";
+import type { ProfilePortfolioItem } from "@/components/profile/types";
+import type {
+  AddPortfolioProjectPayload,
+  RequestContactUpdatePayload,
+} from "@/features/profile/types";
 
 export interface NotificationModalProps {
   isOpen: boolean;
@@ -96,6 +101,30 @@ export interface VerificationBenefitsModalProps {
   ctaLabel?: string;
   onClose: () => void;
   onStartVerification: () => void;
+}
+
+export interface PortfolioProjectModalProps {
+  isOpen: boolean;
+  mode: "view" | "create";
+  project?: ProfilePortfolioItem | null;
+  categories?: string[];
+  isOwner?: boolean;
+  onClose: () => void;
+  onCreateProject?: (payload: AddPortfolioProjectPayload) => void;
+  onDeleteProject?: (projectId: string) => void;
+}
+
+export interface WriteReviewModalProps {
+  isOpen: boolean;
+  recipientName: string;
+  onClose: () => void;
+  onSubmitReview: (payload: { rating: number; comment: string }) => void;
+}
+
+export interface RequestContactUpdateModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmitRequest: (payload: RequestContactUpdatePayload) => void;
 }
 
 

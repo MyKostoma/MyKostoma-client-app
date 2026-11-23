@@ -1,19 +1,15 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { PAGE_METADATA } from "@/config/metadata";
 import { ProfileView } from "@/features/profile/profile-view";
-import { DEFAULT_PROFESSIONAL_PROFILE } from "@/features/profile/data";
 import { ProfilePageSkeleton } from "@/skeletons/(internal-routes)/profile/page-skeleton";
 
-export const metadata: Metadata = {
-  title: "Professional Profile",
-  description:
-    "View professional credentials, project history, and customer reviews on MyKostoma.",
-};
+export const metadata: Metadata = PAGE_METADATA.profileFallback;
 
 export default function ProfilePage() {
   return (
     <Suspense fallback={<ProfilePageSkeleton />}>
-      <ProfileView profile={DEFAULT_PROFESSIONAL_PROFILE} />
+      <ProfileView />
     </Suspense>
   );
 }

@@ -1,26 +1,21 @@
 "use client";
 
-import type { HTMLAttributes } from "react";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { SectionHeader } from "@/components/consumer-home/section-header";
 import { FallbackImage } from "@/components/ui/fallback-image";
 import { cn } from "@/lib/utils";
-import type { ProfilePortfolioItem } from "./types";
+import type { PortfolioShowcaseSectionProps } from "./types";
 
-export interface PortfolioShowcaseSectionProps
-  extends HTMLAttributes<HTMLElement> {
-  title?: string;
-  actionLabel?: string;
-  items: ProfilePortfolioItem[];
-  onViewAllClick?: () => void;
-  onItemClick?: (item: ProfilePortfolioItem) => void;
-}
+export type { PortfolioShowcaseSectionProps } from "./types";
 
 export function PortfolioShowcaseSection({
   title = "Portfolio Showcase",
   actionLabel = "VIEW ALL PROJECTS",
+  isOwner = false,
   items,
   onViewAllClick,
+  onAddProjectClick,
   onItemClick,
   className,
   ...props
@@ -34,16 +29,31 @@ export function PortfolioShowcaseSection({
       <div className="flex flex-wrap items-center justify-between gap-4">
         <SectionHeader title={title} />
 
-        {actionLabel && (
-          <button
-            type="button"
-            onClick={onViewAllClick}
-            className="group inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-primary hover:text-primary-hover transition-colors shrink-0 cursor-pointer"
-          >
-            <span>{actionLabel}</span>
-            <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-          </button>
-        )}
+        <div className="flex items-center gap-3">
+          {isOwner && onAddProjectClick && (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onAddProjectClick}
+              leadingIcon={<Plus className="size-3.5" />}
+              className="h-8 px-3 rounded-lg text-[11px] font-semibold"
+            >
+              Add Project
+            </Button>
+          )}
+
+          {actionLabel && (
+            <button
+              type="button"
+              onClick={onViewAllClick}
+              className="group inline-flex items-center gap-1 text-[11px] font-bold uppercase tracking-wider text-primary hover:text-primary-hover transition-colors shrink-0 cursor-pointer"
+            >
+              <span>{actionLabel}</span>
+              <ChevronRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">

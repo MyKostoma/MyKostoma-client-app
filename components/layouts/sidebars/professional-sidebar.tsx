@@ -159,7 +159,10 @@ export function ProfessionalSidebar({
           {header || (
             isOpen ? (
               <div className="px-4 pb-2 pt-1">
-                <div className="flex items-center gap-3 p-2.5 rounded-2xl bg-secondary/40 border border-border/50">
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-3 p-2.5 rounded-2xl bg-secondary/40 border border-border/50 hover:bg-secondary/70 transition-colors"
+                >
                   <div className="relative shrink-0">
                     {avatarUrl ? (
                       <img
@@ -192,13 +195,13 @@ export function ProfessionalSidebar({
                       {categoryLabel}
                     </p>
                   </div>
-                </div>
+                </Link>
               </div>
             ) : (
               <div className="pt-4 pb-2 flex flex-col items-center gap-3">
                 {/* User Avatar with Blue Verified Badge */}
                 <SidebarTooltip content={`${displayName} (${categoryLabel})`} enabled={!isOpen}>
-                  <div className="relative cursor-default">
+                  <Link href="/profile" className="relative cursor-pointer block">
                     {avatarUrl ? (
                       <img
                         src={avatarUrl}
@@ -218,7 +221,7 @@ export function ProfessionalSidebar({
                     <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-card flex items-center justify-center">
                       <BadgeCheck className="h-3 w-3 text-blue-500 fill-blue-500" />
                     </span>
-                  </div>
+                  </Link>
                 </SidebarTooltip>
               </div>
             )
