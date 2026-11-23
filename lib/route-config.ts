@@ -39,6 +39,11 @@ export const protectedRoutes: RouteConfig[] = [
     roles: ["professional"],
     redirectTo: "/login",
   },
+  {
+    path: "/verification*",
+    roles: ["professional"],
+    redirectTo: "/login",
+  },
 
   // Consumer workspace routes
   {
@@ -222,6 +227,11 @@ export const dashboardRoutes: DashboardRouteConfig[] = [
   {
     path: "/earnings*",
     title: "Earnings & Payouts",
+    roles: ["professional"],
+  },
+  {
+    path: "/verification*",
+    title: "Verification",
     roles: ["professional"],
   },
   {

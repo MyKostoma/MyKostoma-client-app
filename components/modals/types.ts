@@ -82,5 +82,21 @@ export interface DeleteServiceCardModalProps {
   onConfirmDelete: () => void;
 }
 
+export interface DeleteBankAccountModalProps {
+  isOpen: boolean;
+  bankName: string;
+  maskedAccountNumber: string;
+  onClose: () => void;
+  onConfirmDelete: () => void;
+}
+
+export interface VerificationBenefitsModalProps {
+  isOpen: boolean;
+  isVerified?: boolean;
+  ctaLabel?: string;
+  onClose: () => void;
+  onStartVerification: () => void;
+}
+
 
 

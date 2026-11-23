@@ -198,6 +198,54 @@ export const PAGE_METADATA = {
     title: "Transaction History",
     description: "Detailed record of all your deposits, escrow holds, payments, and refunds on MyKostoma.",
   },
+  walletPayoutSettings: {
+    title: "Payout Settings",
+    description: "Manage your payout schedule, connected Nigerian bank accounts, and 2FA withdrawal security on MyKostoma.",
+  },
+  walletAddBank: {
+    title: "Add Bank Account",
+    description: "Connect and verify a Nigerian bank account to receive payouts from your MyKostoma professional wallet.",
+  },
+  walletWithdraw: {
+    title: "Withdraw Funds",
+    description: "Withdraw available professional earnings from your MyKostoma wallet to your linked bank account.",
+  },
+  walletWithdrawStatus: {
+    title: "Withdrawal Status",
+    description: "Track live payout processing, bank transfer confirmation, and withdrawal receipts on MyKostoma.",
+  },
+
+  // Professional Verification Module (/verification*)
+  verificationOverview: {
+    title: "Professional Verification",
+    description:
+      "Manage and view the status of your personal and business credentials to unlock premium features and increase your trust score on MyKostoma.",
+  },
+  verificationSubmit: {
+    title: "Select Identity Document",
+    description:
+      "Submit a valid Nigerian government-issued identity document for secure MyKostoma professional verification.",
+  },
+  verificationStatus: {
+    title: "Verification Status",
+    description:
+      "View your MyKostoma professional identity verification result and credential details.",
+  },
+  companyVerificationOverview: {
+    title: "Company Verification",
+    description:
+      "Verify your business entity with CAC incorporation documents to unlock corporate features on MyKostoma.",
+  },
+  companyVerificationSubmit: {
+    title: "Company Details & Documents",
+    description:
+      "Provide your official company details and upload CAC incorporation documents for MyKostoma business verification.",
+  },
+  companyVerificationStatus: {
+    title: "Company Verification Status",
+    description:
+      "View your MyKostoma business entity verification result and credential details.",
+  },
 
   // Not Found
   notFound: {

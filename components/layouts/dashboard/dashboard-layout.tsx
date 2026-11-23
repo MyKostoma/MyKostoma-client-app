@@ -55,6 +55,7 @@ const DEFAULT_PAGE_TITLES: Record<string, string> = {
   "/reels": "Reels Console",
   "/reels-console": "Reels Console",
   "/earnings": "Earnings & Payouts",
+  "/verification": "Verification",
   "/settings": "Settings",
   "/profile": "My Profile",
   "/notifications": "Notifications",
