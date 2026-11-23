@@ -14,28 +14,34 @@ export function ReelsFeedTabs({
   onTabChange,
   className,
 }: ReelsFeedTabsProps) {
+  const navRef = useRef<HTMLElement>(null);
   const tabRefs = useRef<Partial<Record<ReelsFeedTabId, HTMLButtonElement | null>>>(
     {}
   );
 
   useEffect(() => {
-    tabRefs.current[activeTab]?.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest",
-    });
+    const navEl = navRef.current;
+    const activeEl = tabRefs.current[activeTab];
+    if (navEl && activeEl && navEl.scrollWidth > navEl.clientWidth) {
+      activeEl.scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
   }, [activeTab]);
 
   return (
     <div
       className={cn(
-        "sticky top-16 z-10 flex justify-center py-2 md:py-0 md:static",
+        "sticky top-0 z-30 flex justify-center -mt-2 sm:-mt-4 lg:-mt-6 py-1.5 pointer-events-none",
         className
       )}
     >
       <nav
+        ref={navRef}
         aria-label="Reels feed tabs"
-        className="inline-flex items-center gap-2 md:gap-8 overflow-x-auto no-scrollbar rounded-full border border-border bg-card/95 backdrop-blur-xs p-1 shadow-xs md:shadow-none md:rounded-none md:border-0 md:border-b md:border-border md:w-full md:justify-center md:bg-card md:px-4"
+        className="pointer-events-auto inline-flex items-center gap-2 md:gap-8 overflow-x-auto no-scrollbar rounded-full md:rounded-none bg-transparent backdrop-blur-md px-1.5 py-1 md:px-4 md:py-1.5"
       >
         {FEED_TABS.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -47,18 +53,22 @@ export function ReelsFeedTabs({
               }}
               type="button"
               onClick={() => {
-                tabRefs.current[tab.id]?.scrollIntoView({
-                  behavior: "smooth",
-                  inline: "center",
-                  block: "nearest",
-                });
+                const navEl = navRef.current;
+                const el = tabRefs.current[tab.id];
+                if (navEl && el && navEl.scrollWidth > navEl.clientWidth) {
+                  el.scrollIntoView({
+                    behavior: "smooth",
+                    inline: "center",
+                    block: "nearest",
+                  });
+                }
                 onTabChange(tab.id);
               }}
               className={cn(
-                "relative shrink-0 px-5 py-1.5 md:px-2 md:py-3 rounded-full md:rounded-none text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer outline-none",
+                "relative shrink-0 px-4 py-1.5 md:px-2 md:py-1.5 rounded-full md:rounded-none text-xs sm:text-sm font-semibold whitespace-nowrap transition-colors cursor-pointer outline-none",
                 isActive
-                  ? "bg-primary text-primary-foreground md:bg-transparent md:text-foreground"
-                  : "text-muted-foreground hover:text-foreground hover:bg-secondary/60 md:hover:bg-transparent"
+                  ? "bg-primary text-primary-foreground shadow-xs md:shadow-none md:bg-transparent md:text-foreground"
+                  : "text-foreground/80 hover:text-foreground hover:bg-secondary/40 md:text-muted-foreground md:hover:text-foreground md:hover:bg-transparent"
               )}
             >
               <span>{tab.label}</span>
@@ -66,7 +76,7 @@ export function ReelsFeedTabs({
               {isActive && (
                 <span
                   aria-hidden="true"
-                  className="hidden md:block absolute bottom-0 left-0 right-0 h-0.5 bg-foreground rounded-full"
+                  className="hidden md:block absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-full"
                 />
               )}
             </button>

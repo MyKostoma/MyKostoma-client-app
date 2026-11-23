@@ -1,6 +1,6 @@
 "use client";
 
-import { Clapperboard, Compass, Menu, Plus } from "lucide-react";
+import { Clapperboard, Compass, Menu, Plus, Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SearchInput } from "@/components/ui/form-fields";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,8 @@ export function ReelsTopBar({
   viewMode,
   searchQuery,
   onSearchChange,
+  mobileSearchOpen = false,
+  onToggleMobileSearch,
   onViewModeChange,
   onUploadClick,
   onMenuClick,
@@ -52,6 +54,44 @@ export function ReelsTopBar({
         </h1>
       </div>
 
+      {/* Mobile Compact Header Actions */}
+      <div className="flex md:hidden items-center gap-2 shrink-0 ml-auto">
+        {onToggleMobileSearch && (
+          <button
+            type="button"
+            onClick={onToggleMobileSearch}
+            aria-label={mobileSearchOpen ? "Close search" : "Search reels"}
+            aria-expanded={mobileSearchOpen}
+            className={cn(
+              "size-9 rounded-xl border border-border flex items-center justify-center transition-colors cursor-pointer",
+              mobileSearchOpen || searchQuery.trim()
+                ? "bg-primary text-primary-foreground border-primary"
+                : "bg-card text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {mobileSearchOpen ? (
+              <X className="size-4" />
+            ) : (
+              <Search className="size-4" />
+            )}
+          </button>
+        )}
+
+        {isProfessional && onUploadClick && (
+          <Button
+            type="button"
+            variant="default"
+            size="sm"
+            onClick={onUploadClick}
+            leadingIcon={<Plus className="size-3.5" />}
+            className="h-9 px-3 rounded-xl text-xs font-bold shadow-xs shrink-0"
+          >
+            Upload
+          </Button>
+        )}
+      </div>
+
+      {/* Desktop Header Controls */}
       <div className="hidden md:flex items-center gap-2.5 lg:gap-3 shrink-0 ml-auto">
         <div className="w-52 lg:w-64">
           <SearchInput

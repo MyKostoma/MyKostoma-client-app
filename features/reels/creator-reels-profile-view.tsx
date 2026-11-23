@@ -80,7 +80,7 @@ export function CreatorReelsProfileView({
         />
 
         {/* Responsive Sticky Mobile Pill -> Desktop Center Underline Tabs */}
-        <div className="sticky top-16 z-10 flex justify-center py-1.5 md:static md:py-0">
+        <div className="sticky top-0 z-20 flex justify-center py-1.5 md:static md:py-0">
           <nav
             aria-label="Creator profile sections"
             className="inline-flex items-center gap-2 md:gap-10 overflow-x-auto no-scrollbar rounded-full border border-border bg-card/95 backdrop-blur-xs p-1 shadow-xs md:shadow-none md:rounded-none md:border-0 md:border-t md:border-border md:w-full md:justify-center md:bg-transparent md:pt-1"

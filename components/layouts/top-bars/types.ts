@@ -114,6 +114,8 @@ export interface ReelsTopBarProps {
   viewMode: "my-reels" | "discover" | "following";
   searchQuery: string;
   onSearchChange: (value: string) => void;
+  mobileSearchOpen?: boolean;
+  onToggleMobileSearch?: () => void;
   onViewModeChange?: (mode: "my-reels" | "discover" | "following") => void;
   onUploadClick?: () => void;
   onMenuClick?: () => void;

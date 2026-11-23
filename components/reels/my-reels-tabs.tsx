@@ -33,7 +33,7 @@ export function MyReelsTabs({
   return (
     <div
       className={cn(
-        "sticky top-16 z-10 -mx-1 px-1 py-1.5 md:static md:mx-0 md:px-0 md:py-0",
+        "sticky top-0 z-20 -mx-1 px-1 py-1.5 md:static md:mx-0 md:px-0 md:py-0",
         className
       )}
     >

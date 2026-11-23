@@ -1,6 +1,6 @@
 "use client";
 
-import type { MouseEvent } from "react";
+import { useEffect, useRef, type MouseEvent } from "react";
 import {
   ArrowLeft,
   Edit3,
@@ -36,10 +36,28 @@ export function ManageReelWorkspace({
   onShareLink,
   onOpenDelete,
 }: ManageReelWorkspaceProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl) return;
+    videoEl.muted = isMuted;
+    if (isPlaying) {
+      void videoEl.play().catch(() => {});
+    } else {
+      videoEl.pause();
+    }
+  }, [isMuted, isPlaying]);
+
   const handleProgressBarClick = (e: MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const ratio = Math.min(1, Math.max(0, (e.clientX - rect.left) / rect.width));
-    onScrub(Math.round(ratio * 100));
+    const nextPercent = Math.round(ratio * 100);
+    const videoEl = videoRef.current;
+    if (videoEl && Number.isFinite(videoEl.duration) && videoEl.duration > 0) {
+      videoEl.currentTime = ratio * videoEl.duration;
+    }
+    onScrub(nextPercent);
   };
 
   return (
@@ -61,12 +79,18 @@ export function ManageReelWorkspace({
           <div className="relative aspect-9/16 rounded-2xl overflow-hidden bg-black border border-border shadow-md group select-none">
             {reel.videoUrl ? (
               <video
+                ref={videoRef}
                 src={reel.videoUrl}
                 poster={reel.thumbnailUrl}
-                autoPlay={isPlaying}
                 muted={isMuted}
                 loop
                 playsInline
+                onTimeUpdate={(e) => {
+                  const vid = e.currentTarget;
+                  if (vid.duration > 0) {
+                    onScrub(Math.round((vid.currentTime / vid.duration) * 100));
+                  }
+                }}
                 onClick={onTogglePlay}
                 className="w-full h-full object-cover cursor-pointer"
               />

@@ -25,7 +25,7 @@ import {
   selectMyReels,
   selectReelCreatorById,
   selectReportedReelIds,
-  toggleFollowCreatorLocal,
+  setFollowCreatorLocal,
   toggleLikeReelLocal,
   updateManagedReelLocal,
   useDeleteReelMutation,
@@ -49,7 +49,6 @@ import {
   REEL_COVER_PRESETS,
 } from "../data";
 import {
-  formatCompactCount,
   formatFileSize,
   formatReelDate,
   normalizeMyReelsTab,
@@ -85,6 +84,7 @@ export function useReelsHubService() {
     normalizeMyReelsTab(tabParam)
   );
   const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [activeHashtag, setActiveHashtag] = useState<string | null>(null);
   const [playingReelId, setPlayingReelId] = useState<string | null>(null);
   const [isMuted, setIsMuted] = useState(true);
@@ -92,12 +92,27 @@ export function useReelsHubService() {
   const [previewManagedReel, setPreviewManagedReel] =
     useState<ManagedReelItem | null>(null);
 
+  const prevViewParamRef = useRef<string | null>(viewParam);
+  const prevIsProfessionalRef = useRef<boolean>(isProfessional);
+
   const [toggleLikeMutation] = useToggleLikeReelMutation();
   const [toggleFollowProMutation] = useToggleFollowProfessionalMutation();
   const [reportReelMutation] = useReportReelMutation();
 
   useEffect(() => {
-    setViewMode(normalizeReelsViewMode(viewParam, isProfessional));
+    const viewParamChanged = prevViewParamRef.current !== viewParam;
+    const roleChanged = prevIsProfessionalRef.current !== isProfessional;
+    prevViewParamRef.current = viewParam;
+    prevIsProfessionalRef.current = isProfessional;
+
+    if (viewParamChanged || roleChanged) {
+      setViewMode((prev) =>
+        viewParamChanged
+          ? normalizeReelsViewMode(viewParam, isProfessional)
+          : normalizeReelsViewMode(prev, isProfessional)
+      );
+      setPlayingReelId(null);
+    }
   }, [isProfessional, viewParam]);
 
   useEffect(() => {
@@ -179,10 +194,16 @@ export function useReelsHubService() {
     (nextMode: ReelsViewMode) => {
       const safeMode = normalizeReelsViewMode(nextMode, isProfessional);
       setViewMode(safeMode);
+      setPlayingReelId(null);
       router.replace(`/reels?view=${safeMode}`, { scroll: false });
     },
     [isProfessional, router]
   );
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearchQuery(value);
+    setPlayingReelId(null);
+  }, []);
 
   const handleTogglePlay = useCallback((reelId: string) => {
     setPlayingReelId((prev) => (prev === reelId ? null : reelId));
@@ -203,25 +224,34 @@ export function useReelsHubService() {
 
   const handleToggleFollow = useCallback(
     async (creatorId: string, creatorName: string) => {
-      const normalized = creatorId.toLowerCase();
+      const normalized = creatorId.trim().toLowerCase();
       const currentlyFollowing = combinedFollowedIds.includes(normalized);
-      dispatch(toggleFollowCreatorLocal({ creatorId }));
-      dispatch(toggleFollowedProfessional(creatorId));
+      const nextFollowing = !currentlyFollowing;
+
+      dispatch(setFollowCreatorLocal({ creatorId, following: nextFollowing }));
+
+      const isFollowedInDiscover = followedProIds.some(
+        (id) => id.trim().toLowerCase() === normalized
+      );
+      if (isFollowedInDiscover !== nextFollowing) {
+        dispatch(toggleFollowedProfessional(creatorId));
+      }
+
       try {
         await toggleFollowProMutation({
           id: creatorId,
-          following: !currentlyFollowing,
+          following: nextFollowing,
         }).unwrap();
       } catch {
         // Fallback already applied
       }
       toast.success(
-        currentlyFollowing
-          ? `Unfollowed ${creatorName}`
-          : `Following ${creatorName}`
+        nextFollowing
+          ? `Following ${creatorName}`
+          : `Unfollowed ${creatorName}`
       );
     },
-    [combinedFollowedIds, dispatch, toggleFollowProMutation]
+    [combinedFollowedIds, dispatch, followedProIds, toggleFollowProMutation]
   );
 
   const handleShareReel = useCallback(async (reel: ReelItem) => {
@@ -260,6 +290,7 @@ export function useReelsHubService() {
   );
 
   const handleHashtagClick = useCallback((tag: string) => {
+    setPlayingReelId(null);
     setActiveHashtag((prev) =>
       prev?.toLowerCase() === tag.toLowerCase() ? null : tag
     );
@@ -301,7 +332,9 @@ export function useReelsHubService() {
     myReelsTab,
     setMyReelsTab,
     searchQuery,
-    setSearchQuery,
+    setSearchQuery: handleSearchChange,
+    mobileSearchOpen,
+    setMobileSearchOpen,
     activeHashtag,
     setActiveHashtag,
     playingReelId,
@@ -468,8 +501,11 @@ export function useUploadReelService() {
   const [createdReel, setCreatedReel] = useState<ManagedReelItem | null>(null);
 
   const uploadTimerRef = useRef<number | null>(null);
+  const progressRef = useRef<number>(0);
   const createdObjectUrlsRef = useRef<string[]>([]);
+  const committedUrlsRef = useRef<Set<string>>(new Set());
 
+  const creatorRecord = useAppSelector(selectReelCreatorById("alex-rivera"));
   const [uploadReelMutation] = useUploadReelMutation();
 
   const clearUploadTimer = useCallback(() => {
@@ -480,12 +516,15 @@ export function useUploadReelService() {
   }, []);
 
   useEffect(() => {
+    const objectUrls = createdObjectUrlsRef.current;
+    const committed = committedUrlsRef.current;
     return () => {
       clearUploadTimer();
-      for (const url of createdObjectUrlsRef.current) {
-        URL.revokeObjectURL(url);
+      for (const url of objectUrls) {
+        if (!committed.has(url)) {
+          URL.revokeObjectURL(url);
+        }
       }
-      createdObjectUrlsRef.current = [];
     };
   }, [clearUploadTimer]);
 
@@ -561,6 +600,7 @@ export function useUploadReelService() {
   const beginUploadProgress = useCallback(
     (allowSimulatedFailCheck: boolean) => {
       clearUploadTimer();
+      progressRef.current = 12;
       setPhase("uploading");
       setProgress(12);
 
@@ -569,74 +609,79 @@ export function useUploadReelService() {
       const effectiveCover = selectedCoverUrl || REEL_COVER_PRESETS[0];
 
       uploadTimerRef.current = window.setInterval(() => {
-        setProgress((prev) => {
-          const next = Math.min(100, prev + 16);
+        const next = Math.min(100, progressRef.current + 16);
+        progressRef.current = next;
+        setProgress(next);
 
-          if (
-            allowSimulatedFailCheck &&
-            next >= 64 &&
-            fileName.toLowerCase().includes("fail")
-          ) {
-            clearUploadTimer();
-            setErrorCode("ERR_NETWORK_TIMEOUT_502");
-            setErrorMessage(
-              "Something went wrong while processing your video. Please check your internet connection and try again."
-            );
-            setPhase("failed");
-            return 64;
+        if (
+          allowSimulatedFailCheck &&
+          next >= 64 &&
+          fileName.toLowerCase().includes("fail")
+        ) {
+          clearUploadTimer();
+          setErrorCode("ERR_NETWORK_TIMEOUT_502");
+          setErrorMessage(
+            "Something went wrong while processing your video. Please check your internet connection and try again."
+          );
+          setPhase("failed");
+          return;
+        }
+
+        if (next >= 100) {
+          clearUploadTimer();
+
+          if (videoPreviewUrl) {
+            committedUrlsRef.current.add(videoPreviewUrl);
+          }
+          if (effectiveCover.startsWith("blob:")) {
+            committedUrlsRef.current.add(effectiveCover);
           }
 
-          if (next >= 100) {
-            clearUploadTimer();
+          const now = new Date();
+          const newReel: ManagedReelItem = {
+            id: `my-reel-${Date.now()}`,
+            creatorId: "alex-rivera",
+            creatorName: currentUser?.fullName || "Alex Rivera",
+            creatorRole: "UI/UX DESIGNER & CONTENT CREATOR",
+            creatorAvatarUrl:
+              currentUser?.avatarUrl ||
+              DEFAULT_REEL_CREATORS[0].avatarUrl,
+            creatorVerified: true,
+            title: resolvedTitle,
+            caption:
+              caption.trim() ||
+              "Sharing a quick behind-the-scenes project showcase with the MyKostoma community.",
+            hashtags:
+              parsedHashtags.length > 0 ? parsedHashtags : ["#mykostoma"],
+            thumbnailUrl: effectiveCover,
+            videoUrl: videoPreviewUrl || undefined,
+            durationSeconds: 42,
+            likesCount: 0,
+            viewsCount: 1,
+            commentsCount: 0,
+            audioLabel: "Original Audio",
+            uploadedAtLabel: formatReelDate(now),
+            createdAtISO: now.toISOString().slice(0, 10),
+            status: visibility,
+            viewsTrendLabel: "Just uploaded",
+            engagementRateLabel: "Collecting metrics",
+            commentsTodayLabel: "0 today",
+            fileName: fileName || "reel_upload.mp4",
+          };
 
-            const now = new Date();
-            const newReel: ManagedReelItem = {
-              id: `my-reel-${Date.now()}`,
-              creatorId: "alex-rivera",
-              creatorName: currentUser?.fullName || "Alex Rivera",
-              creatorRole: "UI/UX DESIGNER & CONTENT CREATOR",
-              creatorAvatarUrl:
-                currentUser?.avatarUrl ||
-                DEFAULT_REEL_CREATORS[0].avatarUrl,
-              creatorVerified: true,
-              title: resolvedTitle,
-              caption:
-                caption.trim() ||
-                "Sharing a quick behind-the-scenes project showcase with the MyKostoma community.",
-              hashtags:
-                parsedHashtags.length > 0 ? parsedHashtags : ["#mykostoma"],
-              thumbnailUrl: effectiveCover,
-              videoUrl: videoPreviewUrl || undefined,
-              durationSeconds: 42,
-              likesCount: 0,
-              viewsCount: 1,
-              commentsCount: 0,
-              audioLabel: "Original Audio",
-              uploadedAtLabel: formatReelDate(now),
-              createdAtISO: now.toISOString().slice(0, 10),
-              status: visibility,
-              viewsTrendLabel: "Just uploaded",
-              engagementRateLabel: "Collecting metrics",
-              commentsTodayLabel: "0 today",
-              fileName: fileName || "reel_upload.mp4",
-            };
+          void uploadReelMutation({
+            title: newReel.title,
+            caption: newReel.caption,
+            hashtags: newReel.hashtags,
+            visibility,
+            thumbnailUrl: newReel.thumbnailUrl,
+            fileName: newReel.fileName || "reel_upload.mp4",
+          }).catch(() => {});
 
-            void uploadReelMutation({
-              title: newReel.title,
-              caption: newReel.caption,
-              hashtags: newReel.hashtags,
-              visibility,
-              thumbnailUrl: newReel.thumbnailUrl,
-              fileName: newReel.fileName || "reel_upload.mp4",
-            }).catch(() => {});
-
-            dispatch(addUploadedReelLocal({ reel: newReel }));
-            setCreatedReel(newReel);
-            setPhase("success");
-          }
-
-          return next;
-        });
+          dispatch(addUploadedReelLocal({ reel: newReel }));
+          setCreatedReel(newReel);
+          setPhase("success");
+        }
       }, 220);
     },
     [
@@ -711,8 +756,8 @@ export function useUploadReelService() {
     [createdReel?.title, title]
   );
 
-  const creator = DEFAULT_REEL_CREATORS[0];
-  const followersCountLabel = `${formatCompactCount(creator.followersCount).replace("K", ",000").includes(",") ? creator.followersCount.toLocaleString("en-US") : "2,450"} followers`;
+  const activeCreator = creatorRecord ?? DEFAULT_REEL_CREATORS[0];
+  const followersCountLabel = `${activeCreator.followersCount.toLocaleString("en-US")} followers`;
 
   return {
     isProfessional,
@@ -741,7 +786,7 @@ export function useUploadReelService() {
     errorCode,
     errorMessage,
     createdReel,
-    followersCountLabel: creator.followersCount === 42500 ? "2,450 followers" : followersCountLabel,
+    followersCountLabel,
     handleFileSelect,
     handleUseSampleClip,
     handleClearFile,
@@ -803,21 +848,49 @@ export function useCreatorReelsProfileService(creatorId: string) {
     router.push("/reels?view=discover");
   }, [router]);
 
-  const handleToggleFollow = useCallback(async () => {
-    dispatch(toggleFollowCreatorLocal({ creatorId: creator.id }));
-    dispatch(toggleFollowedProfessional(creator.id));
-    try {
-      await toggleFollowProMutation({
-        id: creator.id,
-        following: !isFollowing,
-      }).unwrap();
-    } catch {
-      // Fallback persisted
-    }
-    toast.success(
-      isFollowing ? `Unfollowed ${creator.name}` : `Following ${creator.name}`
-    );
-  }, [creator.id, creator.name, dispatch, isFollowing, toggleFollowProMutation]);
+  const handleToggleFollow = useCallback(
+    async (targetCreatorId = creator.id, targetCreatorName = creator.name) => {
+      const normalized = targetCreatorId.trim().toLowerCase();
+      const currentlyFollowing = combinedFollowedIds.includes(normalized);
+      const nextFollowing = !currentlyFollowing;
+
+      dispatch(
+        setFollowCreatorLocal({
+          creatorId: targetCreatorId,
+          following: nextFollowing,
+        })
+      );
+
+      const isFollowedInDiscover = followedProIds.some(
+        (id) => id.trim().toLowerCase() === normalized
+      );
+      if (isFollowedInDiscover !== nextFollowing) {
+        dispatch(toggleFollowedProfessional(targetCreatorId));
+      }
+
+      try {
+        await toggleFollowProMutation({
+          id: targetCreatorId,
+          following: nextFollowing,
+        }).unwrap();
+      } catch {
+        // Fallback persisted
+      }
+      toast.success(
+        nextFollowing
+          ? `Following ${targetCreatorName}`
+          : `Unfollowed ${targetCreatorName}`
+      );
+    },
+    [
+      combinedFollowedIds,
+      creator.id,
+      creator.name,
+      dispatch,
+      followedProIds,
+      toggleFollowProMutation,
+    ]
+  );
 
   const handleMessageCreator = useCallback(() => {
     toast.info(`Opening messages with ${creator.name}...`);

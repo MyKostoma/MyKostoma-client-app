@@ -109,6 +109,33 @@ const reelsSlice = createSlice({
         creator.followersCount = Math.max(0, creator.followersCount + delta);
       }
     },
+    setFollowCreatorLocal: (
+      state,
+      action: PayloadAction<{ creatorId: string; following: boolean }>
+    ) => {
+      const { creatorId, following } = action.payload;
+      const normalized = creatorId.trim().toLowerCase();
+      const currentlyFollowing = state.followedCreatorIds.includes(normalized);
+      if (currentlyFollowing === following) return;
+
+      if (following) {
+        state.followedCreatorIds.push(normalized);
+      } else {
+        state.followedCreatorIds = state.followedCreatorIds.filter(
+          (id) => id !== normalized
+        );
+      }
+
+      const creator = state.creators.find(
+        (item) => item.id.toLowerCase() === normalized
+      );
+      if (creator) {
+        creator.followersCount = Math.max(
+          0,
+          creator.followersCount + (following ? 1 : -1)
+        );
+      }
+    },
     addUploadedReelLocal: (
       state,
       action: PayloadAction<{ reel: ManagedReelItem }>
@@ -181,6 +208,7 @@ const reelsSlice = createSlice({
 export const {
   toggleLikeReelLocal,
   toggleFollowCreatorLocal,
+  setFollowCreatorLocal,
   addUploadedReelLocal,
   updateManagedReelLocal,
   deleteManagedReelLocal,

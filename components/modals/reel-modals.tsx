@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
   BadgeCheck,
   Check,
@@ -458,6 +458,8 @@ export function ReelPlayerModal({
 }: ReelPlayerModalProps) {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const [progressPercent, setProgressPercent] = useState(18);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const safeIndex = Math.min(Math.max(0, activeIndex), Math.max(0, reels.length - 1));
   const currentReel = reels[safeIndex];
@@ -465,6 +467,7 @@ export function ReelPlayerModal({
   useEffect(() => {
     if (!isOpen) return;
     setIsPlaying(true);
+    setProgressPercent(18);
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
@@ -476,6 +479,27 @@ export function ReelPlayerModal({
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, onChangeIndex, onClose, reels.length, safeIndex]);
+
+  useEffect(() => {
+    const videoEl = videoRef.current;
+    if (!videoEl || !isOpen) return;
+    videoEl.muted = isMuted;
+    if (isPlaying) {
+      void videoEl.play().catch(() => {});
+    } else {
+      videoEl.pause();
+    }
+  }, [currentReel?.videoUrl, isMuted, isOpen, isPlaying]);
+
+  useEffect(() => {
+    if (!isOpen || !isPlaying || currentReel?.videoUrl) return;
+    const durationSec = currentReel?.durationSeconds || 30;
+    const stepMs = Math.max(120, Math.round((durationSec * 1000) / 100));
+    const timer = window.setInterval(() => {
+      setProgressPercent((prev) => (prev >= 100 ? 0 : prev + 1));
+    }, stepMs);
+    return () => window.clearInterval(timer);
+  }, [currentReel?.durationSeconds, currentReel?.videoUrl, isOpen, isPlaying]);
 
   if (!isOpen || !currentReel) return null;
 
@@ -515,22 +539,28 @@ export function ReelPlayerModal({
           <div className="relative w-72 sm:w-88 aspect-9/16 rounded-2xl overflow-hidden bg-black border border-border/50 shadow-2xl">
             <div className="absolute top-0 left-0 right-0 z-20 h-1 bg-border/30">
               <div
-                className={cn(
-                  "h-full bg-primary transition-all duration-500",
-                  isPlaying ? "w-2/5" : "w-1/4"
-                )}
+                className="h-full bg-primary transition-[width] duration-150"
+                style={{ width: `${progressPercent}%` }}
               />
             </div>
 
             {currentReel.videoUrl ? (
               <video
+                ref={videoRef}
                 key={currentReel.videoUrl}
                 src={currentReel.videoUrl}
                 poster={currentReel.thumbnailUrl}
-                autoPlay={isPlaying}
                 muted={isMuted}
                 loop
                 playsInline
+                onTimeUpdate={(e) => {
+                  const vid = e.currentTarget;
+                  if (vid.duration > 0) {
+                    setProgressPercent(
+                      Math.round((vid.currentTime / vid.duration) * 100)
+                    );
+                  }
+                }}
                 onClick={() => setIsPlaying((prev) => !prev)}
                 className="w-full h-full object-cover cursor-pointer"
               />

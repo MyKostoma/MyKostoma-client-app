@@ -25,6 +25,8 @@ export function ReelsView() {
     setMyReelsTab,
     searchQuery,
     setSearchQuery,
+    mobileSearchOpen,
+    setMobileSearchOpen,
     activeHashtag,
     setActiveHashtag,
     playingReelId,
@@ -58,6 +60,8 @@ export function ReelsView() {
 
   const isCreatorStudio = isProfessional && viewMode === "my-reels";
   const activeFeedTab = viewMode === "following" ? "following" : "discover";
+  const showMobileSearchInput =
+    mobileSearchOpen || searchQuery.trim().length > 0;
 
   return (
     <>
@@ -67,74 +71,62 @@ export function ReelsView() {
           viewMode={viewMode}
           searchQuery={searchQuery}
           onSearchChange={setSearchQuery}
+          mobileSearchOpen={mobileSearchOpen}
+          onToggleMobileSearch={() => setMobileSearchOpen((prev) => !prev)}
           onViewModeChange={handleModeChange}
           onUploadClick={isProfessional ? handleOpenUploadReel : undefined}
         />
       </DashboardTopBarSlot>
 
-      <div className="space-y-6 pb-10">
-        {/* Mobile Controls (Search + Professional-only Studio/Upload actions) */}
-        <div className="flex md:hidden flex-col gap-3">
-          <div className="flex items-center gap-2">
-            <div className="flex-1 min-w-0">
-              <SearchInput
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={
-                  isCreatorStudio
-                    ? "Search your reels..."
-                    : "Search reels, creators, #tags..."
-                }
-                className="h-9 text-xs bg-card"
-              />
-            </div>
-
-            {isProfessional && (
-              <Button
-                type="button"
-                variant="default"
-                size="sm"
-                onClick={handleOpenUploadReel}
-                leadingIcon={<Plus className="size-3.5" />}
-                className="h-9 px-3.5 rounded-xl text-xs font-bold shrink-0"
-              >
-                Upload
-              </Button>
-            )}
+      <div className="space-y-4 pb-10">
+        {/* Expandable Mobile Search (only rendered when toggled open or active) */}
+        {showMobileSearchInput && (
+          <div className="md:hidden">
+            <SearchInput
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={
+                isCreatorStudio
+                  ? "Search your reels..."
+                  : "Search reels, creators, #tags..."
+              }
+              className="h-9 text-xs bg-card"
+            />
           </div>
+        )}
 
-          {isProfessional && (
-            <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl border border-border bg-card">
-              <button
-                type="button"
-                onClick={() => handleModeChange("my-reels")}
-                className={cn(
-                  "h-8 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer",
-                  isCreatorStudio
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Clapperboard className="size-3.5" />
-                <span>My Reels</span>
-              </button>
+        {/* Mobile Mode Switcher (Professionals Only) */}
+        {isProfessional && (
+          <div className="md:hidden grid grid-cols-2 gap-1.5 p-1 rounded-xl border border-border bg-card">
+            <button
+              type="button"
+              onClick={() => handleModeChange("my-reels")}
+              className={cn(
+                "h-8 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer",
+                isCreatorStudio
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Clapperboard className="size-3.5" />
+              <span>My Reels</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={() => handleModeChange("discover")}
-                className={cn(
-                  "h-8 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer",
-                  !isCreatorStudio
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <Compass className="size-3.5" />
-                <span>Audience Feed</span>
-              </button>
-            </div>
-          )}
-        </div>
+            <button
+              type="button"
+              onClick={() => handleModeChange("discover")}
+              className={cn(
+                "h-8 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer",
+                !isCreatorStudio
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Compass className="size-3.5" />
+              <span>Audience Feed</span>
+            </button>
+          </div>
+        )}
 
         {/* Creator Studio View (Professionals Only) */}
         {isCreatorStudio ? (
@@ -214,7 +206,7 @@ export function ReelsView() {
           </div>
         ) : (
           /* Audience Feed View (Consumer Default + Pro Feed Mode) */
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             <ReelsFeedTabs
               activeTab={activeFeedTab}
               onTabChange={(tab) => handleModeChange(tab)}
@@ -285,7 +277,7 @@ export function ReelsView() {
                 )}
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-8 sm:gap-10">
+              <div className="flex flex-col items-center gap-6 sm:gap-10">
                 {filteredFeedReels.map((reel) => (
                   <ReelFeedCard
                     key={reel.id}
