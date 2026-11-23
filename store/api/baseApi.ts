@@ -182,6 +182,8 @@ export const baseApi = createApi({
     "Earning",
     "Wallet",
     "Verification",
+    "Review",
+    "Reviews",
     "Message",
     "Notification",
   ],

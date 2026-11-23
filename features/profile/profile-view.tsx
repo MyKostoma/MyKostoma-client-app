@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { Building2, IdCard } from "lucide-react";
 import {
@@ -23,10 +24,11 @@ import { ClientReviewsSection } from "@/components/profile/client-reviews-sectio
 import { ProfileServicesTab } from "@/components/profile/profile-services-tab";
 import { ProfilePortfolioTab } from "@/components/profile/profile-portfolio-tab";
 import { ProfileReviewsTab } from "@/components/profile/profile-reviews-tab";
+import { PortfolioProjectModal } from "@/components/modals/profile-modals";
 import {
-  PortfolioProjectModal,
-  WriteReviewModal,
-} from "@/components/modals/profile-modals";
+  RateExperienceModal,
+  ReviewSubmittedModal,
+} from "@/components/modals/review-modals";
 import { cn } from "@/lib/utils";
 import { useAppSelector } from "@/store/hooks";
 import { selectUserRole } from "@/store/slices/authSlice";
@@ -112,6 +114,8 @@ function ProfessionalProfileViewContent({
     initialMessagingOpen,
     initialFollowing,
   });
+
+  const [reviewSubmittedOpen, setReviewSubmittedOpen] = useState(false);
 
   const handleOpenCustomerMessage = () => {
     setIsMessagingOpen(true);
@@ -345,11 +349,25 @@ function ProfessionalProfileViewContent({
         onDeleteProject={handleDeletePortfolioProject}
       />
 
-      <WriteReviewModal
+      <RateExperienceModal
         isOpen={writeReviewModalOpen}
+        variant="consumer"
         recipientName={profile.name}
+        recipientAvatarUrl={profile.avatarUrl}
+        serviceTitle={profile.services[0]?.title ?? "Service Consultation"}
+        completedDateLabel="Completed Service"
         onClose={() => setWriteReviewModalOpen(false)}
-        onSubmitReview={handleSubmitCustomerReview}
+        onSubmitReview={async (payload) => {
+          await handleSubmitCustomerReview(payload);
+          setReviewSubmittedOpen(true);
+        }}
+      />
+
+      <ReviewSubmittedModal
+        isOpen={reviewSubmittedOpen}
+        variant="consumer"
+        actionLabel="BACK TO PROFILE"
+        onClose={() => setReviewSubmittedOpen(false)}
       />
     </main>
   );

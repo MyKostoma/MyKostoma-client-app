@@ -267,6 +267,13 @@ export const PAGE_METADATA = {
       "View your MyKostoma business entity verification result and credential details.",
   },
 
+  // Reviews Module (/reviews*)
+  reviewsDashboard: {
+    title: "Reviews",
+    description:
+      "Manage client feedback, respond publicly to customer reviews, and rate completed orders on MyKostoma.",
+  },
+
   // Not Found
   notFound: {
     title: "404 - Page Not Found",
@@ -438,6 +445,28 @@ export const PAGE_METADATA_GENERATORS = {
       description:
         description ||
         "Inspect full transaction details, payment method, and downloadable receipt on MyKostoma.",
+    };
+  },
+
+  // Review Detail: /reviews/[id]
+  reviewDetail(authorName?: string, orderCode?: string): Metadata {
+    return {
+      title: authorName
+        ? `Review from ${authorName}${orderCode ? ` (#${orderCode})` : ""}`
+        : "Review Detail",
+      description:
+        "Inspect full customer review feedback, verified order details, and manage your public response on MyKostoma.",
+    };
+  },
+
+  // Rate Consumer / Order Review: /reviews/rate/[orderId]
+  rateConsumer(recipientName?: string, orderCode?: string): Metadata {
+    return {
+      title: recipientName
+        ? `Rate ${recipientName}${orderCode ? ` (#${orderCode})` : ""}`
+        : "Rate Experience",
+      description:
+        "Share honest feedback and star ratings for completed MyKostoma orders to help strengthen community trust.",
     };
   },
 };

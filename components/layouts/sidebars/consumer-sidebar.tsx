@@ -11,6 +11,7 @@ import {
   Store,
   Clapperboard,
   MessageSquare,
+  Star,
   Bell,
   User as UserIcon,
   Settings,
@@ -39,6 +40,7 @@ export const DEFAULT_CONSUMER_NAV_ITEMS: SidebarNavItem[] = [
   { id: "shop", label: "Shop", href: "/shop", icon: Store },
   { id: "reels", label: "Reels", href: "/reels", icon: Clapperboard },
   { id: "messages", label: "Messages", href: "/messages", icon: MessageSquare },
+  { id: "reviews", label: "Reviews", href: "/reviews", icon: Star },
   { id: "wallet", label: "Wallet", href: "/wallet", icon: Wallet },
 ];
 

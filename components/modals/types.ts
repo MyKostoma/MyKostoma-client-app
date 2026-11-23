@@ -139,5 +139,50 @@ export interface ConsumerAddressModalProps {
   onSaveAddress: (values: ConsumerAddressFormValues) => void;
 }
 
+export interface RateExperienceModalProps {
+  isOpen: boolean;
+  variant: "professional" | "consumer";
+  recipientName: string;
+  recipientAvatarUrl?: string;
+  serviceTitle: string;
+  completedDateLabel: string;
+  orderCode?: string;
+  feeFormatted?: string;
+  onClose: () => void;
+  onSubmitReview: (payload: { rating: number; comment: string }) => void;
+}
+
+export interface ReviewSubmittedModalProps {
+  isOpen: boolean;
+  variant?: "professional" | "consumer";
+  title?: string;
+  description?: string;
+  actionLabel?: string;
+  onClose: () => void;
+  onPrimaryAction?: () => void;
+}
+
+export interface ReportReviewModalProps {
+  isOpen: boolean;
+  authorName: string;
+  reasons: readonly string[];
+  onClose: () => void;
+  onSubmitReport: (payload: { reason: string; details: string }) => void;
+}
+
+export interface DeleteReviewResponseModalProps {
+  isOpen: boolean;
+  authorName: string;
+  onClose: () => void;
+  onConfirmDelete: () => void;
+}
+
+export interface RequestEditResponseModalProps {
+  isOpen: boolean;
+  currentResponse: string;
+  onClose: () => void;
+  onSubmitRequest: (payload: { revisedText: string; reason: string }) => void;
+}
+
 
 
