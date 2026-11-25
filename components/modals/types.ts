@@ -9,6 +9,12 @@ import type {
   ReelVisibility,
 } from "@/components/reels/types";
 import type {
+  DisputeRecord,
+  SettingsBusinessInfo,
+  SettingsCredentialsInfo,
+} from "@/components/settings/types";
+import type { ProPayoutSchedule } from "@/components/wallet/types";
+import type {
   AddPortfolioProjectPayload,
   ConsumerAddressFormValues,
   RequestContactUpdatePayload,
@@ -229,6 +235,70 @@ export interface ReelPlayerModalProps {
   onToggleLike: (reelId: string) => void;
   onToggleFollow: (creatorId: string, creatorName: string) => void;
   onShare: (reel: ReelItem) => void;
+}
+
+export interface ConfirmAccountDeletionModalProps {
+  isOpen: boolean;
+  isDeleting?: boolean;
+  onClose: () => void;
+  onConfirmDelete: () => void;
+  onContactSupport: () => void;
+}
+
+export interface ChangeEmailModalProps {
+  isOpen: boolean;
+  currentEmail: string;
+  onClose: () => void;
+  onSubmitChange: (payload: { newEmail: string; currentPassword: string }) => void;
+}
+
+export interface BusinessInfoModalProps {
+  isOpen: boolean;
+  initialInfo: SettingsBusinessInfo;
+  onClose: () => void;
+  onSaveInfo: (payload: {
+    legalName: string;
+    taxId: string;
+    registeredAddress: string;
+  }) => void;
+}
+
+export interface UploadCredentialsModalProps {
+  isOpen: boolean;
+  initialCredentials: SettingsCredentialsInfo;
+  onClose: () => void;
+  onSubmitCredentials: (payload: {
+    licenseName: string;
+    issuingBody: string;
+    licenseNumber: string;
+    fileName: string;
+  }) => void;
+}
+
+export interface EditPayoutScheduleModalProps {
+  isOpen: boolean;
+  currentSchedule: ProPayoutSchedule;
+  onClose: () => void;
+  onSaveSchedule: (schedule: ProPayoutSchedule) => void;
+}
+
+export interface StartDisputeModalProps {
+  isOpen: boolean;
+  reasons: readonly string[];
+  onClose: () => void;
+  onCreateDispute: (payload: {
+    transactionTitle: string;
+    transactionRef: string;
+    reason: string;
+    description: string;
+  }) => void;
+}
+
+export interface DisputeDetailModalProps {
+  isOpen: boolean;
+  dispute: DisputeRecord | null;
+  onClose: () => void;
+  onContactSupport: () => void;
 }
 
 

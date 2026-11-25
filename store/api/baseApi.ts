@@ -185,6 +185,8 @@ export const baseApi = createApi({
     "Verification",
     "Review",
     "Reviews",
+    "Settings",
+    "Dispute",
     "Message",
     "Notification",
   ],

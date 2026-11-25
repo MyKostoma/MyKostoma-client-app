@@ -132,4 +132,10 @@ export interface ReelsSubpageTopBarProps {
   className?: string;
 }
 
+export interface SettingsTopBarProps {
+  title?: string;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
 

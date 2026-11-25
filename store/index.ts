@@ -25,6 +25,7 @@ import verificationReducer from "./slices/verificationSlice"
 import profileReducer from "./slices/profileSlice"
 import reviewsReducer from "./slices/reviewsSlice"
 import reelsReducer from "./slices/reelsSlice"
+import settingsReducer from "./slices/settingsSlice"
 import notificationsReducer from "./slices/notificationsSlice"
 import messagesReducer from "./slices/messagesSlice"
 import professionalDashboardReducer from "./slices/professionalDashboardSlice"
@@ -74,6 +75,7 @@ const rootReducer = combineReducers({
   profile: profileReducer,
   reviews: reviewsReducer,
   reels: reelsReducer,
+  settings: settingsReducer,
   notifications: notificationsReducer,
   messages: messagesReducer,
   professionalDashboard: professionalDashboardReducer,

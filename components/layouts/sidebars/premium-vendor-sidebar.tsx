@@ -196,7 +196,7 @@ export function PremiumVendorSidebar({
           {/* Main Nav Items */}
           <nav
             className={cn(
-              "px-3 py-2 space-y-1 overflow-y-auto overflow-x-hidden max-h-[calc(100vh-270px)]",
+              "px-3 py-2 space-y-1 overflow-y-auto no-scrollbar overflow-x-hidden max-h-[calc(100vh-270px)]",
               !isOpen && "px-2"
             )}
           >

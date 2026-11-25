@@ -286,6 +286,48 @@ export const PAGE_METADATA = {
       "Upload, configure hashtags and cover art, and publish a vertical showcase reel to your MyKostoma audience.",
   },
 
+  // Settings Module (/settings*)
+  settingsOverview: {
+    title: "Settings",
+    description:
+      "Manage your profile details, password security, notification preferences, disputes, and account settings on MyKostoma.",
+  },
+  settingsProfile: {
+    title: "Profile Settings",
+    description:
+      "Update your public name, photo, phone number, location, and summary on MyKostoma.",
+  },
+  settingsPassword: {
+    title: "Change Password",
+    description:
+      "Keep your MyKostoma account secure by updating your password and security credentials.",
+  },
+  settingsNotifications: {
+    title: "Notification Preferences",
+    description:
+      "Customize Email, Push, SMS, and Quiet Hours alert preferences across MyKostoma.",
+  },
+  settingsVerification: {
+    title: "Verification Settings",
+    description:
+      "Track your identity, business information, and professional credential verification steps on MyKostoma.",
+  },
+  settingsWallet: {
+    title: "Wallet & Payout Settings",
+    description:
+      "Configure payout schedules, linked bank methods, and view recent earnings transactions on MyKostoma.",
+  },
+  settingsDisputes: {
+    title: "Disputes & Resolution",
+    description:
+      "Review active and past transaction disputes or initiate a new MyKostoma resolution ticket.",
+  },
+  settingsDeleteAccount: {
+    title: "Delete Account",
+    description:
+      "Review permanent account deletion consequences or deactivate your MyKostoma account.",
+  },
+
   // Not Found
   notFound: {
     title: "404 - Page Not Found",
