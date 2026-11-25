@@ -123,6 +123,18 @@ export const PAGE_METADATA = {
       "Track active service jobs, inspect milestones, release escrow funds, and view receipts on MyKostoma.",
   },
 
+  // Disputes Module (/disputes*)
+  disputesDashboard: {
+    title: "Disputes",
+    description:
+      "Manage and track your active or resolved escrow conflict resolutions and mediation evidence on MyKostoma.",
+  },
+  disputeDetailDefault: {
+    title: "Dispute Details",
+    description:
+      "Inspect dispute timeline, supporting evidence, and mutual escrow settlement options on MyKostoma.",
+  },
+
   // Notifications Module
   notifications: {
     title: "Notifications",
@@ -541,6 +553,17 @@ export const PAGE_METADATA_GENERATORS = {
         : "Creator Reels Profile",
       description:
         "Explore vertical video reels, biography, and bookable services from verified MyKostoma professionals.",
+    };
+  },
+
+  // Dispute Detail: /disputes/[id]
+  disputeDetail(code?: string, orderCode?: string): Metadata {
+    return {
+      title: code
+        ? `Dispute ${code}${orderCode ? ` (${orderCode})` : ""}`
+        : "Dispute Details",
+      description:
+        "Review dispute status, escrow hold timeline, party responses, and resolution options on MyKostoma.",
     };
   },
 };

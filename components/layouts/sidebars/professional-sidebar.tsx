@@ -12,6 +12,7 @@ import {
   Clapperboard,
   MessageSquare,
   Star,
+  Scale,
   IdCard,
   Bell,
   Settings,
@@ -43,6 +44,7 @@ export const DEFAULT_PROFESSIONAL_NAV_ITEMS: SidebarNavItem[] = [
   { id: "reels", label: "Reels", href: "/reels", icon: Clapperboard },
   { id: "messages", label: "Messages", href: "/messages", icon: MessageSquare },
   { id: "reviews", label: "Reviews", href: "/reviews", icon: Star },
+  { id: "disputes", label: "Disputes", href: "/disputes", icon: Scale },
   { id: "verification", label: "Verification", href: "/verification", icon: IdCard },
 ];
 

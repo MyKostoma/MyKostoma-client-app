@@ -138,4 +138,16 @@ export interface SettingsTopBarProps {
   className?: string;
 }
 
+export interface DisputesTopBarProps {
+  title?: string;
+  backHref?: string;
+  backLabel?: string;
+  onRaiseDispute?: () => void;
+  onMessageAdmin?: () => void;
+  onAddEvidence?: () => void;
+  isResolved?: boolean;
+  onMenuClick?: () => void;
+  className?: string;
+}
+
 

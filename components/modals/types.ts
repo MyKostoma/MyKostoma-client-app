@@ -13,6 +13,11 @@ import type {
   SettingsBusinessInfo,
   SettingsCredentialsInfo,
 } from "@/components/settings/types";
+import type {
+  DisputableOrderOption,
+  DisputeEvidenceAttachment,
+} from "@/components/disputes/types";
+import type { DisputeGuidelineSection } from "@/features/disputes/data";
 import type { ProPayoutSchedule } from "@/components/wallet/types";
 import type {
   AddPortfolioProjectPayload,
@@ -299,6 +304,57 @@ export interface DisputeDetailModalProps {
   dispute: DisputeRecord | null;
   onClose: () => void;
   onContactSupport: () => void;
+}
+
+export interface RaiseDisputeWizardModalProps {
+  isOpen: boolean;
+  orderOptions: DisputableOrderOption[];
+  reasons: readonly string[];
+  defaultOrderId?: string;
+  onClose: () => void;
+  onSubmitDispute: (payload: {
+    orderId: string;
+    reason: string;
+    description: string;
+    attachments: DisputeEvidenceAttachment[];
+  }) => Promise<{ id: string; code: string } | null>;
+  onViewDisputeDetail: (disputeId: string) => void;
+  onOpenHelpCenter: () => void;
+  onContactSupport: () => void;
+}
+
+export interface AddDisputeEvidenceModalProps {
+  isOpen: boolean;
+  disputeCode: string;
+  onClose: () => void;
+  onSubmitEvidence: (payload: {
+    message: string;
+    attachments: DisputeEvidenceAttachment[];
+  }) => Promise<void> | void;
+}
+
+export interface MessageDisputeAdminModalProps {
+  isOpen: boolean;
+  disputeCode: string;
+  onClose: () => void;
+  onSendMessage: (payload: {
+    subject: string;
+    message: string;
+  }) => Promise<void> | void;
+  onOpenMessagesHub: () => void;
+}
+
+export interface DisputeGuidelinesModalProps {
+  isOpen: boolean;
+  sections: DisputeGuidelineSection[];
+  onClose: () => void;
+  onContactSupport: () => void;
+}
+
+export interface EvidencePreviewModalProps {
+  isOpen: boolean;
+  attachment: DisputeEvidenceAttachment | null;
+  onClose: () => void;
 }
 
 

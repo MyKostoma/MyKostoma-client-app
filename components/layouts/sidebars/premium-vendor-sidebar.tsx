@@ -10,6 +10,7 @@ import {
   Wallet,
   Cog,
   Star,
+  Scale,
   IdCard,
   Bell,
   Settings,
@@ -41,6 +42,7 @@ export const DEFAULT_PREMIUM_VENDOR_NAV_ITEMS: SidebarNavItem[] = [
   { id: "orders", label: "Orders", href: "/orders", icon: Wallet },
   { id: "wallet", label: "Wallet", href: "/wallet", icon: Cog },
   { id: "reviews", label: "Reviews", href: "/reviews", icon: Star },
+  { id: "disputes", label: "Disputes", href: "/disputes", icon: Scale },
   { id: "verification", label: "Verification", href: "/verification", icon: IdCard },
 ];
 
