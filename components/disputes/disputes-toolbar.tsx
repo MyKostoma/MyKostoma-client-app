@@ -58,13 +58,15 @@ export function DisputesToolbar({
             variant={filtersOpen || hasActiveFilters ? "secondary" : "outline"}
             size="sm"
             onClick={() => setFiltersOpen((prev) => !prev)}
-            className="h-10 px-4 rounded-xl text-xs font-semibold gap-2"
+            leadingIcon={<SlidersHorizontal className="size-3.5" />}
+            trailingIcon={
+              hasActiveFilters ? (
+                <span className="size-2 rounded-full bg-primary" />
+              ) : undefined
+            }
+            className="h-10 px-4 rounded-xl text-xs font-semibold"
           >
-            <SlidersHorizontal className="size-3.5" />
-            <span>Filters</span>
-            {hasActiveFilters && (
-              <span className="size-2 rounded-full bg-primary" />
-            )}
+            Filters
           </Button>
 
           <Button
@@ -72,10 +74,10 @@ export function DisputesToolbar({
             variant="outline"
             size="sm"
             onClick={onExportCsv}
-            className="h-10 px-4 rounded-xl text-xs font-semibold gap-2"
+            leadingIcon={<Download className="size-3.5" />}
+            className="h-10 px-4 rounded-xl text-xs font-semibold"
           >
-            <Download className="size-3.5" />
-            <span>Export</span>
+            Export
           </Button>
         </div>
       </div>
@@ -124,10 +126,10 @@ export function DisputesToolbar({
               variant="ghost"
               size="sm"
               onClick={onResetFilters}
-              className="h-9 px-3 rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground gap-1.5 self-start lg:self-end"
+              leadingIcon={<RotateCcw className="size-3.5" />}
+              className="h-9 px-3 rounded-xl text-xs font-semibold text-muted-foreground hover:text-foreground self-start lg:self-end"
             >
-              <RotateCcw className="size-3.5" />
-              <span>Reset</span>
+              Reset
             </Button>
           )}
         </div>

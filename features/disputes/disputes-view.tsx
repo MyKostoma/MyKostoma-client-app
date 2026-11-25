@@ -83,10 +83,10 @@ export function DisputesView() {
             type="button"
             variant="primary"
             onClick={openRaiseModal}
-            className="flex sm:hidden w-full h-10 px-5 rounded-xl text-xs font-semibold gap-2 justify-center"
+            leadingIcon={<Plus className="size-4" />}
+            className="flex sm:hidden w-full h-10 px-5 rounded-xl text-xs font-semibold justify-center"
           >
-            <Plus className="size-4" />
-            <span>Raise Dispute</span>
+            Raise Dispute
           </Button>
         </div>
 

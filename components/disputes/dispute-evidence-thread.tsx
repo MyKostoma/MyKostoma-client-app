@@ -28,10 +28,10 @@ export function DisputeEvidenceThread({
             variant="outline"
             size="sm"
             onClick={onAddEvidence}
-            className="h-8 px-3 rounded-lg text-xs font-semibold gap-1.5"
+            leadingIcon={<Plus className="size-3.5" />}
+            className="h-8 px-3 rounded-lg text-xs font-semibold"
           >
-            <Plus className="size-3.5" />
-            <span>Add Response</span>
+            Add Response
           </Button>
         )}
       </div>

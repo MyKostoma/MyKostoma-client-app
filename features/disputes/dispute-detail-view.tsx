@@ -141,10 +141,10 @@ export function DisputeDetailView({ disputeId }: DisputeDetailViewProps) {
                 variant="outline"
                 size="sm"
                 onClick={() => setMessageAdminModalOpen(true)}
-                className="flex-1 h-9 px-3 rounded-xl text-xs font-semibold gap-1.5"
+                leadingIcon={<MessageSquare className="size-3.5" />}
+                className="flex-1 h-9 px-3 rounded-xl text-xs font-semibold"
               >
-                <MessageSquare className="size-3.5" />
-                <span>Message Admin</span>
+                Message Admin
               </Button>
               {!isResolved && (
                 <Button
@@ -152,10 +152,10 @@ export function DisputeDetailView({ disputeId }: DisputeDetailViewProps) {
                   variant="primary"
                   size="sm"
                   onClick={() => setAddEvidenceModalOpen(true)}
-                  className="flex-1 h-9 px-3 rounded-xl text-xs font-semibold gap-1.5"
+                  leadingIcon={<Upload className="size-3.5" />}
+                  className="flex-1 h-9 px-3 rounded-xl text-xs font-semibold"
                 >
-                  <Upload className="size-3.5" />
-                  <span>Add Evidence</span>
+                  Add Evidence
                 </Button>
               )}
             </div>

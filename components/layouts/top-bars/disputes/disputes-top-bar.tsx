@@ -80,10 +80,10 @@ export function DisputesTopBar({
             variant="primary"
             size="sm"
             onClick={onRaiseDispute}
-            className="hidden sm:inline-flex h-9 px-4 rounded-xl text-xs font-semibold gap-1.5"
+            leadingIcon={<Plus className="size-4" />}
+            className="hidden sm:inline-flex h-9 px-4 rounded-xl text-xs font-semibold"
           >
-            <Plus className="size-4" />
-            <span>Raise Dispute</span>
+            Raise Dispute
           </Button>
         )}
 
@@ -93,10 +93,10 @@ export function DisputesTopBar({
             variant="outline"
             size="sm"
             onClick={onMessageAdmin}
-            className="hidden sm:inline-flex h-9 px-3.5 rounded-xl text-xs font-semibold gap-1.5"
+            leadingIcon={<MessageSquare className="size-3.5" />}
+            className="hidden sm:inline-flex h-9 px-3.5 rounded-xl text-xs font-semibold"
           >
-            <MessageSquare className="size-3.5" />
-            <span>Message Admin</span>
+            Message Admin
           </Button>
         )}
 
@@ -106,10 +106,10 @@ export function DisputesTopBar({
             variant="primary"
             size="sm"
             onClick={onAddEvidence}
-            className="hidden sm:inline-flex h-9 px-4 rounded-xl text-xs font-semibold gap-1.5"
+            leadingIcon={<Upload className="size-3.5" />}
+            className="hidden sm:inline-flex h-9 px-4 rounded-xl text-xs font-semibold"
           >
-            <Upload className="size-3.5" />
-            <span>Add Evidence</span>
+            Add Evidence
           </Button>
         )}
 

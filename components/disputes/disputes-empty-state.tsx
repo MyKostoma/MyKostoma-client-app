@@ -35,20 +35,20 @@ export function DisputesEmptyState({
               type="button"
               variant="outline"
               onClick={onClearFilters}
-              className="h-10 px-5 rounded-xl text-xs font-semibold gap-2"
+              leadingIcon={<RotateCcw className="size-3.5" />}
+              className="h-10 px-5 rounded-xl text-xs font-semibold"
             >
-              <RotateCcw className="size-3.5" />
-              <span>Clear Filters</span>
+              Clear Filters
             </Button>
           ) : (
             <Button
               type="button"
               variant="primary"
               onClick={onRaiseDispute}
-              className="h-10 px-6 rounded-xl text-xs font-semibold gap-2"
+              leadingIcon={<Plus className="size-4" />}
+              className="h-10 px-6 rounded-xl text-xs font-semibold"
             >
-              <Plus className="size-4" />
-              <span>Raise a Dispute</span>
+              Raise a Dispute
             </Button>
           )}
         </div>
