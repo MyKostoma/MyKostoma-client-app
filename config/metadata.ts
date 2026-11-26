@@ -123,6 +123,18 @@ export const PAGE_METADATA = {
       "Track active service jobs, inspect milestones, release escrow funds, and view receipts on MyKostoma.",
   },
 
+  // Disputes Module (/disputes*)
+  disputesDashboard: {
+    title: "Disputes",
+    description:
+      "Manage and track your active or resolved escrow conflict resolutions and mediation evidence on MyKostoma.",
+  },
+  disputeDetailDefault: {
+    title: "Dispute Details",
+    description:
+      "Inspect dispute timeline, supporting evidence, and mutual escrow settlement options on MyKostoma.",
+  },
+
   // Notifications Module
   notifications: {
     title: "Notifications",
@@ -284,6 +296,48 @@ export const PAGE_METADATA = {
     title: "Upload Reel",
     description:
       "Upload, configure hashtags and cover art, and publish a vertical showcase reel to your MyKostoma audience.",
+  },
+
+  // Settings Module (/settings*)
+  settingsOverview: {
+    title: "Settings",
+    description:
+      "Manage your profile details, password security, notification preferences, disputes, and account settings on MyKostoma.",
+  },
+  settingsProfile: {
+    title: "Profile Settings",
+    description:
+      "Update your public name, photo, phone number, location, and summary on MyKostoma.",
+  },
+  settingsPassword: {
+    title: "Change Password",
+    description:
+      "Keep your MyKostoma account secure by updating your password and security credentials.",
+  },
+  settingsNotifications: {
+    title: "Notification Preferences",
+    description:
+      "Customize Email, Push, SMS, and Quiet Hours alert preferences across MyKostoma.",
+  },
+  settingsVerification: {
+    title: "Verification Settings",
+    description:
+      "Track your identity, business information, and professional credential verification steps on MyKostoma.",
+  },
+  settingsWallet: {
+    title: "Wallet & Payout Settings",
+    description:
+      "Configure payout schedules, linked bank methods, and view recent earnings transactions on MyKostoma.",
+  },
+  settingsDisputes: {
+    title: "Disputes & Resolution",
+    description:
+      "Review active and past transaction disputes or initiate a new MyKostoma resolution ticket.",
+  },
+  settingsDeleteAccount: {
+    title: "Delete Account",
+    description:
+      "Review permanent account deletion consequences or deactivate your MyKostoma account.",
   },
 
   // Not Found
@@ -499,6 +553,17 @@ export const PAGE_METADATA_GENERATORS = {
         : "Creator Reels Profile",
       description:
         "Explore vertical video reels, biography, and bookable services from verified MyKostoma professionals.",
+    };
+  },
+
+  // Dispute Detail: /disputes/[id]
+  disputeDetail(code?: string, orderCode?: string): Metadata {
+    return {
+      title: code
+        ? `Dispute ${code}${orderCode ? ` (${orderCode})` : ""}`
+        : "Dispute Details",
+      description:
+        "Review dispute status, escrow hold timeline, party responses, and resolution options on MyKostoma.",
     };
   },
 };

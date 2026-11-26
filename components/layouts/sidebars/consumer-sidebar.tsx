@@ -12,6 +12,7 @@ import {
   Clapperboard,
   MessageSquare,
   Star,
+  Scale,
   Bell,
   User as UserIcon,
   Settings,
@@ -41,6 +42,7 @@ export const DEFAULT_CONSUMER_NAV_ITEMS: SidebarNavItem[] = [
   { id: "reels", label: "Reels", href: "/reels", icon: Clapperboard },
   { id: "messages", label: "Messages", href: "/messages", icon: MessageSquare },
   { id: "reviews", label: "Reviews", href: "/reviews", icon: Star },
+  { id: "disputes", label: "Disputes", href: "/disputes", icon: Scale },
   { id: "wallet", label: "Wallet", href: "/wallet", icon: Wallet },
 ];
 
@@ -217,7 +219,7 @@ export function ConsumerSidebar({
           {/* Main Nav Items */}
           <nav
             className={cn(
-              "px-3 py-2 space-y-1 overflow-y-auto overflow-x-hidden max-h-[calc(100vh-270px)]",
+              "px-3 py-2 space-y-1 overflow-y-auto no-scrollbar overflow-x-hidden max-h-[calc(100vh-270px)]",
               !isOpen && "px-2"
             )}
           >
